@@ -1,5 +1,5 @@
 $squareCount: 11;
-$gap: 4px;
+$gap: 2px;
 $totalGap: ($squareCount - 1) * $gap;
 $buffer: 64px;
 $maxWidth: 600 + $buffer + $totalGap;

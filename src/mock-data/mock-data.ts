@@ -14,7 +14,13 @@ export const MOCK_PLACED_SHAPES: PlacedLandscapeShape[] = [
   {
     position: { x: 0, y: 6 },
     type: LandscapeType.WATER,
-    shapeBitMap: ShapeBitMap.T_SMALL,
+    shapeBitMap: ShapeBitMap.L_BIG,
+  },
+  {
+    position: { x: 5, y: 0 },
+    type: LandscapeType.HERO,
+    shapeBitMap: ShapeBitMap.HERO_1,
+    heroPosition: { x: 1, y: 1 },
   },
   {
     position: { x: 6, y: 0 },
@@ -25,12 +31,6 @@ export const MOCK_PLACED_SHAPES: PlacedLandscapeShape[] = [
     position: { x: 6, y: 6 },
     type: LandscapeType.VILLAGE,
     shapeBitMap: ShapeBitMap.T_BIG,
-  },
-  {
-    position: { x: 5, y: 0 },
-    type: LandscapeType.HERO,
-    shapeBitMap: ShapeBitMap.HERO_1,
-    heroPosition: { x: 1, y: 1 },
   },
 ];
 
