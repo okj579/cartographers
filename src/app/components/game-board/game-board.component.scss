@@ -1,0 +1,151 @@
+$squareCount: 11;
+$gap: 4px;
+$totalGap: ($squareCount - 1) * $gap;
+$buffer: 64px;
+$maxWidth: 600 + $buffer + $totalGap;
+$squareSize: calc(calc(min(100vw, 100vh, $maxWidth) - $buffer - $totalGap) / $squareCount);
+$font-size: calc(0.6 * $squareSize);
+
+:host {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat($squareCount, $squareSize);
+  grid-template-rows: repeat($squareCount, $squareSize);
+  gap: $gap;
+}
+
+div {
+  background: #444;
+  display: grid;
+  place-items: center;
+  font-size: $font-size;
+  position: relative;
+  text-shadow: 0 0 0.05em #999;
+
+  &.hero-star,
+  &.destroyed {
+    &::after {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+    }
+  }
+
+  &.hero-star:not(.destroyed) {
+    &::after {
+      content: '⭐';
+      background: #ffffff11;
+      font-size: 0.4em;
+    }
+  }
+
+  &.destroyed {
+    &::after {
+      content: '💥';
+      background: #444444aa;
+      font-size: 1.2em;
+      display: grid;
+      place-items: center;
+    }
+  }
+
+  &[data-landscape='mountain'] {
+    background: #853;
+
+    &::before {
+      content: '🏔';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '⛰️';
+      }
+    }
+  }
+
+  &[data-landscape='water'] {
+    background: #00a;
+
+    &::before {
+      content: '🌊';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '🐟';
+      }
+    }
+  }
+
+  &[data-landscape='forest'] {
+    background: #060;
+
+    &::before {
+      content: '🌳';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '🌲';
+      }
+    }
+  }
+
+  &[data-landscape='field'] {
+    background: #fa0;
+
+    &::before {
+      content: '🌾';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '🌱';
+      }
+    }
+  }
+
+  &[data-landscape='village'] {
+    background: #823;
+
+    &::before {
+      content: '🏘';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '🏠';
+      }
+    }
+  }
+
+  &[data-landscape='monster'] {
+    background: #a0a;
+
+    &::before {
+      content: '😈';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '🐉';
+      }
+    }
+  }
+
+  &[data-landscape='hero'] {
+    background: #aaa;
+
+    &::before {
+      content: '👸';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '🤴';
+      }
+    }
+  }
+}

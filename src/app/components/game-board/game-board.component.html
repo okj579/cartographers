@@ -1,0 +1,6 @@
+<div
+  *ngFor="let tile of boardTiles"
+  [attr.data-landscape]="tile.landscape"
+  [class.destroyed]="tile.destroyed"
+  [class.hero-star]="tile.heroStar"
+></div>
