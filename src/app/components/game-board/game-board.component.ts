@@ -37,11 +37,11 @@ export class GameBoardComponent {
           tile.landscape = getRandomLandscapeType();
         }
 
-        if (Math.random() > 0.8) {
+        if (Math.random() > 0.9) {
           tile.destroyed = true;
         }
 
-        if (Math.random() > 0.8) {
+        if (Math.random() > 0.9) {
           tile.heroStar = true;
         }
 
