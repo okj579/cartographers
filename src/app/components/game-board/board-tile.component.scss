@@ -1,0 +1,137 @@
+:host {
+  display: grid;
+  place-items: center;
+  position: relative;
+
+  &.base {
+    background: #444;
+  }
+
+  &.hero-star,
+  &.destroyed {
+    &::after {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+    }
+  }
+
+  &.hero-star:not(.destroyed) {
+    &::after {
+      content: '⭐';
+      background: #ffffff11;
+      font-size: 0.4em;
+    }
+  }
+
+  &.destroyed {
+    z-index: 1;
+
+    &::after {
+      content: '💥';
+      background: #444444aa;
+      font-size: 1.2em;
+      display: grid;
+      place-items: center;
+    }
+  }
+
+  &[data-landscape='mountain'] {
+    background: #853;
+
+    &::before {
+      content: '🏔';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '⛰️';
+      }
+    }
+  }
+
+  &[data-landscape='water'] {
+    background: #00a;
+
+    &::before {
+      content: '🌊';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '🐟';
+      }
+    }
+  }
+
+  &[data-landscape='forest'] {
+    background: #060;
+
+    &::before {
+      content: '🌳';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '🌲';
+      }
+    }
+  }
+
+  &[data-landscape='field'] {
+    background: #fa0;
+
+    &::before {
+      content: '🌾';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '🌱';
+      }
+    }
+  }
+
+  &[data-landscape='village'] {
+    background: #823;
+
+    &::before {
+      content: '🏘';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '🏠';
+      }
+    }
+  }
+
+  &[data-landscape='monster'] {
+    background: #a0a;
+
+    &::before {
+      content: '😈';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '🐉';
+      }
+    }
+  }
+
+  &[data-landscape='hero'] {
+    background: #aaa;
+
+    &::before {
+      content: '👸';
+    }
+
+    &:nth-child(2n) {
+      &::before {
+        content: '🤴';
+      }
+    }
+  }
+}

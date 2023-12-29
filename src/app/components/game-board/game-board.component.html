@@ -1,6 +1,2 @@
-<div
-  *ngFor="let tile of boardTiles"
-  [attr.data-landscape]="tile.landscape"
-  [class.destroyed]="tile.destroyed"
-  [class.hero-star]="tile.heroStar"
-></div>
+<app-board-tile *ngFor="let tile of allTiles" [tile]="tile"></app-board-tile>
+<app-placed-landscape-tile *ngFor="let shape of placedShapes" [placedShape]="shape" />
