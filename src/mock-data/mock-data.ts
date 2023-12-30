@@ -9,7 +9,7 @@ export const MOCK_PLACED_SHAPES: PlacedLandscapeShape[] = [
     baseShape: SHAPES[ShapeName.PLUS],
   },
   {
-    position: { x: 1, y: 0 },
+    position: { x: 2, y: 0 },
     type: LandscapeType.FIELD,
     baseShape: SHAPES[ShapeName.O_SMALL],
   },
@@ -30,7 +30,7 @@ export const MOCK_PLACED_SHAPES: PlacedLandscapeShape[] = [
     baseShape: SHAPES[ShapeName.Z_BIG],
   },
   {
-    position: { x: 6, y: 6 },
+    position: { x: 5, y: 6 },
     type: LandscapeType.VILLAGE,
     baseShape: SHAPES[ShapeName.T_BIG],
   },

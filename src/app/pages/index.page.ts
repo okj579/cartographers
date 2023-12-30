@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
 import { GameBoardComponent } from '../components/game-board/game-board.component';
+import { BoardTile } from '../../models/board-tile';
+import { getInitialBoardTiles } from '../../game-logic/constants';
+import { PlacedLandscapeShape } from '../../models/landscape-shape';
+import { MOCK_PLACED_SHAPES } from '../../mock-data/mock-data';
+import { tryPlaceShapeOnBoard } from '../../game-logic/functions';
 
 @Component({
   selector: 'app-home',
@@ -7,7 +12,9 @@ import { GameBoardComponent } from '../components/game-board/game-board.componen
   template: `
     <h2>Cartographers</h2>
 
-    <app-game-board />
+    <app-game-board [currentBoardState]="currentBoardState" />
+
+    <button (click)="increment()">Mock next state</button>
   `,
   styles: [
     `
@@ -19,9 +26,11 @@ import { GameBoardComponent } from '../components/game-board/game-board.componen
   imports: [GameBoardComponent],
 })
 export default class HomeComponent {
-  count = 0;
+  currentBoardState: BoardTile[][] = getInitialBoardTiles();
+
+  mockShapes: PlacedLandscapeShape[] = [...MOCK_PLACED_SHAPES];
 
   increment() {
-    this.count++;
+    this.currentBoardState = tryPlaceShapeOnBoard(this.currentBoardState, this.mockShapes.shift()).updatedBoard;
   }
 }

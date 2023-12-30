@@ -5,6 +5,7 @@ export interface BoardTile {
   position: Coordinates;
   landscape?: LandscapeType;
   destroyed?: boolean;
+  conflicted?: boolean;
   heroStar?: boolean;
   isBase?: boolean;
 }
