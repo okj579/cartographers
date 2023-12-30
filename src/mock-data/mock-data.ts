@@ -19,15 +19,15 @@ export const MOCK_PLACED_SHAPES: PlacedLandscapeShape[] = [
     baseShape: SHAPES[ShapeName.L_BIG],
   },
   {
-    position: { x: 6, y: 1 },
+    position: { x: 5, y: 0 },
+    type: LandscapeType.MONSTER,
+    baseShape: SHAPES[ShapeName.Z_BIG],
+  },
+  {
+    position: { x: 5, y: 1 },
     type: LandscapeType.HERO,
     baseShape: SHAPES[ShapeName.X],
     heroPosition: { x: 1, y: 1 },
-  },
-  {
-    position: { x: 6, y: 0 },
-    type: LandscapeType.MONSTER,
-    baseShape: SHAPES[ShapeName.Z_BIG],
   },
   {
     position: { x: 5, y: 6 },
