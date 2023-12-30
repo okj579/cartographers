@@ -7,6 +7,11 @@
     background: #444;
   }
 
+  &.temporary {
+    opacity: 0.7;
+    margin: -2px;
+  }
+
   &.hero-star,
   &.conflicted,
   div.destroyed {
@@ -36,7 +41,7 @@
       content: '🚫';
       background: #ff000099;
       font-size: 0.4em;
-      animation: opacityBlink 1s infinite;
+      animation: opacityBlink 1.5s infinite;
     }
   }
 

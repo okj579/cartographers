@@ -8,4 +8,5 @@ export interface BoardTile {
   conflicted?: boolean;
   heroStar?: boolean;
   isBase?: boolean;
+  isTemporary?: boolean;
 }

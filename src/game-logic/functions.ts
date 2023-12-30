@@ -21,7 +21,7 @@ export function mirrorShape(shape: BaseShape): BaseShape {
   return { ...shape, filledCells };
 }
 
-export function tryPlaceShapeOnBoard(board: BoardTile[][], shape?: PlacedLandscapeShape): PlaceShapeResult {
+export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape, isTemporary: boolean): PlaceShapeResult {
   const updatedBoard: BoardTile[][] = board.map((row) => row.map((tile) => ({ ...tile })));
   let hasConflict: boolean = false;
 
@@ -31,12 +31,13 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape?: PlacedLandsca
     const tile = updatedBoard[shape.position.x + cell.x][shape.position.y + cell.y];
 
     if (tile) {
+      tile.isTemporary = isTemporary;
       applyShapeToTile(tile, shape);
     } else {
       hasConflict = true;
     }
 
-    if (tile.conflicted) {
+    if (tile?.conflicted) {
       hasConflict = true;
     }
   }
