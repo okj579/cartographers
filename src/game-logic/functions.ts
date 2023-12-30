@@ -10,7 +10,7 @@ interface PlaceShapeResult {
 }
 
 export function rotateShape(shape: BaseShape): BaseShape {
-  const filledCells: Coordinates[] = shape.filledCells.map((cell) => ({ x: cell.y, y: shape.width - cell.x - 1 }));
+  const filledCells: Coordinates[] = shape.filledCells.map((cell) => ({ x: shape.height - cell.y - 1, y: cell.x }));
 
   return { width: shape.height, height: shape.width, filledCells };
 }
