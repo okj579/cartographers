@@ -1,18 +1,13 @@
 import { Component, Input } from '@angular/core';
-import { LandscapeType, PlacedLandscapeShape, ShapeBitMap } from '../../../models/shape';
 import { NgForOf } from '@angular/common';
-import { BoardTile, BoardTileComponent } from './board-tile.component';
+import { BoardTileComponent } from './board-tile.component';
 import { PlacedLandscapeTileComponent } from './placed-landscape-tile.component';
 import { MOCK_DESTROYED_TILES, MOCK_PLACED_SHAPES } from '../../../mock-data/mock-data';
+import { BoardTile } from '../../../models/board-tile';
+import { LandscapeType } from '../../../models/landscape-type';
+import { PlacedLandscapeShape } from '../../../models/landscape-shape';
 
 const boardSize = 11;
-
-function getRandomLandscapeType(): LandscapeType {
-  const landscapeTypes = Object.values(LandscapeType);
-  const randomIndex = Math.floor(Math.random() * landscapeTypes.length);
-
-  return landscapeTypes[randomIndex];
-}
 
 @Component({
   selector: 'app-game-board',

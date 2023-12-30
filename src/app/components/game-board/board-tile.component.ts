@@ -1,13 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Coordinates, LandscapeType } from '../../../models/shape';
-
-export interface BoardTile {
-  position: Coordinates;
-  landscape?: LandscapeType;
-  destroyed?: boolean;
-  heroStar?: boolean;
-  isBase?: boolean;
-}
+import { BoardTile } from '../../../models/board-tile';
 
 @Component({
   selector: 'app-board-tile',

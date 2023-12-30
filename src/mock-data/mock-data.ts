@@ -1,40 +1,42 @@
-import { LandscapeType, PlacedLandscapeShape, ShapeBitMap } from '../models/shape';
+import { ShapeName, SHAPES } from '../models/base-shape';
+import { LandscapeType } from '../models/landscape-type';
+import { PlacedLandscapeShape } from '../models/landscape-shape';
 
 export const MOCK_PLACED_SHAPES: PlacedLandscapeShape[] = [
   {
     position: { x: 4, y: 4 },
     type: LandscapeType.FOREST,
-    shapeBitMap: ShapeBitMap.X_BIG,
+    baseShape: SHAPES[ShapeName.PLUS],
   },
   {
     position: { x: 1, y: 0 },
     type: LandscapeType.FIELD,
-    shapeBitMap: ShapeBitMap.O_SMALL,
+    baseShape: SHAPES[ShapeName.O_SMALL],
   },
   {
     position: { x: 0, y: 6 },
     type: LandscapeType.WATER,
-    shapeBitMap: ShapeBitMap.L_BIG,
+    baseShape: SHAPES[ShapeName.L_BIG],
   },
   {
-    position: { x: 5, y: 0 },
+    position: { x: 6, y: 1 },
     type: LandscapeType.HERO,
-    shapeBitMap: ShapeBitMap.HERO_1,
+    baseShape: SHAPES[ShapeName.X],
     heroPosition: { x: 1, y: 1 },
   },
   {
     position: { x: 6, y: 0 },
     type: LandscapeType.MONSTER,
-    shapeBitMap: ShapeBitMap.Z_BIG,
+    baseShape: SHAPES[ShapeName.Z_BIG],
   },
   {
     position: { x: 6, y: 6 },
     type: LandscapeType.VILLAGE,
-    shapeBitMap: ShapeBitMap.T_BIG,
+    baseShape: SHAPES[ShapeName.T_BIG],
   },
 ];
 
 export const MOCK_DESTROYED_TILES = [
-  { position: { x: 7, y: 0 }, destroyed: true },
-  { position: { x: 7, y: 2 }, destroyed: true },
+  { position: { x: 6, y: 1 }, destroyed: true },
+  { position: { x: 8, y: 1 }, destroyed: true },
 ];
