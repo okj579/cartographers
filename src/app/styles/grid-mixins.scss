@@ -1,0 +1,15 @@
+$squareCount: 11;
+$gap: 2px;
+$totalGap: ($squareCount - 1) * $gap;
+$buffer: 64px;
+$maxWidth: 600 + $buffer + $totalGap;
+$squareSize: calc(calc(min(100vw, 100vh, $maxWidth) - $buffer - $totalGap) / $squareCount);
+$font-size: calc(0.6 * $squareSize);
+
+@mixin board-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--columns, $squareCount), $squareSize);
+  grid-template-rows: repeat(var(--rows, $squareCount), $squareSize);
+  gap: $gap;
+  font-size: $font-size;
+}

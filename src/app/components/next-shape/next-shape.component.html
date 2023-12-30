@@ -1,0 +1,5 @@
+<div class="shape-box" [style.--columns]="landscapeShape.baseShape.width" [style.--rows]="landscapeShape.baseShape.height">
+  <app-board-tile *ngFor="let tile of boardTiles" [tile]="tile"></app-board-tile>
+</div>
+<button (click)="rotate()">Rotate</button>
+<button (click)="mirror()">Mirror</button>

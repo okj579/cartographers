@@ -1,10 +1,24 @@
 import { BoardTile } from '../models/board-tile';
-import { PlacedLandscapeShape } from '../models/landscape-shape';
+import { LandscapeShape, PlacedLandscapeShape } from '../models/landscape-shape';
 import { LandscapeType } from '../models/landscape-type';
+import { BaseShape } from '../models/base-shape';
+import { Coordinates } from '../models/simple-types';
 
 interface PlaceShapeResult {
   updatedBoard: BoardTile[][];
   hasConflict: boolean;
+}
+
+export function rotateShape(shape: BaseShape): BaseShape {
+  const filledCells: Coordinates[] = shape.filledCells.map((cell) => ({ x: cell.y, y: shape.width - cell.x - 1 }));
+
+  return { width: shape.height, height: shape.width, filledCells };
+}
+
+export function mirrorShape(shape: BaseShape): BaseShape {
+  const filledCells: Coordinates[] = shape.filledCells.map((cell) => ({ x: shape.width - cell.x - 1, y: cell.y }));
+
+  return { ...shape, filledCells };
 }
 
 export function tryPlaceShapeOnBoard(board: BoardTile[][], shape?: PlacedLandscapeShape): PlaceShapeResult {
@@ -31,19 +45,11 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape?: PlacedLandsca
 }
 
 function applyShapeToTile(tile: BoardTile, shape: PlacedLandscapeShape): BoardTile {
-  const isHeroShape = shape.type === LandscapeType.HERO;
-  const isHeroPosition =
-    isHeroShape &&
-    shape.heroPosition &&
-    tile.position.x === shape.heroPosition.x + shape.position.x &&
-    tile.position.y === shape.heroPosition.y + shape.position.y;
-  const isHeroStar = isHeroShape && !isHeroPosition;
+  const { isHeroStar } = getHeroInformation(shape, tile.position, shape.position);
 
   const alreadyHasLandscape = tile.landscape !== undefined;
 
-  console.warn('applyShapeToTile', tile.landscape, alreadyHasLandscape);
-
-  if (alreadyHasLandscape && !isHeroShape && !isHeroStar) {
+  if (alreadyHasLandscape && !isHeroStar) {
     tile.conflicted = true;
 
     return tile;
@@ -57,4 +63,13 @@ function applyShapeToTile(tile: BoardTile, shape: PlacedLandscapeShape): BoardTi
   }
 
   return tile;
+}
+
+export function getHeroInformation(shape: LandscapeShape, cell: Coordinates, offset: Coordinates = { x: 0, y: 0 }) {
+  const isHeroShape = shape.type === LandscapeType.HERO;
+  const isHeroPosition =
+    isHeroShape && shape.heroPosition && cell.x === shape.heroPosition.x + offset.x && cell.y === shape.heroPosition.y + offset.y;
+  const isHeroStar = isHeroShape && !isHeroPosition;
+
+  return { isHeroShape, isHeroStar };
 }

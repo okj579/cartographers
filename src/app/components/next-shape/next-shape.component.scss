@@ -1,0 +1,12 @@
+@use '../../styles/grid-mixins';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.shape-box {
+  @include grid-mixins.board-tile-grid;
+}

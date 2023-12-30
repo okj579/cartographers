@@ -1,0 +1,10 @@
+<h2>Cartographers</h2>
+
+<div class="content">
+  <app-game-board [currentBoardState]="currentBoardState" />
+
+  <div class="controls">
+    <button (click)="increment()">Mock next state</button>
+    <app-next-shape *ngIf="nextLandscapeShape" [(landscapeShape)]="nextLandscapeShape"></app-next-shape>
+  </div>
+</div>
