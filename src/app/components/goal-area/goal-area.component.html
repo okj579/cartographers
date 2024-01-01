@@ -1,0 +1,27 @@
+<div
+  *ngFor="let goal of goals; let index = index"
+  class="goal"
+  [attr.data-category]="goal.category"
+  [attr.title]="goal.description"
+  (click)="showDescription(index)"
+>
+  <i class="goal-description fa-solid fa-circle-info"></i>
+  <div class="title">
+    {{ goal.name }}
+  </div>
+  <div class="score">
+    {{ previousScores[index] }}
+    <ng-container *ngIf="getScoreDiff(index) as scoreDiff">
+      <span *ngIf="scoreDiff > 0" class="positive">(+{{ scoreDiff }})</span>
+      <span *ngIf="scoreDiff < 0" class="negative">({{ scoreDiff }})</span>
+    </ng-container>
+  </div>
+</div>
+<div class="goal">
+  <div class="title">Total</div>
+  <div class="score">
+    {{ totalPreviousScore }}
+    <span *ngIf="totalScoreDiff > 0" class="positive">(+{{ totalScoreDiff }})</span>
+    <span *ngIf="totalScoreDiff < 0" class="negative">({{ totalScoreDiff }})</span>
+  </div>
+</div>

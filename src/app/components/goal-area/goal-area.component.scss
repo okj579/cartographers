@@ -1,0 +1,56 @@
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.goal {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  &[title] {
+    cursor: pointer;
+  }
+
+  .score {
+    font-size: 1.5rem;
+    font-weight: bold;
+
+    .positive,
+    .negative {
+      font-size: 1rem;
+      font-weight: normal;
+    }
+
+    .positive {
+      color: green;
+    }
+
+    .negative {
+      color: red;
+    }
+  }
+
+  &[data-category='village'] {
+    .goal-description {
+      color: #823;
+    }
+  }
+
+  &[data-category='forest'] {
+    .goal-description {
+      color: #060;
+    }
+  }
+
+  &[data-category='field-water'] {
+    .goal-description {
+      background: linear-gradient(125deg, #fa0, #00a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+}

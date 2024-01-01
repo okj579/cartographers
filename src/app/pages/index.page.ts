@@ -7,18 +7,21 @@ import { getShuffledCards, tryPlaceShapeOnBoard } from '../../game-logic/functio
 import { NextShapeComponent } from '../components/next-shape/next-shape.component';
 import { NgIf } from '@angular/common';
 import { LandscapeCard } from '../../models/landscape-card';
+import { GoalAreaComponent } from '../components/goal-area/goal-area.component';
+import { Goal, GOALS } from '../../models/goals';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './index.page.html',
   styleUrl: './index.page.scss',
-  imports: [GameBoardComponent, NextShapeComponent, NgIf],
+  imports: [GameBoardComponent, NextShapeComponent, NgIf, GoalAreaComponent],
 })
 export default class HomeComponent {
   untouchedBoardState: BoardTile[][] = getInitialBoardTiles();
   currentBoardState: BoardTile[][] = [...this.untouchedBoardState];
   cardDeck: LandscapeCard[] = getShuffledCards();
+  goals: Goal[] = GOALS;
 
   hasConflict: boolean = false;
 
