@@ -7,7 +7,7 @@
   <button class="icon-btn" [disabled]="disableRight" (click)="moveRight()"><i class="fa-solid fa-arrow-right fa-fw"></i></button>
   <button class="secondary" (click)="mirror()"><i class="fa-solid fa-arrow-right-arrow-left"></i> Mirror</button>
   <button class="submit-btn" [disabled]="hasConflict || !currentVariant" (click)="submitShape()">Submit</button>
-  <div class="warning" *ngIf="hasConflict"><i class="fa-solid fa-warning"></i>Invalid position</div>
+  <div class="warning" [class.hidden]="!hasConflict"><i class="fa-solid fa-warning"></i>Invalid position</div>
 </div>
 
 <div class="shape-selection" [class.nothing-selected]="!currentVariant">

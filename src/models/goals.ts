@@ -50,8 +50,6 @@ export const VILLAGE_GOALS: Goal[] = [
     category: GoalCategory.VILLAGE,
     singlePlayerValue: 16,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
-      let score = 0;
-
       const villageAreas = getIndividualAreas(boardState, LandscapeType.VILLAGE);
 
       const scorePerVillageArea = villageAreas.map((area) => {
@@ -100,13 +98,20 @@ export const FIELD_WATER_GOALS: Goal[] = [
 export const GLOBAL_GOALS: Goal[] = [
   {
     name: 'Silos',
-    description: '10 points for each fully filled column',
+    description: '10 points for each fully filled odd column',
     category: GoalCategory.GLOBAL,
     singlePlayerValue: 30,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
       let score = 0;
 
       for (let x = 0; x < BOARD_SIZE; x++) {
+        let columnHasEvenIndex = x % 2 === 0;
+        let columnIsOdd = columnHasEvenIndex; // array index starts at 0, but column index starts at 1
+
+        if (!columnIsOdd) {
+          continue;
+        }
+
         let tiles = 0;
         for (let y = 0; y < BOARD_SIZE; y++) {
           if (boardState[x][y].landscape !== undefined) {

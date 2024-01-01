@@ -98,6 +98,10 @@
     font-size: 0.8em;
     font-style: italic;
 
+    &.hidden {
+      visibility: hidden;
+    }
+
     i {
       margin-right: 8px;
       color: orange;
