@@ -69,5 +69,10 @@
 
   button.submit-btn {
     margin-top: 16px;
+
+    &:not([disabled]) {
+      background: darkgreen;
+      color: #fafafa;
+    }
   }
 }

@@ -52,7 +52,10 @@ button {
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
-  transition: border-color 0.25s;
+  transition:
+    border-color 0.2s ease-in-out,
+    background 0.2s ease-in-out,
+    color 0.2s ease-in-out;
 
   &.icon-btn {
     padding: 0.6em;
