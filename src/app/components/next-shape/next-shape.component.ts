@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PlacedLandscapeShape } from '../../../models/landscape-shape';
-import { getHeroInformation, mirrorShape, rotateShape } from '../../../game-logic/functions';
+import { getHeroInformation, mirrorShape, rotateShapeClockwise, rotateShapeCounterClockwise } from '../../../game-logic/functions';
 import { BaseShape } from '../../../models/base-shape';
 import { BoardTileComponent } from '../game-board/board-tile.component';
 import { BoardTile } from '../../../models/board-tile';
@@ -30,8 +30,13 @@ export class NextShapeComponent {
     });
   }
 
-  rotate() {
-    const baseShape: BaseShape = rotateShape(this.landscapeShape.baseShape);
+  rotateClockwise() {
+    const baseShape: BaseShape = rotateShapeClockwise(this.landscapeShape.baseShape);
+    this.landscapeShapeChange.emit({ ...this.landscapeShape, baseShape });
+  }
+
+  rotateCounterClockwise() {
+    const baseShape: BaseShape = rotateShapeCounterClockwise(this.landscapeShape.baseShape);
     this.landscapeShapeChange.emit({ ...this.landscapeShape, baseShape });
   }
 

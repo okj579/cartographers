@@ -12,4 +12,7 @@ $font-size: calc(0.6 * $squareSize);
   grid-template-rows: repeat(var(--rows, $squareCount), $squareSize);
   gap: $gap;
   font-size: $font-size;
+
+  --square-size: #{$squareSize};
+  --gap: #{$gap};
 }

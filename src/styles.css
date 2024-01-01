@@ -1,4 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
+
+@import '@fortawesome/fontawesome-free/css/all.css';
+
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -43,7 +46,7 @@ h1 {
 
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 1px solid #1a1a1a;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
@@ -51,6 +54,19 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+
+  &.icon-btn {
+    padding: 0.6em;
+  }
+
+  &.secondary {
+    background: transparent;
+    border-color: #303030;
+
+    &:hover {
+      border-color: #646cff;
+    }
+  }
 }
 button:hover {
   border-color: #646cff;
@@ -74,5 +90,10 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+    border-color: #f9f9f9;
+
+    &.secondary {
+      border-color: #eaeaea;
+    }
   }
 }

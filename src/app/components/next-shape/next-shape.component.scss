@@ -4,9 +4,27 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 32px;
 }
 
 .shape-box {
   @include grid-mixins.board-tile-grid;
+
+  min-width: calc(3 * var(--square-size) + 2 * var(--gap));
+  min-height: calc(3 * var(--square-size) + 2 * var(--gap));
+
+  app-board-tile {
+    margin: -1px;
+  }
+}
+
+.control-box {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 16px;
+
+  button:not(.icon-btn) {
+    grid-column: 1 / -1;
+  }
 }
