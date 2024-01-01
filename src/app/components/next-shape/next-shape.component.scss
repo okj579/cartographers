@@ -2,12 +2,24 @@
 
 :host {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 32px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 24px;
 
   @include grid-mixins.board-tile-grid-variables;
-  min-width: calc(4 * var(--square-size) + 3 * var(--gap));
+}
+
+.shape-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: calc(3.5 * var(--square-size) + 3 * var(--gap));
+
+  &.nothing-selected {
+    .variant-info {
+      animation: scale-pulse 1.5s infinite;
+    }
+  }
 }
 
 .shape-box {
@@ -22,17 +34,21 @@
   cursor: pointer;
 
   padding: 8px;
-  border: 2px solid transparent;
-  opacity: 0.5;
+  border: 2px dotted #889;
+  border-radius: 4px;
+  opacity: 0.85;
+  width: fit-content;
 
   position: relative;
 
   &:hover {
-    opacity: 0.8;
+    opacity: 0.95;
+    border-color: currentColor;
   }
 
   &.selected {
     opacity: 1;
+    border-style: solid;
     border-color: currentColor;
   }
 
@@ -42,9 +58,9 @@
 
   .variant-info {
     position: absolute;
-    top: 0;
-    right: 0;
-    background: #888;
+    top: -0.4em;
+    left: -0.4em;
+    background: #889;
     width: 1em;
     height: 1em;
     border-radius: 50%;
@@ -60,10 +76,12 @@
 .control-box {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-rows: repeat(5, auto);
   gap: 16px;
+  height: fit-content;
 
-  button:not(.icon-btn) {
+  button:not(.icon-btn),
+  .warning {
     grid-column: 1 / -1;
   }
 
@@ -74,5 +92,29 @@
       background: darkgreen;
       color: #fafafa;
     }
+  }
+
+  .warning {
+    font-size: 0.8em;
+    font-style: italic;
+
+    i {
+      margin-right: 8px;
+      color: orange;
+    }
+  }
+}
+
+@keyframes scale-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.075);
+  }
+
+  100% {
+    transform: scale(1);
   }
 }

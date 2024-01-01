@@ -3,7 +3,7 @@ import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape, ShapeDimensio
 import { getHeroInformation, mirrorShape, rotateShapeClockwise, rotateShapeCounterClockwise } from '../../../game-logic/functions';
 import { BoardTileComponent } from '../game-board/board-tile.component';
 import { BoardTile } from '../../../models/board-tile';
-import { NgForOf } from '@angular/common';
+import { NgForOf, NgIf } from '@angular/common';
 import { BOARD_SIZE } from '../../../game-logic/constants';
 import { LandscapeCard } from '../../../models/landscape-card';
 import { Coordinates } from '../../../models/simple-types';
@@ -11,7 +11,7 @@ import { Coordinates } from '../../../models/simple-types';
 @Component({
   selector: 'app-next-shape',
   standalone: true,
-  imports: [BoardTileComponent, NgForOf],
+  imports: [BoardTileComponent, NgForOf, NgIf],
   templateUrl: './next-shape.component.html',
   styleUrl: './next-shape.component.scss',
 })
