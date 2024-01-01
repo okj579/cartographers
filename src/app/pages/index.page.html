@@ -3,12 +3,11 @@
 <div class="content">
   <app-game-board [currentBoardState]="currentBoardState" />
 
-  <div class="controls">
-    <button [disabled]="hasConflict || !nextLandscapeShape" (click)="submitShape()">Submit</button>
-    <app-next-shape
-      *ngIf="nextLandscapeShape"
-      [landscapeShape]="nextLandscapeShape"
-      (landscapeShapeChange)="onNextShapeChange($event)"
-    ></app-next-shape>
-  </div>
+  <app-next-shape
+    *ngIf="currentCard"
+    [landscapeCard]="currentCard"
+    [hasConflict]="hasConflict"
+    (landscapeShapeChange)="updateShapeInBoard($event, true)"
+    (submit)="submitShape($event)"
+  ></app-next-shape>
 </div>

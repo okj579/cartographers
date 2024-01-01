@@ -1,12 +1,12 @@
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { GameBoardComponent } from '../components/game-board/game-board.component';
 import { BoardTile } from '../../models/board-tile';
 import { getInitialBoardTiles } from '../../game-logic/constants';
 import { PlacedLandscapeShape } from '../../models/landscape-shape';
-import { MOCK_PLACED_SHAPES } from '../../mock-data/mock-data';
-import { tryPlaceShapeOnBoard } from '../../game-logic/functions';
+import { getShuffledCards, tryPlaceShapeOnBoard } from '../../game-logic/functions';
 import { NextShapeComponent } from '../components/next-shape/next-shape.component';
 import { NgIf } from '@angular/common';
+import { LandscapeCard } from '../../models/landscape-card';
 
 @Component({
   selector: 'app-home',
@@ -18,34 +18,27 @@ import { NgIf } from '@angular/common';
 export default class HomeComponent {
   untouchedBoardState: BoardTile[][] = getInitialBoardTiles();
   currentBoardState: BoardTile[][] = [...this.untouchedBoardState];
-  nextLandscapeShape: PlacedLandscapeShape | undefined;
+  cardDeck: LandscapeCard[] = getShuffledCards();
 
   hasConflict: boolean = false;
 
-  mockShapes: PlacedLandscapeShape[] = [...MOCK_PLACED_SHAPES];
+  protected currentCardIndex: number = 0;
 
-  constructor() {
-    this.onNextShapeChange(this.mockShapes.shift());
+  get currentCard(): LandscapeCard | undefined {
+    return this.cardDeck[this.currentCardIndex];
   }
 
-  onNextShapeChange(shape: PlacedLandscapeShape | undefined): void {
-    this.nextLandscapeShape = shape;
-    this.updateShapeInBoard(true);
-  }
-
-  @HostListener('window:keydown.Enter', ['$event'])
-  @HostListener('window:keydown.Space', ['$event'])
-  submitShape() {
+  submitShape(shape: PlacedLandscapeShape): void {
     if (this.hasConflict) return;
 
-    this.updateShapeInBoard(false);
+    this.updateShapeInBoard(shape, false);
     this.untouchedBoardState = this.currentBoardState;
-    this.onNextShapeChange(this.mockShapes.shift());
+    this.currentCardIndex++;
   }
 
-  updateShapeInBoard(isTemporary: boolean) {
-    if (this.nextLandscapeShape) {
-      const placeResult = tryPlaceShapeOnBoard(this.untouchedBoardState, this.nextLandscapeShape as PlacedLandscapeShape, isTemporary);
+  updateShapeInBoard(shape: PlacedLandscapeShape | undefined, isTemporary: boolean) {
+    if (shape) {
+      const placeResult = tryPlaceShapeOnBoard(this.untouchedBoardState, shape, isTemporary);
       this.currentBoardState = placeResult.updatedBoard;
       this.hasConflict = placeResult.hasConflict;
     }

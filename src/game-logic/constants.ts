@@ -20,7 +20,7 @@ export function getInitialBoardTiles(): BoardTile[][] {
   const initialBoardTiles: BoardTile[][] = [];
 
   for (let x = 0; x < BOARD_SIZE; x++) {
-    let row: BoardTile[] = [];
+    let column: BoardTile[] = [];
 
     for (let y = 0; y < BOARD_SIZE; y++) {
       const tile: BoardTile = { position: { x, y }, isBase: true };
@@ -29,10 +29,10 @@ export function getInitialBoardTiles(): BoardTile[][] {
         tile.landscape = LandscapeType.MOUNTAIN;
       }
 
-      row.push(tile);
+      column.push(tile);
     }
 
-    initialBoardTiles.push(row);
+    initialBoardTiles.push(column);
   }
 
   return initialBoardTiles;

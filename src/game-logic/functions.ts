@@ -3,6 +3,7 @@ import { LandscapeShape, PlacedLandscapeShape } from '../models/landscape-shape'
 import { LandscapeType } from '../models/landscape-type';
 import { BaseShape } from '../models/base-shape';
 import { Coordinates } from '../models/simple-types';
+import { LANDSCAPE_CARDS, LandscapeCard } from '../models/landscape-card';
 
 interface PlaceShapeResult {
   updatedBoard: BoardTile[][];
@@ -27,8 +28,21 @@ export function mirrorShape(shape: BaseShape): BaseShape {
   return { ...shape, filledCells };
 }
 
+export function getShuffledCards(): LandscapeCard[] {
+  const cards = [...LANDSCAPE_CARDS];
+  const shuffledCards: LandscapeCard[] = [];
+
+  while (cards.length > 0) {
+    const index = Math.floor(Math.random() * cards.length);
+    shuffledCards.push(cards[index]);
+    cards.splice(index, 1);
+  }
+
+  return shuffledCards;
+}
+
 export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape, isTemporary: boolean): PlaceShapeResult {
-  const updatedBoard: BoardTile[][] = board.map((row) => row.map((tile) => ({ ...tile })));
+  const updatedBoard: BoardTile[][] = board.map((column) => column.map((tile) => ({ ...tile })));
   let hasConflict: boolean = false;
 
   if (!shape) return { updatedBoard, hasConflict };

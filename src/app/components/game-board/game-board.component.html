@@ -1,5 +1,5 @@
-<ng-container *ngFor="let row of currentBoardState; trackBy: trackByIndex">
-  <ng-container *ngFor="let tile of row; trackBy: trackByIndex">
+<ng-container *ngFor="let column of currentBoardState; trackBy: trackByIndex">
+  <ng-container *ngFor="let tile of column; trackBy: trackByIndex">
     <app-board-tile [tile]="tile"></app-board-tile>
   </ng-container>
 </ng-container>

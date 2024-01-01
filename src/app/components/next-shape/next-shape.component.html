@@ -6,8 +6,17 @@
   <button class="icon-btn" [disabled]="disableDown" (click)="moveDown()"><i class="fa-solid fa-arrow-down fa-fw"></i></button>
   <button class="icon-btn" [disabled]="disableRight" (click)="moveRight()"><i class="fa-solid fa-arrow-right fa-fw"></i></button>
   <button class="secondary" (click)="mirror()"><i class="fa-solid fa-arrow-right-arrow-left"></i> Mirror</button>
+  <button class="submit-btn" [disabled]="hasConflict || !currentVariant" (click)="submitShape()">Submit</button>
 </div>
 
-<div class="shape-box" [style.--columns]="landscapeShape.baseShape.width" [style.--rows]="landscapeShape.baseShape.height">
-  <app-board-tile *ngFor="let tile of boardTiles" [tile]="tile"></app-board-tile>
+<div
+  class="shape-box"
+  *ngFor="let variant of allVariants; let index = index"
+  [class.selected]="index === selectedVariant"
+  [style.--columns]="variant.baseShape.width"
+  [style.--rows]="variant.baseShape.height"
+  (click)="selectVariant(index)"
+>
+  <app-board-tile *ngFor="let tile of boardTilesPerVariant[index]" [tile]="tile"></app-board-tile>
+  <div class="variant-info">{{ index + 1 }}</div>
 </div>

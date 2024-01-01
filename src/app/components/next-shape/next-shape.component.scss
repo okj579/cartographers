@@ -5,16 +5,55 @@
   flex-direction: column;
   align-items: center;
   gap: 32px;
+
+  @include grid-mixins.board-tile-grid-variables;
+  min-width: calc(4 * var(--square-size) + 3 * var(--gap));
 }
 
 .shape-box {
   @include grid-mixins.board-tile-grid;
 
-  min-width: calc(3 * var(--square-size) + 2 * var(--gap));
-  min-height: calc(3 * var(--square-size) + 2 * var(--gap));
+  --max-count: max(var(--columns), var(--rows));
+  --gap-count: calc(var(--max-count) - 1);
+
+  min-width: calc(var(--max-count) * var(--square-size) + var(--gap-count) * var(--gap));
+  min-height: calc(var(--max-count) * var(--square-size) + var(--gap-count) * var(--gap));
+
+  cursor: pointer;
+
+  padding: 8px;
+  border: 2px solid transparent;
+  opacity: 0.5;
+
+  position: relative;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &.selected {
+    opacity: 1;
+    border-color: currentColor;
+  }
 
   app-board-tile {
     margin: -1px;
+  }
+
+  .variant-info {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #888;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    padding: 0.2em;
+    font-size: 0.8em;
+    line-height: 1;
+    font-weight: bold;
   }
 }
 
@@ -26,5 +65,9 @@
 
   button:not(.icon-btn) {
     grid-column: 1 / -1;
+  }
+
+  button.submit-btn {
+    margin-top: 16px;
   }
 }

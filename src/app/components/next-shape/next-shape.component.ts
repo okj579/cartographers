@@ -1,11 +1,12 @@
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { getShapeDimensions, PlacedLandscapeShape, ShapeDimensions } from '../../../models/landscape-shape';
+import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape, ShapeDimensions } from '../../../models/landscape-shape';
 import { getHeroInformation, mirrorShape, rotateShapeClockwise, rotateShapeCounterClockwise } from '../../../game-logic/functions';
-import { BaseShape } from '../../../models/base-shape';
 import { BoardTileComponent } from '../game-board/board-tile.component';
 import { BoardTile } from '../../../models/board-tile';
 import { NgForOf } from '@angular/common';
 import { BOARD_SIZE } from '../../../game-logic/constants';
+import { LandscapeCard } from '../../../models/landscape-card';
+import { Coordinates } from '../../../models/simple-types';
 
 @Component({
   selector: 'app-next-shape',
@@ -15,61 +16,112 @@ import { BOARD_SIZE } from '../../../game-logic/constants';
   styleUrl: './next-shape.component.scss',
 })
 export class NextShapeComponent {
-  @Input({ required: true }) landscapeShape!: PlacedLandscapeShape;
-
-  @Output() landscapeShapeChange: EventEmitter<PlacedLandscapeShape> = new EventEmitter<PlacedLandscapeShape>();
-
-  get boardTiles(): BoardTile[] {
-    return this.landscapeShape.baseShape.filledCells.map((cell) => {
-      const { isHeroStar } = getHeroInformation(this.landscapeShape, cell);
-
-      return {
-        position: { x: cell.x, y: cell.y },
-        landscape: isHeroStar ? undefined : this.landscapeShape.type,
-        heroStar: isHeroStar,
-      };
-    });
+  @Input({ required: true }) set landscapeCard(card: LandscapeCard) {
+    this._resetValues();
+    this.allVariants = this._getAllVariants(card);
+    this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
+    this._emitCurrentVariant();
   }
 
-  get shapeDimensions(): ShapeDimensions {
-    return getShapeDimensions(this.landscapeShape);
+  @Input() hasConflict: boolean = false;
+
+  @Output() landscapeShapeChange: EventEmitter<PlacedLandscapeShape> = new EventEmitter<PlacedLandscapeShape>();
+  @Output() submit: EventEmitter<PlacedLandscapeShape> = new EventEmitter<PlacedLandscapeShape>();
+
+  protected allVariants: LandscapeShape[] = [];
+  protected boardTilesPerVariant: BoardTile[][] = [];
+
+  protected selectedVariant: number = -1;
+  protected currentPosition: Coordinates = { x: 0, y: 0 };
+
+  constructor() {
+    this._resetValues();
+  }
+
+  get currentVariant(): PlacedLandscapeShape | undefined {
+    const currentShape = this.allVariants[this.selectedVariant];
+
+    if (!currentShape) return undefined;
+
+    return { ...currentShape, position: this.currentPosition };
+  }
+
+  get shapeDimensions(): ShapeDimensions | undefined {
+    return this.currentVariant && getShapeDimensions(this.currentVariant);
   }
 
   get disableLeft(): boolean {
-    return this.shapeDimensions.x === 0;
+    return !this.shapeDimensions || this.shapeDimensions.x === 0;
   }
 
   get disableRight(): boolean {
-    return this.shapeDimensions.x + this.shapeDimensions.width === BOARD_SIZE;
+    return !this.shapeDimensions || this.shapeDimensions.x + this.shapeDimensions.width === BOARD_SIZE;
   }
 
   get disableUp(): boolean {
-    return this.shapeDimensions.y === 0;
+    return !this.shapeDimensions || this.shapeDimensions.y === 0;
   }
 
   get disableDown(): boolean {
-    return this.shapeDimensions.y + this.shapeDimensions.height === BOARD_SIZE;
+    return !this.shapeDimensions || this.shapeDimensions.y + this.shapeDimensions.height === BOARD_SIZE;
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  selectVariantListener(event: KeyboardEvent) {
+    const key = Number(event.key);
+
+    if (isNaN(key) || key > this.allVariants.length) return;
+
+    this.selectVariant(key - 1);
+  }
+
+  selectVariant(index: number) {
+    this.selectedVariant = index;
+    this._emitCurrentVariant();
+  }
+
+  @HostListener('window:keydown.Enter', ['$event'])
+  @HostListener('window:keydown.Space', ['$event'])
+  submitShape() {
+    if (this.hasConflict || !this.currentVariant) return;
+
+    this.submit.emit(this.currentVariant);
   }
 
   @HostListener('window:keydown.r', ['$event'])
   @HostListener('window:keydown.e', ['$event'])
   rotateClockwise() {
-    const baseShape: BaseShape = rotateShapeClockwise(this.landscapeShape.baseShape);
-    this.landscapeShapeChange.emit({ ...this.landscapeShape, baseShape });
+    this.allVariants = this.allVariants.map((variant) => ({
+      ...variant,
+      baseShape: rotateShapeClockwise(variant.baseShape),
+    }));
+    this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
+
+    this._emitCurrentVariant();
   }
 
   @HostListener('window:keydown.l', ['$event'])
   @HostListener('window:keydown.q', ['$event'])
   rotateCounterClockwise() {
-    const baseShape: BaseShape = rotateShapeCounterClockwise(this.landscapeShape.baseShape);
-    this.landscapeShapeChange.emit({ ...this.landscapeShape, baseShape });
+    this.allVariants = this.allVariants.map((variant) => ({
+      ...variant,
+      baseShape: rotateShapeCounterClockwise(variant.baseShape),
+    }));
+    this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
+
+    this._emitCurrentVariant();
   }
 
   @HostListener('window:keydown.m', ['$event'])
   @HostListener('window:keydown.x', ['$event'])
   mirror() {
-    const baseShape: BaseShape = mirrorShape(this.landscapeShape.baseShape);
-    this.landscapeShapeChange.emit({ ...this.landscapeShape, baseShape });
+    this.allVariants = this.allVariants.map((variant) => ({
+      ...variant,
+      baseShape: mirrorShape(variant.baseShape),
+    }));
+    this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
+
+    this._emitCurrentVariant();
   }
 
   @HostListener('window:keydown.ArrowUp', ['$event'])
@@ -77,10 +129,8 @@ export class NextShapeComponent {
   moveUp() {
     if (this.disableUp) return;
 
-    this.landscapeShapeChange.emit({
-      ...this.landscapeShape,
-      position: { ...this.landscapeShape.position, y: this.landscapeShape.position.y - 1 },
-    });
+    this.currentPosition = { ...this.currentPosition, y: this.currentPosition.y - 1 };
+    this._emitCurrentVariant();
   }
 
   @HostListener('window:keydown.ArrowDown', ['$event'])
@@ -88,10 +138,8 @@ export class NextShapeComponent {
   moveDown() {
     if (this.disableDown) return;
 
-    this.landscapeShapeChange.emit({
-      ...this.landscapeShape,
-      position: { ...this.landscapeShape.position, y: this.landscapeShape.position.y + 1 },
-    });
+    this.currentPosition = { ...this.currentPosition, y: this.currentPosition.y + 1 };
+    this._emitCurrentVariant();
   }
 
   @HostListener('window:keydown.ArrowLeft', ['$event'])
@@ -99,10 +147,8 @@ export class NextShapeComponent {
   moveLeft() {
     if (this.disableLeft) return;
 
-    this.landscapeShapeChange.emit({
-      ...this.landscapeShape,
-      position: { ...this.landscapeShape.position, x: this.landscapeShape.position.x - 1 },
-    });
+    this.currentPosition = { ...this.currentPosition, x: this.currentPosition.x - 1 };
+    this._emitCurrentVariant();
   }
 
   @HostListener('window:keydown.ArrowRight', ['$event'])
@@ -110,9 +156,42 @@ export class NextShapeComponent {
   moveRight() {
     if (this.disableRight) return;
 
-    this.landscapeShapeChange.emit({
-      ...this.landscapeShape,
-      position: { ...this.landscapeShape.position, x: this.landscapeShape.position.x + 1 },
+    this.currentPosition = { ...this.currentPosition, x: this.currentPosition.x + 1 };
+    this._emitCurrentVariant();
+  }
+
+  private _emitCurrentVariant(): void {
+    if (!this.currentVariant) return;
+
+    this.landscapeShapeChange.emit(this.currentVariant);
+  }
+
+  private _resetValues(): void {
+    this.selectedVariant = -1;
+    this.currentPosition = { x: Math.floor(BOARD_SIZE / 2) - 1, y: Math.floor(BOARD_SIZE / 2) - 1 };
+  }
+
+  private _getAllVariants(card: LandscapeCard): LandscapeShape[] {
+    const landscapeShapes: LandscapeShape[] = [];
+
+    for (let landscapeType of card.landscapeTypes) {
+      for (let baseShape of card.baseShapes) {
+        landscapeShapes.push({ type: landscapeType, baseShape });
+      }
+    }
+
+    return landscapeShapes;
+  }
+
+  private _getBoardTiles(variant: LandscapeShape): BoardTile[] {
+    return variant.baseShape.filledCells.map((cell) => {
+      const { isHeroStar } = getHeroInformation(variant, cell);
+
+      return {
+        position: { x: cell.x, y: cell.y },
+        landscape: isHeroStar ? undefined : variant.type,
+        heroStar: isHeroStar,
+      };
     });
   }
 }
