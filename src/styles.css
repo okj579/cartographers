@@ -52,7 +52,6 @@ button {
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
-  cursor: pointer;
   transition: border-color 0.25s;
 
   &.icon-btn {
@@ -63,12 +62,13 @@ button {
     background: transparent;
     border-color: #303030;
 
-    &:hover {
+    &:hover:not([disabled]) {
       border-color: #646cff;
     }
   }
 }
-button:hover {
+button:hover:not([disabled]) {
+  cursor: pointer;
   border-color: #646cff;
 }
 button:focus-visible {
