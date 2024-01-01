@@ -34,12 +34,14 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
   if (!shape) return { updatedBoard, hasConflict };
 
   for (let cell of shape.baseShape.filledCells) {
-    const tile = updatedBoard[shape.position.x + cell.x][shape.position.y + cell.y];
+    const column: BoardTile[] = updatedBoard[shape.position.x + cell.x];
+    const tile = column ? column[shape.position.y + cell.y] : undefined;
+    const { isHeroStar } = getHeroInformation(shape, cell);
 
     if (tile) {
       tile.isTemporary = isTemporary;
-      applyShapeToTile(tile, shape);
-    } else {
+      applyShapeToTile(tile, shape, isHeroStar);
+    } else if (!isHeroStar) {
       hasConflict = true;
     }
 
@@ -51,9 +53,7 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
   return { updatedBoard, hasConflict };
 }
 
-function applyShapeToTile(tile: BoardTile, shape: PlacedLandscapeShape): BoardTile {
-  const { isHeroStar } = getHeroInformation(shape, tile.position, shape.position);
-
+function applyShapeToTile(tile: BoardTile, shape: PlacedLandscapeShape, isHeroStar: boolean): BoardTile {
   const alreadyHasLandscape = tile.landscape !== undefined;
 
   if (alreadyHasLandscape && !isHeroStar) {
@@ -72,10 +72,9 @@ function applyShapeToTile(tile: BoardTile, shape: PlacedLandscapeShape): BoardTi
   return tile;
 }
 
-export function getHeroInformation(shape: LandscapeShape, cell: Coordinates, offset: Coordinates = { x: 0, y: 0 }) {
+export function getHeroInformation(shape: LandscapeShape, cell: Coordinates) {
   const isHeroShape = shape.type === LandscapeType.HERO;
-  const isHeroPosition =
-    isHeroShape && shape.heroPosition && cell.x === shape.heroPosition.x + offset.x && cell.y === shape.heroPosition.y + offset.y;
+  const isHeroPosition = isHeroShape && shape.heroPosition && cell.x === shape.heroPosition.x && cell.y === shape.heroPosition.y;
   const isHeroStar = isHeroShape && !isHeroPosition;
 
   return { isHeroShape, isHeroStar };

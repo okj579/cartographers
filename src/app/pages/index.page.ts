@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { GameBoardComponent } from '../components/game-board/game-board.component';
 import { BoardTile } from '../../models/board-tile';
 import { getInitialBoardTiles } from '../../game-logic/constants';
@@ -33,7 +33,11 @@ export default class HomeComponent {
     this.updateShapeInBoard(true);
   }
 
+  @HostListener('window:keydown.Enter', ['$event'])
+  @HostListener('window:keydown.Space', ['$event'])
   submitShape() {
+    if (this.hasConflict) return;
+
     this.updateShapeInBoard(false);
     this.untouchedBoardState = this.currentBoardState;
     this.onNextShapeChange(this.mockShapes.shift());
