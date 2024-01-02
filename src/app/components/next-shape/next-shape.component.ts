@@ -70,11 +70,15 @@ export class NextShapeComponent {
 
   @HostListener('window:keydown', ['$event'])
   selectVariantListener(event: KeyboardEvent) {
-    const key = Number(event.key);
+    try {
+      const key = parseInt(event.key);
 
-    if (isNaN(key) || key > this.allVariants.length) return;
+      if (isNaN(key) || key > this.allVariants.length) return;
 
-    this.selectVariant(key - 1);
+      this.selectVariant(key - 1);
+    } catch (e) {
+      return;
+    }
   }
 
   selectVariant(index: number) {
