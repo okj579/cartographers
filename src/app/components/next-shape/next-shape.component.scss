@@ -109,6 +109,21 @@
   }
 }
 
+@media (max-width: 600px) {
+  :host {
+    padding-bottom: 64px;
+  }
+
+  .submit-btn {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 16px;
+    z-index: 1;
+  }
+}
+
 @keyframes scale-pulse {
   0% {
     transform: scale(1);

@@ -1,10 +1,27 @@
+:host {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  height: 100%;
+  width: 100%;
+}
+
 app-season-info {
-  margin-bottom: 32px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg-color);
+  padding: 24px 24px 16px;
+  width: calc(100% - 48px);
+}
+
+app-goal-area {
+  padding: 16px 24px;
 }
 
 .content {
-  margin: 32px auto;
-  gap: 32px;
+  margin: 0 auto;
+  padding: 16px;
+  gap: 24px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
