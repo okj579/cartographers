@@ -21,7 +21,8 @@ export class NextShapeComponent {
     this._resetValues();
     this.allVariants = this._getAllVariants(card);
     this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
-    this._emitCurrentVariant();
+
+    setTimeout(() => this.selectVariant(0));
   }
 
   @Input() hasConflict: boolean = false;
