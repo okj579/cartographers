@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/c
 import { Goal } from '../../../models/goals';
 import { BoardTile } from '../../../models/board-tile';
 import { NgForOf, NgIf } from '@angular/common';
+import { IndexToCharPipe } from './index-to-char.pipe';
 
 @Component({
   selector: 'app-goal-area',
   standalone: true,
-  imports: [NgForOf, NgIf],
+  imports: [NgForOf, NgIf, IndexToCharPipe],
   templateUrl: './goal-area.component.html',
   styleUrl: './goal-area.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,6 +43,6 @@ export class GoalAreaComponent implements OnChanges {
   }
 
   showDescription(index: number): void {
-    window.alert(this.goals[index].description);
+    window.alert(this.goals[index].name + ': ' + this.goals[index].description);
   }
 }

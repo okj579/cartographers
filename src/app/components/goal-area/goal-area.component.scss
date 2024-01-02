@@ -1,7 +1,7 @@
 :host {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 16px 32px;
   align-items: center;
   justify-content: center;
 }
@@ -10,6 +10,15 @@
   display: flex;
   gap: 8px;
   align-items: center;
+  min-width: 56px;
+
+  .title {
+    display: none;
+  }
+
+  .goal-id {
+    font-weight: 600;
+  }
 
   &[title] {
     cursor: pointer;
@@ -18,11 +27,15 @@
   .score {
     font-size: 1.5rem;
     font-weight: bold;
+    position: relative;
+    font-variant-numeric: tabular-nums;
 
     .positive,
     .negative {
-      font-size: 1rem;
-      font-weight: normal;
+      font-size: 0.8rem;
+      position: absolute;
+      top: -8px;
+      right: -16px;
     }
 
     .positive {
