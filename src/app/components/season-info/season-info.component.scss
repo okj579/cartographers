@@ -1,0 +1,20 @@
+:host {
+  width: 100%;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.season-icon {
+  font-size: 2rem;
+}
+
+.season-progress {
+  white-space: nowrap;
+  font-size: 1.5rem;
+  font-weight: 600;
+
+  &.last-round {
+    color: orange;
+  }
+}

@@ -1,0 +1,129 @@
+@mixin bg-colors {
+  &[data-landscape='mountain'] {
+    background: #853;
+  }
+
+  &[data-landscape='water'] {
+    background: #00a;
+  }
+
+  &[data-landscape='forest'] {
+    background: #060;
+  }
+
+  &[data-landscape='field'] {
+    background: #fa0;
+  }
+
+  &[data-landscape='village'] {
+    background: #823;
+  }
+
+  &[data-landscape='monster'] {
+    background: #a0a;
+  }
+
+  &[data-landscape='hero'] {
+    background: #aaa;
+  }
+}
+
+@mixin emojis($alternate: true) {
+  &[data-landscape='mountain'] {
+    &::before {
+      content: '🏔';
+    }
+
+    @if $alternate {
+      &:nth-child(2n) {
+        &::before {
+          content: '⛰️';
+        }
+      }
+    }
+  }
+
+  &[data-landscape='water'] {
+    &::before {
+      content: '🌊';
+    }
+
+    @if $alternate {
+      &:nth-child(2n) {
+        &::before {
+          content: '🐟';
+        }
+      }
+    }
+  }
+
+  &[data-landscape='forest'] {
+    &::before {
+      content: '🌳';
+    }
+
+    @if $alternate {
+      &:nth-child(2n) {
+        &::before {
+          content: '🎄';
+        }
+      }
+    }
+  }
+
+  &[data-landscape='field'] {
+    &::before {
+      content: '🌾';
+    }
+
+    @if $alternate {
+      &:nth-child(2n) {
+        &::before {
+          content: '🌱';
+        }
+      }
+    }
+  }
+
+  &[data-landscape='village'] {
+    &::before {
+      content: '🏘';
+    }
+
+    @if $alternate {
+      &:nth-child(2n) {
+        &::before {
+          content: '🏠';
+        }
+      }
+    }
+  }
+
+  &[data-landscape='monster'] {
+    &::before {
+      content: '😈';
+    }
+
+    @if $alternate {
+      &:nth-child(2n) {
+        &::before {
+          content: '🐉';
+        }
+      }
+    }
+  }
+
+  &[data-landscape='hero'] {
+    &::before {
+      content: '👸';
+    }
+
+    @if $alternate {
+      &:nth-child(2n) {
+        &::before {
+          content: '🤴';
+        }
+      }
+    }
+  }
+}

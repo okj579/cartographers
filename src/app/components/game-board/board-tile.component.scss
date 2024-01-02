@@ -1,3 +1,5 @@
+@use '../../styles/landscape.mixins';
+
 :host {
   display: grid;
   place-items: center;
@@ -57,103 +59,8 @@
     }
   }
 
-  &[data-landscape='mountain'] {
-    background: #853;
-
-    &::before {
-      content: '🏔';
-    }
-
-    &:nth-child(2n) {
-      &::before {
-        content: '⛰️';
-      }
-    }
-  }
-
-  &[data-landscape='water'] {
-    background: #00a;
-
-    &::before {
-      content: '🌊';
-    }
-
-    &:nth-child(2n) {
-      &::before {
-        content: '🐟';
-      }
-    }
-  }
-
-  &[data-landscape='forest'] {
-    background: #060;
-
-    &::before {
-      content: '🌳';
-    }
-
-    &:nth-child(2n) {
-      &::before {
-        content: '🎄';
-      }
-    }
-  }
-
-  &[data-landscape='field'] {
-    background: #fa0;
-
-    &::before {
-      content: '🌾';
-    }
-
-    &:nth-child(2n) {
-      &::before {
-        content: '🌱';
-      }
-    }
-  }
-
-  &[data-landscape='village'] {
-    background: #823;
-
-    &::before {
-      content: '🏘';
-    }
-
-    &:nth-child(2n) {
-      &::before {
-        content: '🏠';
-      }
-    }
-  }
-
-  &[data-landscape='monster'] {
-    background: #a0a;
-
-    &::before {
-      content: '😈';
-    }
-
-    &:nth-child(2n) {
-      &::before {
-        content: '🐉';
-      }
-    }
-  }
-
-  &[data-landscape='hero'] {
-    background: #aaa;
-
-    &::before {
-      content: '👸';
-    }
-
-    &:nth-child(2n) {
-      &::before {
-        content: '🤴';
-      }
-    }
-  }
+  @include landscape.bg-colors;
+  @include landscape.emojis;
 }
 
 @keyframes opacityBlink {

@@ -41,6 +41,10 @@ export function getShuffledCards(): LandscapeCard[] {
   return shuffledCards;
 }
 
+export function getCurrentTimeProgress(playedCards: LandscapeCard[]): number {
+  return playedCards.reduce((sum, card) => sum + card.timeValue, 0);
+}
+
 export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape, isTemporary: boolean): PlaceShapeResult {
   const updatedBoard: BoardTile[][] = board.map((column) => column.map((tile) => ({ ...tile })));
   let hasConflict: boolean = false;
