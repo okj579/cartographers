@@ -9,19 +9,29 @@ import { PlacedLandscapeShape } from '../../../models/landscape-shape';
   selector: 'app-placed-landscape-tile',
   standalone: true,
   imports: [BoardTileComponent, NgForOf],
-  template: `<app-board-tile *ngFor="let tile of boardTiles" [tile]="tile" />`,
-  styles: `
-    :host {
-      display: contents;
-    }
-  `,
+  template: `<app-board-tile
+    *ngFor="let tile of boardTiles; trackBy: trackByIndex; let index = index"
+    [tile]="tile"
+    [class.conflicted]="isConflicted(index)"
+  />`,
+  styleUrl: './placed-landscape-tile.component.scss',
 })
 export class PlacedLandscapeTileComponent {
   @Input() set placedShape(shape: PlacedLandscapeShape) {
     this.boardTiles = this._shapeToBoardTiles(shape);
   }
 
+  @Input() conflictedCellIndices: number[] = [];
+
   boardTiles: BoardTile[] = [];
+
+  isConflicted(index: number): boolean {
+    return this.conflictedCellIndices.includes(index);
+  }
+
+  trackByIndex(index: number): number {
+    return index;
+  }
 
   private _shapeToBoardTiles(shape: PlacedLandscapeShape): BoardTile[] {
     const boardTiles: BoardTile[] = [];

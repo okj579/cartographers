@@ -22,12 +22,15 @@ import { Season, SEASONS } from '../../models/season';
 })
 export default class HomeComponent {
   untouchedBoardState: BoardTile[][] = getInitialBoardTiles();
-  currentBoardState: BoardTile[][] = [...this.untouchedBoardState];
+  temporaryBoardState: BoardTile[][] = [...this.untouchedBoardState];
   cardDeck: LandscapeCard[] = getShuffledCards();
   goals: Goal[] = GOALS;
   currentSeasonIndex: number = 0;
 
+  currentShapeToPlace: PlacedLandscapeShape | undefined;
+
   hasConflict: boolean = false;
+  conflictedCellIndices: number[] = [];
 
   protected currentCardIndex: number = 0;
   protected seasons: Season[] = SEASONS;
@@ -48,16 +51,19 @@ export default class HomeComponent {
     if (this.hasConflict) return;
 
     this.updateShapeInBoard(shape, false);
-    this.untouchedBoardState = this.currentBoardState;
+    this.untouchedBoardState = this.temporaryBoardState;
+    this.currentShapeToPlace = undefined;
 
     this.startNewSeasonIfApplicable();
   }
 
   updateShapeInBoard(shape: PlacedLandscapeShape | undefined, isTemporary: boolean) {
     if (shape) {
+      this.currentShapeToPlace = shape;
       const placeResult = tryPlaceShapeOnBoard(this.untouchedBoardState, shape, isTemporary);
-      this.currentBoardState = placeResult.updatedBoard;
-      this.hasConflict = placeResult.hasConflict;
+      this.temporaryBoardState = placeResult.updatedBoard;
+      this.hasConflict = placeResult.conflictedCellIndices.length > 0;
+      this.conflictedCellIndices = placeResult.conflictedCellIndices;
     }
   }
 

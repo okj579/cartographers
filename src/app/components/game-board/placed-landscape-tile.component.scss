@@ -1,0 +1,20 @@
+:host {
+  display: contents;
+}
+
+app-board-tile {
+  animation: opacityBlink 1.5s infinite;
+  margin: -1px;
+}
+
+@keyframes opacityBlink {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}

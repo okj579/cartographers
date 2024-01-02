@@ -7,7 +7,7 @@ import { LANDSCAPE_CARDS, LandscapeCard } from '../models/landscape-card';
 
 interface PlaceShapeResult {
   updatedBoard: BoardTile[][];
-  hasConflict: boolean;
+  conflictedCellIndices: number[];
 }
 
 export function rotateShapeClockwise(shape: BaseShape): BaseShape {
@@ -47,11 +47,12 @@ export function getCurrentTimeProgress(playedCards: LandscapeCard[]): number {
 
 export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape, isTemporary: boolean): PlaceShapeResult {
   const updatedBoard: BoardTile[][] = board.map((column) => column.map((tile) => ({ ...tile })));
-  let hasConflict: boolean = false;
+  const conflictedCellIndices: number[] = [];
 
-  if (!shape) return { updatedBoard, hasConflict };
+  if (!shape) return { updatedBoard, conflictedCellIndices };
 
-  for (let cell of shape.baseShape.filledCells) {
+  for (let i = 0; i < shape.baseShape.filledCells.length; i++) {
+    let cell = shape.baseShape.filledCells[i];
     const column: BoardTile[] = updatedBoard[shape.position.x + cell.x];
     const tile = column ? column[shape.position.y + cell.y] : undefined;
     const { isHeroStar } = getHeroInformation(shape, cell);
@@ -60,15 +61,15 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
       tile.isTemporary = isTemporary;
       applyShapeToTile(tile, shape, isHeroStar);
     } else if (!isHeroStar) {
-      hasConflict = true;
+      conflictedCellIndices.push(i);
     }
 
     if (tile?.conflicted) {
-      hasConflict = true;
+      conflictedCellIndices.push(i);
     }
   }
 
-  return { updatedBoard, hasConflict };
+  return { updatedBoard, conflictedCellIndices };
 }
 
 function applyShapeToTile(tile: BoardTile, shape: PlacedLandscapeShape, isHeroStar: boolean): BoardTile {

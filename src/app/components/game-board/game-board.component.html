@@ -3,3 +3,9 @@
     <app-board-tile [tile]="tile"></app-board-tile>
   </ng-container>
 </ng-container>
+
+<app-placed-landscape-tile
+  *ngIf="currentShapeToPlace"
+  [placedShape]="currentShapeToPlace"
+  [conflictedCellIndices]="conflictedCellIndices"
+/>

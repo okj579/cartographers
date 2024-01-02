@@ -41,9 +41,8 @@
 
     &::after {
       content: '🚫';
-      background: #ff000099;
+      background: #ff000066;
       font-size: 0.4em;
-      animation: opacityBlink 1.5s infinite;
     }
   }
 
@@ -61,16 +60,4 @@
 
   @include landscape.bg-colors;
   @include landscape.emojis;
-}
-
-@keyframes opacityBlink {
-  0% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.5;
-  }
 }

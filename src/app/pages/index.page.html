@@ -2,12 +2,16 @@
 
 <app-goal-area
   [goals]="goals"
-  [boardState]="!hasConflict ? currentBoardState : untouchedBoardState"
+  [boardState]="!hasConflict ? temporaryBoardState : untouchedBoardState"
   [previousBoardState]="untouchedBoardState"
 ></app-goal-area>
 
 <div class="content">
-  <app-game-board [currentBoardState]="currentBoardState" />
+  <app-game-board
+    [currentBoardState]="untouchedBoardState"
+    [currentShapeToPlace]="currentShapeToPlace"
+    [conflictedCellIndices]="conflictedCellIndices"
+  />
 
   <app-next-shape
     *ngIf="currentCard"
