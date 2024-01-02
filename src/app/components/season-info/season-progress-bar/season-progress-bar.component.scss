@@ -21,9 +21,55 @@
     height: 2rem;
     width: 8px;
     grid-column: var(--grid-column);
+
+    &.last {
+      animation:
+        opacity-blink 1.5s infinite,
+        grow-width-fixed 1.5s;
+    }
+  }
+
+  &.last {
+    animation:
+      opacity-blink 1.5s infinite,
+      grow-width 1.5s;
   }
 
   > div {
     @include landscape.bg-colors;
+  }
+}
+
+@keyframes opacity-blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes grow-width {
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes grow-width-fixed {
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 2rem;
   }
 }

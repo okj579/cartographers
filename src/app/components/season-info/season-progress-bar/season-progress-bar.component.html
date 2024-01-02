@@ -1,9 +1,10 @@
 <div
-  *ngFor="let card of playedCards; let index = index"
+  *ngFor="let card of playedCards; let index = index; let last = last"
   class="card-progress"
   [class.zero-width]="card.timeValue === 0"
+  [class.last]="last"
   [style.--column-span]="card.timeValue"
-  [style.--grid-column]="getPreviousTimeProgress(index)"
+  [style.--grid-column]="getPreviousTimeProgress(index) + 1"
 >
   <div *ngFor="let type of card.landscapeTypes" [attr.data-landscape]="type"></div>
 </div>
