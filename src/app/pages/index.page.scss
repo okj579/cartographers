@@ -27,3 +27,14 @@ app-goal-area {
   justify-content: center;
   align-content: center;
 }
+
+@media (max-width: 600px) {
+  app-season-info {
+    padding: 16px;
+    width: calc(100% - 32px);
+  }
+
+  app-goal-area {
+    padding: 0 16px;
+  }
+}
