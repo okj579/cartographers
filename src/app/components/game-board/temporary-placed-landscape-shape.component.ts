@@ -9,8 +9,8 @@ import { PlacedLandscapeShape } from '../../../models/landscape-shape';
   selector: 'app-temporary-placed-landscape-shape',
   standalone: true,
   imports: [BoardTileComponent, NgForOf],
-  template: `<app-board-tile
-    *ngFor="let tile of boardTiles; trackBy: trackByIndex; let index = index"
+  template: ` <app-board-tile
+    *ngFor="let tile of boardTiles; trackBy: trackByIndexAndShapeSize; let index = index"
     [tile]="tile"
     [class.conflicted]="isConflicted(index)"
   />`,
@@ -29,9 +29,9 @@ export class TemporaryPlacedLandscapeShapeComponent {
     return this.conflictedCellIndices.includes(index);
   }
 
-  trackByIndex(index: number): number {
-    return index;
-  }
+  trackByIndexAndShapeSize = (index: number): number => {
+    return index + this.boardTiles.length;
+  };
 
   private _shapeToBoardTiles(shape: PlacedLandscapeShape): BoardTile[] {
     const boardTiles: BoardTile[] = [];
