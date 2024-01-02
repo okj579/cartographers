@@ -8,6 +8,7 @@ import { LANDSCAPE_CARDS, LandscapeCard } from '../models/landscape-card';
 interface PlaceShapeResult {
   updatedBoard: BoardTile[][];
   conflictedCellIndices: number[];
+  newCoins: number;
 }
 
 export function rotateShapeClockwise(shape: BaseShape): BaseShape {
@@ -48,8 +49,9 @@ export function getCurrentTimeProgress(playedCards: LandscapeCard[]): number {
 export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape, isTemporary: boolean): PlaceShapeResult {
   const updatedBoard: BoardTile[][] = board.map((column) => column.map((tile) => ({ ...tile })));
   const conflictedCellIndices: number[] = [];
+  let newCoins = 0;
 
-  if (!shape) return { updatedBoard, conflictedCellIndices };
+  if (!shape) return { updatedBoard, conflictedCellIndices, newCoins };
 
   for (let i = 0; i < shape.baseShape.filledCells.length; i++) {
     let cell = shape.baseShape.filledCells[i];
@@ -60,6 +62,7 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
     if (tile) {
       tile.isTemporary = isTemporary;
       applyShapeToTile(tile, shape, isHeroStar);
+      newCoins += checkForMountainCoin(updatedBoard, tile.position);
     } else if (!isHeroStar) {
       conflictedCellIndices.push(i);
     }
@@ -69,7 +72,38 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
     }
   }
 
-  return { updatedBoard, conflictedCellIndices };
+  return { updatedBoard, conflictedCellIndices, newCoins: conflictedCellIndices.length > 0 ? 0 : newCoins };
+}
+
+function checkForMountainCoin(board: BoardTile[][], cell: Coordinates): number {
+  const adjacentTiles = getAdjacentTiles(board, cell);
+  const mountainTiles = adjacentTiles.filter((tile) => tile.landscape === LandscapeType.MOUNTAIN);
+  let coins = 0;
+
+  for (let mountainTile of mountainTiles) {
+    if (!mountainTile.hasCoin) continue;
+
+    let adjacentMountainTiles = getAdjacentTiles(board, mountainTile.position);
+    let isMountainSurrounded = adjacentMountainTiles.every((tile) => tile.landscape !== undefined);
+
+    if (isMountainSurrounded) {
+      mountainTile.hasCoin = false;
+      coins++;
+    }
+  }
+
+  return coins;
+}
+
+function getAdjacentTiles(board: BoardTile[][], cell: Coordinates): BoardTile[] {
+  const adjacentTiles: BoardTile[] = [];
+
+  if (cell.x > 0) adjacentTiles.push(board[cell.x - 1][cell.y]);
+  if (cell.x < board.length - 1) adjacentTiles.push(board[cell.x + 1][cell.y]);
+  if (cell.y > 0) adjacentTiles.push(board[cell.x][cell.y - 1]);
+  if (cell.y < board.length - 1) adjacentTiles.push(board[cell.x][cell.y + 1]);
+
+  return adjacentTiles;
 }
 
 function applyShapeToTile(tile: BoardTile, shape: PlacedLandscapeShape, isHeroStar: boolean): BoardTile {

@@ -19,6 +19,13 @@
   </div>
 </div>
 <div class="goal">
+  <div>💎</div>
+  <div class="score">
+    {{ coins }}
+    <span *ngIf="newCoins > 0" class="positive">+{{ newCoins }}</span>
+  </div>
+</div>
+<div class="goal">
   <div>Σ</div>
   <div class="title">Total</div>
   <div class="score">

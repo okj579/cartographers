@@ -27,6 +27,7 @@ export function getInitialBoardTiles(): BoardTile[][] {
 
       if (isMountainTile(tile.position)) {
         tile.landscape = LandscapeType.MOUNTAIN;
+        tile.hasCoin = true;
       }
 
       column.push(tile);

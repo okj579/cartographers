@@ -26,6 +26,8 @@ export default class HomeComponent {
   cardDeck: LandscapeCard[] = getShuffledCards();
   goals: Goal[] = GOALS;
   currentSeasonIndex: number = 0;
+  coins: number = 0;
+  newCoins: number = 0;
 
   currentShapeToPlace: PlacedLandscapeShape | undefined;
 
@@ -53,6 +55,8 @@ export default class HomeComponent {
     this.updateShapeInBoard(shape, false);
     this.untouchedBoardState = this.temporaryBoardState;
     this.currentShapeToPlace = undefined;
+    this.coins += this.newCoins;
+    this.newCoins = 0;
 
     this.startNewSeasonIfApplicable();
   }
@@ -60,7 +64,9 @@ export default class HomeComponent {
   updateShapeInBoard(shape: PlacedLandscapeShape | undefined, isTemporary: boolean) {
     if (shape) {
       this.currentShapeToPlace = shape;
+      this.newCoins = shape.baseShape.hasCoin ? 1 : 0;
       const placeResult = tryPlaceShapeOnBoard(this.untouchedBoardState, shape, isTemporary);
+      this.newCoins += placeResult.newCoins;
       this.temporaryBoardState = placeResult.updatedBoard;
       this.hasConflict = placeResult.conflictedCellIndices.length > 0;
       this.conflictedCellIndices = placeResult.conflictedCellIndices;

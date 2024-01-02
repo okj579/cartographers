@@ -23,5 +23,6 @@
   >
     <app-board-tile *ngFor="let tile of boardTilesPerVariant[index]" [tile]="tile"></app-board-tile>
     <div class="variant-info">{{ index + 1 }}</div>
+    <div *ngIf="variant.baseShape.hasCoin" class="coin">💎</div>
   </div>
 </div>

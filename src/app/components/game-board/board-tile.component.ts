@@ -16,6 +16,7 @@ import { NgIf } from '@angular/common';
     '[class.conflicted]': 'tile.conflicted',
     '[class.temporary]': 'tile.isTemporary',
     '[class.hero-star]': 'tile.heroStar',
+    '[class.has-coin]': 'tile.hasCoin',
     '[class.base]': 'tile.isBase',
   },
 })

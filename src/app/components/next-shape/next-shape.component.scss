@@ -12,7 +12,7 @@
 .shape-selection {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   min-width: calc(3.5 * var(--square-size) + 3 * var(--gap));
 
   &.nothing-selected {
@@ -58,8 +58,8 @@
 
   .variant-info {
     position: absolute;
-    top: -0.4em;
-    left: -0.4em;
+    top: -0.6em;
+    left: -0.6em;
     background: #889;
     width: 1em;
     height: 1em;
@@ -70,6 +70,15 @@
     font-size: 0.8em;
     line-height: 1;
     font-weight: bold;
+  }
+
+  .coin {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+    font-size: 1em;
+    line-height: 1;
   }
 }
 

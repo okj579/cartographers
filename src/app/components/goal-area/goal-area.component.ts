@@ -16,16 +16,18 @@ export class GoalAreaComponent implements OnChanges {
   @Input() goals: Goal[] = [];
   @Input() previousBoardState: BoardTile[][] = [];
   @Input() boardState: BoardTile[][] = [];
+  @Input() coins: number = 0;
+  @Input() newCoins: number = 0;
 
   protected scores: number[] = [];
   protected previousScores: number[] = [];
 
   get totalScoreDiff(): number {
-    return this.scores.reduce((acc, score) => acc + score, 0) - this.totalPreviousScore;
+    return this.scores.reduce((acc, score) => acc + score, 0) + this.coins + this.newCoins - this.totalPreviousScore;
   }
 
   get totalPreviousScore(): number {
-    return this.previousScores.reduce((acc, score) => acc + score, 0);
+    return this.previousScores.reduce((acc, score) => acc + score, 0) + this.coins;
   }
 
   ngOnChanges() {

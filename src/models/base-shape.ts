@@ -4,6 +4,7 @@ export interface BaseShape {
   width: number;
   height: number;
   filledCells: Coordinates[];
+  hasCoin?: boolean;
 }
 
 export enum ShapeName {
@@ -41,6 +42,7 @@ export const SHAPES: Record<ShapeName, BaseShape> = {
       { x: 0, y: 0 },
       { x: 2, y: 0 },
     ],
+    hasCoin: true,
   },
   [ShapeName.I_BIG]: {
     width: 4,
@@ -59,6 +61,7 @@ export const SHAPES: Record<ShapeName, BaseShape> = {
       { x: 0, y: 0 },
       { x: 0, y: 1 },
     ],
+    hasCoin: true,
   },
   [ShapeName.T_BIG]: {
     width: 3,
@@ -120,6 +123,7 @@ export const SHAPES: Record<ShapeName, BaseShape> = {
       { x: 0, y: 1 },
       { x: 1, y: 1 },
     ],
+    hasCoin: true,
   },
   [ShapeName.I_TWICE]: {
     width: 3,
@@ -170,6 +174,7 @@ export const SHAPES: Record<ShapeName, BaseShape> = {
       { x: 1, y: 0 },
       { x: 0, y: 1 },
     ],
+    hasCoin: true,
   },
   [ShapeName.V]: {
     width: 3,

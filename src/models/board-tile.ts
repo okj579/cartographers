@@ -9,4 +9,5 @@ export interface BoardTile {
   heroStar?: boolean;
   isBase?: boolean;
   isTemporary?: boolean;
+  hasCoin?: boolean;
 }

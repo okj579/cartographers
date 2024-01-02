@@ -16,6 +16,7 @@
 
   &.hero-star,
   &.conflicted,
+  &.has-coin,
   div.destroyed {
     &::after {
       width: 100%;
@@ -43,6 +44,15 @@
       content: '🚫';
       background: #ff000066;
       font-size: 0.4em;
+    }
+  }
+
+  &.has-coin {
+    z-index: 2;
+
+    &::after {
+      content: '💎';
+      font-size: 0.5em;
     }
   }
 
