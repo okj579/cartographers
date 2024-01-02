@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape, ShapeDimensions } from '../../../models/landscape-shape';
 import { getHeroInformation, mirrorShape, rotateShapeClockwise, rotateShapeCounterClockwise } from '../../../game-logic/functions';
 import { BoardTileComponent } from '../game-board/board-tile.component';
@@ -14,6 +14,7 @@ import { Coordinates } from '../../../models/simple-types';
   imports: [BoardTileComponent, NgForOf, NgIf],
   templateUrl: './next-shape.component.html',
   styleUrl: './next-shape.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NextShapeComponent {
   @Input({ required: true }) set landscapeCard(card: LandscapeCard) {

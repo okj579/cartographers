@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { GameBoardComponent } from '../components/game-board/game-board.component';
 import { BoardTile } from '../../models/board-tile';
 import { getInitialBoardTiles } from '../../game-logic/constants';
@@ -16,6 +16,7 @@ import { Goal, GOALS } from '../../models/goals';
   templateUrl: './index.page.html',
   styleUrl: './index.page.scss',
   imports: [GameBoardComponent, NextShapeComponent, NgIf, GoalAreaComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class HomeComponent {
   untouchedBoardState: BoardTile[][] = getInitialBoardTiles();

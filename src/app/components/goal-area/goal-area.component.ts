@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges } from '@angular/core';
 import { Goal } from '../../../models/goals';
 import { BoardTile } from '../../../models/board-tile';
 import { NgForOf, NgIf } from '@angular/common';
@@ -9,6 +9,7 @@ import { NgForOf, NgIf } from '@angular/common';
   imports: [NgForOf, NgIf],
   templateUrl: './goal-area.component.html',
   styleUrl: './goal-area.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GoalAreaComponent implements OnChanges {
   @Input() goals: Goal[] = [];
