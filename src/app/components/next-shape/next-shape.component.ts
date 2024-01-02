@@ -88,7 +88,9 @@ export class NextShapeComponent {
 
   @HostListener('window:keydown.Enter', ['$event'])
   @HostListener('window:keydown.Space', ['$event'])
-  submitShape() {
+  submitShape(event: KeyboardEvent) {
+    event.preventDefault();
+
     if (this.hasConflict || !this.currentVariant) return;
 
     this.submit.emit(this.currentVariant);
