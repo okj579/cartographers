@@ -70,6 +70,10 @@ export default class HomeComponent {
       this.temporaryBoardState = placeResult.updatedBoard;
       this.hasConflict = placeResult.conflictedCellIndices.length > 0;
       this.conflictedCellIndices = placeResult.conflictedCellIndices;
+
+      if (this.hasConflict) {
+        this.newCoins = 0;
+      }
     }
   }
 

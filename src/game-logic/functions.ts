@@ -72,7 +72,7 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
     }
   }
 
-  return { updatedBoard, conflictedCellIndices, newCoins: conflictedCellIndices.length > 0 ? 0 : newCoins };
+  return { updatedBoard, conflictedCellIndices, newCoins };
 }
 
 function checkForMountainCoin(board: BoardTile[][], cell: Coordinates): number {
