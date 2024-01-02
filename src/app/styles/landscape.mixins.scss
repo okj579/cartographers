@@ -28,32 +28,16 @@
   }
 }
 
-@mixin emojis($alternate: true) {
+@mixin emojis {
   &[data-landscape='mountain'] {
     &::before {
-      content: '🏔';
-    }
-
-    @if $alternate {
-      &:nth-child(2n) {
-        &::before {
-          content: '⛰️';
-        }
-      }
+      content: '⛰️';
     }
   }
 
   &[data-landscape='water'] {
     &::before {
-      content: '🌊';
-    }
-
-    @if $alternate {
-      &:nth-child(2n) {
-        &::before {
-          content: '🐟';
-        }
-      }
+      content: '🐟';
     }
   }
 
@@ -61,41 +45,17 @@
     &::before {
       content: '🌳';
     }
-
-    @if $alternate {
-      &:nth-child(2n) {
-        &::before {
-          content: '🎄';
-        }
-      }
-    }
   }
 
   &[data-landscape='field'] {
     &::before {
-      content: '🌾';
-    }
-
-    @if $alternate {
-      &:nth-child(2n) {
-        &::before {
-          content: '🌱';
-        }
-      }
+      content: '🌱';
     }
   }
 
   &[data-landscape='village'] {
     &::before {
-      content: '🏘';
-    }
-
-    @if $alternate {
-      &:nth-child(2n) {
-        &::before {
-          content: '🏠';
-        }
-      }
+      content: '🏠';
     }
   }
 
@@ -103,27 +63,11 @@
     &::before {
       content: '😈';
     }
-
-    @if $alternate {
-      &:nth-child(2n) {
-        &::before {
-          content: '🐉';
-        }
-      }
-    }
   }
 
   &[data-landscape='hero'] {
     &::before {
       content: '👸';
-    }
-
-    @if $alternate {
-      &:nth-child(2n) {
-        &::before {
-          content: '🤴';
-        }
-      }
     }
   }
 }
