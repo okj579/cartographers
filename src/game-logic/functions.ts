@@ -76,8 +76,6 @@ function applyShapeToTile(tile: BoardTile, shape: PlacedLandscapeShape, isHeroSt
 
   if (alreadyHasLandscape && !isHeroStar) {
     tile.conflicted = true;
-
-    return tile;
   }
 
   tile.landscape = isHeroStar ? tile.landscape : shape.type;

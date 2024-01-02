@@ -1,6 +1,10 @@
 <app-season-info [currentSeason]="currentSeason" [playedCards]="playedCards" />
 
-<app-goal-area [goals]="goals" [boardState]="currentBoardState" [previousBoardState]="untouchedBoardState"></app-goal-area>
+<app-goal-area
+  [goals]="goals"
+  [boardState]="!hasConflict ? currentBoardState : untouchedBoardState"
+  [previousBoardState]="untouchedBoardState"
+></app-goal-area>
 
 <div class="content">
   <app-game-board [currentBoardState]="currentBoardState" />
