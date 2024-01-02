@@ -6,7 +6,7 @@ import { LandscapeType } from '../../../models/landscape-type';
 import { PlacedLandscapeShape } from '../../../models/landscape-shape';
 
 @Component({
-  selector: 'app-placed-landscape-tile',
+  selector: 'app-temporary-placed-landscape-shape',
   standalone: true,
   imports: [BoardTileComponent, NgForOf],
   template: `<app-board-tile
@@ -14,9 +14,9 @@ import { PlacedLandscapeShape } from '../../../models/landscape-shape';
     [tile]="tile"
     [class.conflicted]="isConflicted(index)"
   />`,
-  styleUrl: './placed-landscape-tile.component.scss',
+  styleUrl: './temporary-placed-landscape-shape.component.scss',
 })
-export class PlacedLandscapeTileComponent {
+export class TemporaryPlacedLandscapeShapeComponent {
   @Input() set placedShape(shape: PlacedLandscapeShape) {
     this.boardTiles = this._shapeToBoardTiles(shape);
   }
