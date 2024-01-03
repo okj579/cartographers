@@ -20,7 +20,7 @@ export interface Goal {
 export const FOREST_GOALS: Goal[] = [
   {
     name: 'Sleepy Forest',
-    description: '4 points for each row ith at least 3 forest tiles',
+    description: '4 points for each row with at least 3 forest tiles',
     category: GoalCategory.FOREST,
     singlePlayerValue: 24,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
