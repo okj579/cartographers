@@ -11,13 +11,14 @@ import { GoalAreaComponent } from '../components/goal-area/goal-area.component';
 import { Goal, GOALS } from '../../models/goals';
 import { SeasonInfoComponent } from '../components/season-info/season-info.component';
 import { Season, SEASONS } from '../../models/season';
+import { SeasonGoalsComponent } from '../components/season-goals/season-goals.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './index.page.html',
   styleUrl: './index.page.scss',
-  imports: [GameBoardComponent, NextShapeComponent, NgIf, GoalAreaComponent, SeasonInfoComponent],
+  imports: [GameBoardComponent, NextShapeComponent, NgIf, GoalAreaComponent, SeasonInfoComponent, SeasonGoalsComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class HomeComponent {
@@ -28,14 +29,22 @@ export default class HomeComponent {
   currentSeasonIndex: number = 0;
   coins: number = 0;
   newCoins: number = 0;
+  temporaryScores: number[] = [];
+  scores: number[] = [];
 
   currentShapeToPlace: PlacedLandscapeShape | undefined;
 
   hasConflict: boolean = false;
   conflictedCellIndices: number[] = [];
 
-  protected currentCardIndex: number = 0;
+  protected currentCardIndex: number = -1;
   protected seasons: Season[] = SEASONS;
+
+  protected isEndOfSeason: boolean = false;
+
+  get isStartOfSeason(): boolean {
+    return this.currentCardIndex === -1 && !!this.currentSeason;
+  }
 
   get currentCard(): LandscapeCard | undefined {
     return this.cardDeck[this.currentCardIndex];
@@ -49,6 +58,22 @@ export default class HomeComponent {
     return this.seasons[this.currentSeasonIndex];
   }
 
+  startSeason(): void {
+    this.currentCardIndex = 0;
+  }
+
+  endSeason(): void {
+    this.currentSeasonIndex++;
+    this.currentCardIndex = -1;
+    this.isEndOfSeason = false;
+
+    if (this.currentSeason) {
+      this.cardDeck = getShuffledCards();
+    } else {
+      this.cardDeck = [];
+    }
+  }
+
   submitShape(shape: PlacedLandscapeShape): void {
     if (this.hasConflict) return;
 
@@ -58,7 +83,9 @@ export default class HomeComponent {
     this.coins += this.newCoins;
     this.newCoins = 0;
 
-    this.startNewSeasonIfApplicable();
+    this.scores = [...this.temporaryScores];
+
+    this._startNewSeasonIfApplicable();
   }
 
   updateShapeInBoard(shape: PlacedLandscapeShape | undefined, isTemporary: boolean) {
@@ -74,22 +101,32 @@ export default class HomeComponent {
       if (this.hasConflict) {
         this.newCoins = 0;
       }
+
+      this._updateScores();
     }
   }
 
-  startNewSeasonIfApplicable(): void {
+  private _startNewSeasonIfApplicable(): void {
     if (this.currentSeason && getCurrentTimeProgress(this.playedCards) < this.currentSeason.duration) {
       this.currentCardIndex++;
       return;
     }
 
-    this.currentSeasonIndex++;
-    this.currentCardIndex = 0;
+    this.isEndOfSeason = true;
+  }
 
-    if (this.currentSeason) {
-      this.cardDeck = getShuffledCards();
-    } else {
-      this.cardDeck = [];
+  private _updateScores(): void {
+    this.scores = this.goals.map((goal) => {
+      return goal.scoreAlgorithm(this.untouchedBoardState);
+    });
+
+    if (this.hasConflict) {
+      this.temporaryScores = this.scores;
+      return;
     }
+
+    this.temporaryScores = this.goals.map((goal) => {
+      return goal.scoreAlgorithm(this.temporaryBoardState);
+    });
   }
 }

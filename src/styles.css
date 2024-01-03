@@ -76,6 +76,12 @@ button:hover:not([disabled]) {
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+button.submit-btn {
+  &:not([disabled]) {
+    background: darkgreen;
+    color: #fafafa;
+  }
+}
 
 @media (prefers-color-scheme: light) {
   :root {
@@ -93,5 +99,16 @@ button:focus-visible {
     &.secondary {
       border-color: #eaeaea;
     }
+  }
+}
+
+@media (max-width: 600px) {
+  .submit-btn {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 16px;
+    z-index: 1;
   }
 }

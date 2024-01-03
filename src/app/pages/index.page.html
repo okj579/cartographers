@@ -2,10 +2,11 @@
 
 <app-goal-area
   [goals]="goals"
-  [boardState]="!hasConflict ? temporaryBoardState : untouchedBoardState"
-  [previousBoardState]="untouchedBoardState"
   [coins]="coins"
   [newCoins]="newCoins"
+  [previousScores]="scores"
+  [temporaryScores]="temporaryScores"
+  [currentSeason]="currentSeason"
 ></app-goal-area>
 
 <div class="content">
@@ -15,11 +16,25 @@
     [conflictedCellIndices]="conflictedCellIndices"
   />
 
-  <app-next-shape
-    *ngIf="currentCard"
-    [landscapeCard]="currentCard"
-    [hasConflict]="hasConflict"
-    (landscapeShapeChange)="updateShapeInBoard($event, true)"
-    (submit)="submitShape($event)"
-  ></app-next-shape>
+  <div class="controls-and-info">
+    <app-next-shape
+      *ngIf="currentCard && !isStartOfSeason && !isEndOfSeason"
+      [landscapeCard]="currentCard"
+      [hasConflict]="hasConflict"
+      (landscapeShapeChange)="updateShapeInBoard($event, true)"
+      (submit)="submitShape($event)"
+    ></app-next-shape>
+
+    <app-season-goals
+      *ngIf="currentSeason"
+      [currentSeason]="currentSeason"
+      [goals]="goals"
+      [coins]="coins"
+      [scores]="scores"
+      [isStartOfSeason]="isStartOfSeason"
+      [isEndOfSeason]="isEndOfSeason"
+      (startSeason)="startSeason()"
+      (endSeason)="endSeason()"
+    ></app-season-goals>
+  </div>
 </div>

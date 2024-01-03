@@ -1,0 +1,49 @@
+<h3>
+  <span>{{ currentSeason.emoji }} {{ currentSeason.name }}</span>
+  <span *ngIf="isStartOfSeason" class="season-start"> - Start of season</span>
+  <span *ngIf="isEndOfSeason" class="season-end"> - End of season</span>
+</h3>
+
+<div *ngIf="!isEndOfSeason">Duration: {{ currentSeason.duration }} <i class="fa-solid fa-clock"></i></div>
+
+<h4>Season goals</h4>
+<div class="goal-list">
+  <ng-container *ngFor="let goalIndex of currentSeason.goalIndices">
+    <div class="goal-id">{{ goalIndex | indexToChar }}</div>
+    <div>{{ goals[goalIndex] | goalEmojis }}</div>
+    <div>{{ goals[goalIndex].name }}</div>
+    <div>{{ goals[goalIndex].description }}</div>
+  </ng-container>
+</div>
+
+<ng-container *ngIf="!isStartOfSeason">
+  <h4>Season Score</h4>
+  <div class="goal-scores">
+    <ng-container *ngFor="let goalIndex of currentSeason.goalIndices">
+      <div class="goal-id">{{ goalIndex | indexToChar }}</div>
+      <div>{{ scores[goalIndex] ?? 0 }}</div>
+    </ng-container>
+
+    <div class="goal-id">💎</div>
+    <div>{{ coins }}</div>
+
+    <div class="goal-id">Σ</div>
+    <div>{{ totalSeasonScore }}</div>
+  </div>
+</ng-container>
+
+<button *ngIf="isStartOfSeason" class="submit-btn" (click)="startSeason.emit()">Start season</button>
+<button *ngIf="isEndOfSeason" class="submit-btn" (click)="endSeason.emit()">Proceed to next season</button>
+
+<h4 class="toggle-trigger" (click)="toggleShowAllGoals()">
+  <i class="fa-solid fa-chevron-right" [ngClass]="{ 'fa-rotate-90': showAllGoals }"></i>
+  <span>All goals</span>
+</h4>
+<div *ngIf="showAllGoals" class="goal-list">
+  <ng-container *ngFor="let goal of goals; let goalIndex = index">
+    <div class="goal-id">{{ goalIndex | indexToChar }}</div>
+    <div>{{ goal | goalEmojis }}</div>
+    <div>{{ goal.name }}</div>
+    <div>{{ goal.description }}</div>
+  </ng-container>
+</div>

@@ -24,6 +24,10 @@
     cursor: pointer;
   }
 
+  &.inactive {
+    opacity: 0.33;
+  }
+
   .score {
     font-size: 1.5rem;
     font-weight: bold;

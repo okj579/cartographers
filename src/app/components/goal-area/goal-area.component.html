@@ -3,6 +3,7 @@
   class="goal"
   [attr.data-category]="goal.category"
   [attr.title]="goal.description"
+  [class.inactive]="currentSeason?.goalIndices?.indexOf(index) === -1"
   (click)="showDescription(index)"
 >
   <div class="goal-id">{{ index | indexToChar }}</div>
@@ -11,13 +12,14 @@
     {{ goal.name }}
   </div>
   <div class="score">
-    {{ previousScores[index] }}
+    {{ previousScores[index] ?? 0 }}
     <ng-container *ngIf="getScoreDiff(index) as scoreDiff">
       <span *ngIf="scoreDiff > 0" class="positive">+{{ scoreDiff }}</span>
       <span *ngIf="scoreDiff < 0" class="negative">{{ scoreDiff }}</span>
     </ng-container>
   </div>
 </div>
+
 <div class="goal">
   <div>💎</div>
   <div class="score">
@@ -25,7 +27,18 @@
     <span *ngIf="newCoins > 0" class="positive">+{{ newCoins }}</span>
   </div>
 </div>
-<div class="goal">
+
+<div *ngIf="currentSeason" class="goal">
+  <div><strong>Σ</strong> {{ currentSeason.emoji }}</div>
+  <div class="title">{{ currentSeason.name }}</div>
+  <div class="score">
+    {{ totalSeasonPreviousScore }}
+    <span *ngIf="totalSeasonScoreDiff > 0" class="positive">+{{ totalSeasonScoreDiff }}</span>
+    <span *ngIf="totalSeasonScoreDiff < 0" class="negative">{{ totalSeasonScoreDiff }}</span>
+  </div>
+</div>
+
+<div *ngIf="!currentSeason" class="goal">
   <div>Σ</div>
   <div class="title">Total</div>
   <div class="score">

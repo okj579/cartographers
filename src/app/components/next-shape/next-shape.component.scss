@@ -90,11 +90,6 @@
 
   button.submit-btn {
     margin-top: 16px;
-
-    &:not([disabled]) {
-      background: darkgreen;
-      color: #fafafa;
-    }
   }
 
   .warning {
@@ -109,20 +104,5 @@
       margin-right: 8px;
       color: orange;
     }
-  }
-}
-
-@media (max-width: 600px) {
-  :host {
-    padding-bottom: 64px;
-  }
-
-  .submit-btn {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: 16px;
-    z-index: 1;
   }
 }

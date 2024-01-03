@@ -37,4 +37,8 @@ app-goal-area {
   app-goal-area {
     padding: 0 16px;
   }
+
+  .content {
+    padding-bottom: 80px; // to account for the submit button
+  }
 }

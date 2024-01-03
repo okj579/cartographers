@@ -1,0 +1,33 @@
+:host {
+  text-align: left;
+}
+
+.goal-list,
+.goal-scores {
+  display: grid;
+  gap: 8px;
+  max-width: 480px;
+  grid-template-columns: repeat(3, auto) 1fr;
+
+  .goal-id {
+    font-weight: bold;
+  }
+}
+
+.goal-scores {
+  grid-template-columns: repeat(6, max-content);
+  gap: 8px 32px;
+}
+
+.submit-btn {
+  width: 100%;
+  margin-top: 32px;
+}
+
+.toggle-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-top: 32px;
+}

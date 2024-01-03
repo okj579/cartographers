@@ -4,6 +4,7 @@ import { LandscapeType } from '../models/landscape-type';
 import { BaseShape } from '../models/base-shape';
 import { Coordinates } from '../models/simple-types';
 import { LANDSCAPE_CARDS, LandscapeCard } from '../models/landscape-card';
+import { Season } from '../models/season';
 
 interface PlaceShapeResult {
   updatedBoard: BoardTile[][];
@@ -44,6 +45,10 @@ export function getShuffledCards(): LandscapeCard[] {
 
 export function getCurrentTimeProgress(playedCards: LandscapeCard[]): number {
   return playedCards.reduce((sum, card) => sum + card.timeValue, 0);
+}
+
+export function getSeasonScore(season: Season, scores: number[], coins: number): number {
+  return coins + season.goalIndices.reduce((acc: number, index: number): number => acc + (scores[index] ?? 0), 0);
 }
 
 export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape, isTemporary: boolean): PlaceShapeResult {
