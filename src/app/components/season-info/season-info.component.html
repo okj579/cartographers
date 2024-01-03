@@ -1,7 +1,16 @@
-<div class="season-icon">
-  {{ currentSeason.emoji }}
-</div>
-<app-season-progress-bar [seasonLength]="currentSeason.duration" [playedCards]="playedCards" />
-<div class="season-progress" [class.last-round]="isLastRound">
-  {{ currentSeasonProgress }} / {{ currentSeason.duration }} <i class="fa-solid fa-clock"></i>
-</div>
+<ng-container *ngIf="currentSeason; else noSeason">
+  <div class="season-icon">
+    {{ currentSeason.emoji }}
+  </div>
+  <app-season-progress-bar [seasonLength]="currentSeason.duration" [playedCards]="playedCards" />
+  <div class="season-progress" [class.last-round]="isLastRound">
+    {{ currentSeasonProgress }} / {{ currentSeason.duration }} <i class="fa-solid fa-clock"></i>
+  </div>
+</ng-container>
+
+<ng-template #noSeason>
+  <div *ngFor="let season of seasons" class="season-icon">
+    {{ season.emoji }}
+  </div>
+  <div class="season-icon">🎖️</div>
+</ng-template>

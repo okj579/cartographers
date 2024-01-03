@@ -45,7 +45,7 @@ export default class HomeComponent {
     return this.cardDeck.slice(0, this.currentCardIndex + 1);
   }
 
-  get currentSeason(): Season {
+  get currentSeason(): Season | undefined {
     return this.seasons[this.currentSeasonIndex];
   }
 
@@ -78,7 +78,7 @@ export default class HomeComponent {
   }
 
   startNewSeasonIfApplicable(): void {
-    if (getCurrentTimeProgress(this.playedCards) < this.currentSeason.duration) {
+    if (this.currentSeason && getCurrentTimeProgress(this.playedCards) < this.currentSeason.duration) {
       this.currentCardIndex++;
       return;
     }

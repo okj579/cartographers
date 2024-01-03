@@ -3,24 +3,27 @@ import { Season, SEASONS } from '../../../models/season';
 import { LandscapeCard } from '../../../models/landscape-card';
 import { SeasonProgressBarComponent } from './season-progress-bar/season-progress-bar.component';
 import { getCurrentTimeProgress } from '../../../game-logic/functions';
+import { NgForOf, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-season-info',
   standalone: true,
-  imports: [SeasonProgressBarComponent],
+  imports: [SeasonProgressBarComponent, NgIf, NgForOf],
   templateUrl: './season-info.component.html',
   styleUrl: './season-info.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeasonInfoComponent {
-  @Input() currentSeason: Season = SEASONS[0];
+  @Input() currentSeason: Season | undefined = undefined;
   @Input() playedCards: LandscapeCard[] = [];
+
+  protected seasons: Season[] = SEASONS;
 
   get currentSeasonProgress(): number {
     return getCurrentTimeProgress(this.playedCards);
   }
 
   get isLastRound(): boolean {
-    return this.currentSeasonProgress >= this.currentSeason.duration;
+    return !!this.currentSeason && this.currentSeasonProgress >= this.currentSeason.duration;
   }
 }
