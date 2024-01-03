@@ -12,7 +12,7 @@ export const LANDSCAPE_CARDS: LandscapeCard[] = [
   {
     name: 'Portal',
     timeValue: 0,
-    landscapeTypes: [LandscapeType.FOREST, LandscapeType.VILLAGE, LandscapeType.FIELD, LandscapeType.WATER, LandscapeType.MONSTER],
+    landscapeTypes: [LandscapeType.FOREST, LandscapeType.VILLAGE, LandscapeType.FIELD, LandscapeType.WATER /* LandscapeType.MONSTER*/], // todo
     baseShapes: [SHAPES[ShapeName.DOT]],
   },
   {
