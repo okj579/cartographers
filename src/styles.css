@@ -12,6 +12,10 @@
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
   --bg-color: #242424;
+  --bg-color-2: #1a1a1a;
+  --bg-color-4: #404040;
+  --bg-color-4-alpha-a: #404040aa;
+  --success-color: lime;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -88,6 +92,10 @@ button.submit-btn {
     color: #213547;
     background-color: #ffffff;
     --bg-color: #ffffff;
+    --bg-color-2: #f0f0f0;
+    --bg-color-4: #eaeaea;
+    --bg-color-4-alpha-a: #eaeaeaaa;
+    --success-color: #00b300;
   }
   a:hover {
     color: #747bff;

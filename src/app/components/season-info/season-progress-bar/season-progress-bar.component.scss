@@ -5,7 +5,7 @@
   height: 1.5rem;
   display: grid;
   grid-template-columns: repeat(var(--column-count, 7), 1fr) auto; // additional column in case of overflow
-  background: #444;
+  background: var(--bg-color-4);
   border-radius: 1.5rem;
   overflow: hidden;
   position: relative;

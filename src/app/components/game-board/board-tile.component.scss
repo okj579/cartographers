@@ -6,7 +6,7 @@
   position: relative;
 
   &.base {
-    background: #444;
+    background: var(--bg-color-4);
   }
 
   &.temporary {
@@ -62,7 +62,7 @@
 
     &::after {
       content: '💥';
-      background: #444444aa;
+      background: var(--bg-color-4-alpha-a);
       font-size: 1.2em;
       display: grid;
       place-items: center;
