@@ -20,6 +20,7 @@ export class SeasonGoalsComponent {
 
   @Input() isStartOfSeason: boolean = false;
   @Input() isEndOfSeason: boolean = false;
+  @Input() isEndOfGame: boolean = false;
 
   @Input() coins: number = 0;
   @Input() scores: number[] = [];

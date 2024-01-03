@@ -1,4 +1,4 @@
-<app-season-info [currentSeason]="currentSeason" [playedCards]="playedCards" />
+<app-season-info [currentSeason]="currentSeason" [playedCards]="playedCards" [isEndOfSeason]="isEndOfSeason" />
 
 <app-goal-area
   [goals]="goals"
@@ -36,5 +36,21 @@
       (startSeason)="startSeason()"
       (endSeason)="endSeason()"
     ></app-season-goals>
+
+    <ng-container *ngIf="!currentSeason">
+      <div class="end-score">
+        <div>🎖️</div>
+        <div>{{totalEndScore}}</div>
+      </div>
+
+      <app-season-goals
+        *ngFor="let seasonScore of seasonScores"
+        [currentSeason]="seasonScore.season"
+        [goals]="goals"
+        [coins]="seasonScore.coins"
+        [scores]="seasonScore.goalScores"
+        [isEndOfGame]="true"
+      ></app-season-goals>
+    </ng-container>
   </div>
 </div>

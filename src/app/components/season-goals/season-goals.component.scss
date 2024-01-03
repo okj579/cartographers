@@ -1,5 +1,12 @@
 :host {
   text-align: left;
+  background: var(--bg-color-2);
+  padding: 16px;
+  border-radius: 8px;
+}
+
+h3 {
+  margin-top: 0;
 }
 
 .goal-list,
@@ -9,8 +16,15 @@
   max-width: 480px;
   grid-template-columns: repeat(3, auto) 1fr;
 
-  .goal-id {
+  .goal-id,
+  .total-score {
     font-weight: bold;
+  }
+
+  &.is-end {
+    .total-score {
+      color: var(--success-color);
+    }
   }
 }
 

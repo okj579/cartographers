@@ -28,6 +28,22 @@ app-goal-area {
   align-content: center;
 }
 
+.controls-and-info {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.end-score {
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin: 32px 0;
+}
+
 @media (max-width: 600px) {
   app-season-info {
     padding: 16px;

@@ -5,6 +5,13 @@ export interface Season {
   goalIndices: number[];
 }
 
+export interface SeasonScore {
+  season: Season;
+  goalScores: number[];
+  coins: number;
+  totalScore: number;
+}
+
 export const SEASONS: Season[] = [
   {
     name: 'Spring',

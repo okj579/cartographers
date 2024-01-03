@@ -2,8 +2,8 @@
   <div class="season-icon">
     {{ currentSeason.emoji }}
   </div>
-  <app-season-progress-bar [seasonLength]="currentSeason.duration" [playedCards]="playedCards" />
-  <div class="season-progress" [class.last-round]="isLastRound">
+  <app-season-progress-bar [seasonLength]="currentSeason.duration" [playedCards]="playedCards" [isEndOfSeason]="isEndOfSeason" />
+  <div class="season-progress" [class.last-round]="isLastRound" [class.is-end]="isEndOfSeason">
     {{ currentSeasonProgress }} / {{ currentSeason.duration }} <i class="fa-solid fa-clock"></i>
   </div>
 </ng-container>

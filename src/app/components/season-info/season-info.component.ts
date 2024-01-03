@@ -16,6 +16,7 @@ import { NgForOf, NgIf } from '@angular/common';
 export class SeasonInfoComponent {
   @Input() currentSeason: Season | undefined = undefined;
   @Input() playedCards: LandscapeCard[] = [];
+  @Input() isEndOfSeason: boolean = false;
 
   protected seasons: Season[] = SEASONS;
 

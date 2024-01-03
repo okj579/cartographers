@@ -15,9 +15,13 @@
   font-size: 1.2rem;
   font-weight: 600;
 
-  &.last-round {
+  &.last-round:not(.is-end) {
     color: orange;
     animation: scale-pulse 1.5s infinite;
+  }
+
+  &.is-end {
+    color: var(--success-color);
   }
 }
 
