@@ -33,9 +33,18 @@ export class GameBoardComponent {
   onTileClick(x: number, y: number): void {
     if (!this.allowPlacing || !this.currentShapeToPlace) return;
 
-    const diffXToNotOverflow = Math.min(0, BOARD_SIZE - this.currentShapeToPlace.baseShape.width - x);
-    const diffYToNotOverflow = Math.min(0, BOARD_SIZE - this.currentShapeToPlace.baseShape.height - y);
+    const diffXToMiddle = Math.floor((this.currentShapeToPlace.baseShape.width - 0.1) / 2);
+    const diffYToMiddle = Math.floor((this.currentShapeToPlace.baseShape.height - 0.1) / 2);
 
-    this.positionChange.emit({ x: x + diffXToNotOverflow, y: y + diffYToNotOverflow });
+    const centeredX = x - diffXToMiddle;
+    const centeredY = y - diffYToMiddle;
+
+    const diffXToNotOverflow = Math.min(0, BOARD_SIZE - this.currentShapeToPlace.baseShape.width - centeredX);
+    const diffYToNotOverflow = Math.min(0, BOARD_SIZE - this.currentShapeToPlace.baseShape.height - centeredY);
+
+    const xToPlace = Math.max(0, centeredX + diffXToNotOverflow);
+    const yToPlace = Math.max(0, centeredY + diffYToNotOverflow);
+
+    this.positionChange.emit({ x: xToPlace, y: yToPlace });
   }
 }
