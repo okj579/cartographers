@@ -21,6 +21,7 @@
       *ngIf="currentCard && !isStartOfSeason && !isEndOfSeason"
       [landscapeCard]="currentCard"
       [hasConflict]="hasConflict"
+      [untouchedBoardState]="untouchedBoardState"
       (landscapeShapeChange)="updateShapeInBoard($event, true)"
       (submit)="submitShape($event)"
     ></app-next-shape>

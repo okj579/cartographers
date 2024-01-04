@@ -8,6 +8,10 @@ export interface LandscapeCard {
   baseShapes: BaseShape[];
 }
 
+export function getPortalCard(): LandscapeCard {
+  return LANDSCAPE_CARDS[0];
+}
+
 export const LANDSCAPE_CARDS: LandscapeCard[] = [
   {
     name: 'Portal',

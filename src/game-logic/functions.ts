@@ -1,7 +1,7 @@
 import { BoardTile } from '../models/board-tile';
 import { LandscapeShape, PlacedLandscapeShape } from '../models/landscape-shape';
 import { LandscapeType } from '../models/landscape-type';
-import { BaseShape } from '../models/base-shape';
+import { areShapesEqual, BaseShape, copyShape } from '../models/base-shape';
 import { Coordinates } from '../models/simple-types';
 import { LANDSCAPE_CARDS, LandscapeCard } from '../models/landscape-card';
 import { Season } from '../models/season';
@@ -11,6 +11,13 @@ interface PlaceShapeResult {
   updatedBoard: BoardTile[][];
   conflictedCellIndices: number[];
   newCoins: number;
+}
+
+export interface FindPositionResult {
+  position: Coordinates | undefined;
+  updatedShape: BaseShape;
+  numberOfRotations: number;
+  isMirrored?: boolean;
 }
 
 interface LandscapeArea {
@@ -140,6 +147,78 @@ export function getHeroInformation(shape: LandscapeShape, cell: Coordinates) {
   const isHeroStar = isHeroShape && !isHeroPosition;
 
   return { isHeroShape, isHeroStar };
+}
+
+export function findFirstPositionForShape(board: BoardTile[][], shape: BaseShape): FindPositionResult {
+  let { position, updatedShape, numberOfRotations } = findFirstPositionForShapeWithAllRotations(board, shape);
+  let isMirrored = false;
+
+  if (!position) {
+    updatedShape = mirrorShape(shape);
+    isMirrored = true;
+
+    if (!areShapesEqual(shape, updatedShape)) {
+      let subResult = findFirstPositionForShapeWithAllRotations(board, updatedShape);
+      position = subResult.position;
+      updatedShape = subResult.updatedShape;
+      numberOfRotations = subResult.numberOfRotations;
+    }
+  }
+
+  return { position, updatedShape, numberOfRotations, isMirrored };
+}
+
+function findFirstPositionForShapeWithAllRotations(board: BoardTile[][], shape: BaseShape): FindPositionResult {
+  let updatedShape = copyShape(shape);
+  let previousShape = copyShape(shape);
+  let numberOfRotations = 0;
+  let position: Coordinates | undefined;
+
+  position = getFirstAvailablePosition(board, updatedShape);
+
+  while (!position && numberOfRotations < 3) {
+    previousShape = copyShape(updatedShape);
+    updatedShape = rotateShapeClockwise(updatedShape);
+    numberOfRotations++;
+
+    if (!areShapesEqual(previousShape, updatedShape)) {
+      position = getFirstAvailablePosition(board, updatedShape);
+    }
+  }
+
+  return { position, updatedShape, numberOfRotations };
+}
+
+function getFirstAvailablePosition(board: BoardTile[][], shape: BaseShape): Coordinates | undefined {
+  const boardSize = BOARD_SIZE;
+
+  for (let x = 0; x < boardSize; x++) {
+    for (let y = 0; y < boardSize; y++) {
+      if (canPlaceShapeOnBoard(board, shape, { x, y })) {
+        return { x, y };
+      }
+    }
+  }
+
+  return undefined;
+}
+
+function canPlaceShapeOnBoard(board: BoardTile[][], shape: BaseShape, position: Coordinates): boolean {
+  const boardSize = BOARD_SIZE;
+
+  if (position.x < 0 || position.y < 0 || position.x + shape.width > boardSize || position.y + shape.height > boardSize) {
+    return false;
+  }
+
+  for (let cell of shape.filledCells) {
+    const tile = board[position.x + cell.x][position.y + cell.y];
+
+    if (tile.landscape !== undefined) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 // group all tiles of the same landscape type that are directly connected via edges

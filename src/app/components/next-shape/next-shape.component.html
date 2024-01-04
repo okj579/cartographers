@@ -10,6 +10,9 @@
     <i class="fa-solid fa-location-pin-lock"></i>Confirm
   </button>
   <div class="warning" [class.hidden]="!hasConflict"><i class="fa-solid fa-warning"></i>Invalid position</div>
+  <button class="secondary" (click)="findAvailablePosition()">
+    <i class="fa-solid fa-magnifying-glass-location"></i> Find valid position
+  </button>
 </div>
 
 <div class="shape-selection">

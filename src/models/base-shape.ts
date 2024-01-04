@@ -29,6 +29,19 @@ export enum ShapeName {
   Z_BIG,
 }
 
+export function copyShape(shape: BaseShape): BaseShape {
+  return { ...shape, filledCells: [...shape.filledCells] };
+}
+
+export function areShapesEqual(shape1: BaseShape, shape2: BaseShape): boolean {
+  if (shape1.width !== shape2.width || shape1.height !== shape2.height) return false;
+
+  return (
+    shape1.filledCells.every((cell) => shape2.filledCells.some((c) => c.x === cell.x && c.y === cell.y)) &&
+    shape2.filledCells.every((cell) => shape1.filledCells.some((c) => c.x === cell.x && c.y === cell.y))
+  );
+}
+
 export const SHAPES: Record<ShapeName, BaseShape> = {
   [ShapeName.DOT]: {
     width: 1,

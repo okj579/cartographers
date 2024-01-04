@@ -1,11 +1,18 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape, ShapeDimensions } from '../../../models/landscape-shape';
-import { getHeroInformation, mirrorShape, rotateShapeClockwise, rotateShapeCounterClockwise } from '../../../game-logic/functions';
+import {
+  findFirstPositionForShape,
+  FindPositionResult,
+  getHeroInformation,
+  mirrorShape,
+  rotateShapeClockwise,
+  rotateShapeCounterClockwise,
+} from '../../../game-logic/functions';
 import { BoardTileComponent } from '../game-board/board-tile.component';
 import { BoardTile } from '../../../models/board-tile';
 import { NgForOf, NgIf } from '@angular/common';
 import { BOARD_SIZE } from '../../../game-logic/constants';
-import { LandscapeCard } from '../../../models/landscape-card';
+import { getPortalCard, LandscapeCard } from '../../../models/landscape-card';
 import { Coordinates } from '../../../models/simple-types';
 
 @Component({
@@ -21,10 +28,12 @@ export class NextShapeComponent {
     this._resetValues();
     this.allVariants = this._getAllVariants(card);
     this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
+    this._hasDifferentShapes = card.baseShapes.length > 1;
 
     setTimeout(() => this.selectVariant(0));
   }
 
+  @Input() untouchedBoardState: BoardTile[][] = [];
   @Input() hasConflict: boolean = false;
 
   @Output() landscapeShapeChange: EventEmitter<PlacedLandscapeShape> = new EventEmitter<PlacedLandscapeShape>();
@@ -35,6 +44,8 @@ export class NextShapeComponent {
 
   protected selectedVariant: number = -1;
   protected currentPosition: Coordinates = { x: 0, y: 0 };
+
+  private _hasDifferentShapes: boolean = false;
 
   constructor() {
     this._resetValues();
@@ -98,14 +109,14 @@ export class NextShapeComponent {
 
   @HostListener('window:keydown.r', ['$event'])
   @HostListener('window:keydown.e', ['$event'])
-  rotateClockwise() {
+  rotateClockwise(shouldEmit: boolean = true) {
     this.allVariants = this.allVariants.map((variant) => ({
       ...variant,
       baseShape: rotateShapeClockwise(variant.baseShape),
     }));
     this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
 
-    this._emitCurrentVariant();
+    if (shouldEmit) this._emitCurrentVariant();
   }
 
   @HostListener('window:keydown.l', ['$event'])
@@ -122,14 +133,14 @@ export class NextShapeComponent {
 
   @HostListener('window:keydown.m', ['$event'])
   @HostListener('window:keydown.x', ['$event'])
-  mirror() {
+  mirror(shouldEmit: boolean = true) {
     this.allVariants = this.allVariants.map((variant) => ({
       ...variant,
       baseShape: mirrorShape(variant.baseShape),
     }));
     this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
 
-    this._emitCurrentVariant();
+    if (shouldEmit) this._emitCurrentVariant();
   }
 
   @HostListener('window:keydown.ArrowUp', ['$event'])
@@ -166,6 +177,47 @@ export class NextShapeComponent {
 
     this.currentPosition = { ...this.currentPosition, x: this.currentPosition.x + 1 };
     this._emitCurrentVariant();
+  }
+
+  findAvailablePosition(): void {
+    if (!this.currentVariant) return;
+
+    let findPositionResult: FindPositionResult = findFirstPositionForShape(this.untouchedBoardState, this.currentVariant.baseShape);
+
+    if (!findPositionResult.position && this._hasDifferentShapes) {
+      const nextVariant = (this.selectedVariant + 1) % 2;
+      this.selectVariant(nextVariant);
+      findPositionResult = findFirstPositionForShape(this.untouchedBoardState, this.currentVariant.baseShape);
+    }
+
+    this._updateAfterFindingPosition(findPositionResult);
+  }
+
+  private _updateAfterFindingPosition(result: FindPositionResult) {
+    if (result.position) {
+      this.currentPosition = { ...result.position };
+
+      if (result.isMirrored) {
+        this.mirror(false);
+      }
+
+      for (let i = 0; i < result.numberOfRotations; i++) {
+        this.rotateClockwise(false);
+      }
+
+      this._emitCurrentVariant();
+    } else {
+      this._addPortalCard();
+    }
+  }
+
+  private _addPortalCard(): void {
+    this._resetValues();
+    const previousLength = this.allVariants.length;
+    this.allVariants = [...this.allVariants, ...this._getAllVariants(getPortalCard())];
+    this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
+    this._hasDifferentShapes = false;
+    this.selectVariant(previousLength);
   }
 
   private _emitCurrentVariant(): void {
