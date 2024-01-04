@@ -5,11 +5,17 @@ import { BaseShape } from '../models/base-shape';
 import { Coordinates } from '../models/simple-types';
 import { LANDSCAPE_CARDS, LandscapeCard } from '../models/landscape-card';
 import { Season } from '../models/season';
+import { BOARD_SIZE } from './constants';
 
 interface PlaceShapeResult {
   updatedBoard: BoardTile[][];
   conflictedCellIndices: number[];
   newCoins: number;
+}
+
+interface LandscapeArea {
+  landscape: LandscapeType;
+  tiles: BoardTile[];
 }
 
 export function rotateShapeClockwise(shape: BaseShape): BaseShape {
@@ -134,4 +140,63 @@ export function getHeroInformation(shape: LandscapeShape, cell: Coordinates) {
   const isHeroStar = isHeroShape && !isHeroPosition;
 
   return { isHeroShape, isHeroStar };
+}
+
+// group all tiles of the same landscape type that are directly connected via edges
+export function getIndividualAreas(boardState: BoardTile[][], landscapeType: LandscapeType): LandscapeArea[] {
+  const connectedAreas: LandscapeArea[] = [];
+  const visitedTiles: BoardTile[] = [];
+  const tilesToVisit: BoardTile[] = [];
+  const boardSize = BOARD_SIZE;
+
+  // iterate over all tiles
+  for (let x = 0; x < boardSize; x++) {
+    for (let y = 0; y < boardSize; y++) {
+      const tile = boardState[x][y];
+      // if tile is of the landscape type and not yet visited
+      if (tile.landscape === landscapeType && !visitedTiles.includes(tile)) {
+        // add tile to tiles to visit
+        tilesToVisit.push(tile);
+        // create new area
+        const area: LandscapeArea = {
+          landscape: landscapeType,
+          tiles: [],
+        };
+        // add tile to area
+        area.tiles.push(tile);
+        // add area to connected areas
+        connectedAreas.push(area);
+        // while there are tiles to visit
+        while (tilesToVisit.length > 0) {
+          // get first tile to visit
+          const tileToVisit = tilesToVisit.shift();
+
+          if (!tileToVisit) continue;
+
+          // if tile is not yet visited
+          if (!visitedTiles.includes(tileToVisit)) {
+            // add tile to visited tiles
+            visitedTiles.push(tileToVisit);
+            // add tile to area
+            area.tiles.push(tileToVisit);
+            // get all adjacent tiles
+            const adjacentTiles = [
+              boardState[tileToVisit.position.x - 1]?.[tileToVisit.position.y],
+              boardState[tileToVisit.position.x + 1]?.[tileToVisit.position.y],
+              boardState[tileToVisit.position.x]?.[tileToVisit.position.y - 1],
+              boardState[tileToVisit.position.x]?.[tileToVisit.position.y + 1],
+            ];
+            // add adjacent tiles that are of the landscape type and not yet visited to tiles to visit
+            adjacentTiles.forEach((adjacentTile) => {
+              if (adjacentTile?.landscape === landscapeType && !visitedTiles.includes(adjacentTile)) {
+                tilesToVisit.push(adjacentTile);
+              }
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return connectedAreas;
 }
