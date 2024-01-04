@@ -3,3 +3,9 @@
 :host {
   @include grid-mixins.board-tile-grid;
 }
+
+app-board-tile {
+  &.interactive {
+    cursor: pointer;
+  }
+}

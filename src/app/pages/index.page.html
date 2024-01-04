@@ -14,6 +14,7 @@
     [currentBoardState]="untouchedBoardState"
     [currentShapeToPlace]="currentShapeToPlace"
     [conflictedCellIndices]="conflictedCellIndices"
+    (positionChange)="onPositionChange($event)"
   />
 
   <div class="controls-and-info">

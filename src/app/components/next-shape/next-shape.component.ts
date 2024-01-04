@@ -193,6 +193,11 @@ export class NextShapeComponent {
     this._updateAfterFindingPosition(findPositionResult);
   }
 
+  updatePositionFromOutside(position: Coordinates): void {
+    this.currentPosition = { ...position };
+    this._emitCurrentVariant();
+  }
+
   private _updateAfterFindingPosition(result: FindPositionResult) {
     if (result.position) {
       this.currentPosition = { ...result.position };

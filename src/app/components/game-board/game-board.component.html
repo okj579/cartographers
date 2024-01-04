@@ -1,6 +1,6 @@
-<ng-container *ngFor="let column of currentBoardState; trackBy: trackByIndex">
-  <ng-container *ngFor="let tile of column; trackBy: trackByIndex">
-    <app-board-tile [tile]="tile"></app-board-tile>
+<ng-container *ngFor="let column of currentBoardState; trackBy: trackByIndex; let x = index">
+  <ng-container *ngFor="let tile of column; trackBy: trackByIndex; let y = index">
+    <app-board-tile [tile]="tile" [class.interactive]="allowPlacing" (click)="onTileClick(x, y)"></app-board-tile>
   </ng-container>
 </ng-container>
 

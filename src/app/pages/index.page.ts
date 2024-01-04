@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { GameBoardComponent } from '../components/game-board/game-board.component';
 import { BoardTile } from '../../models/board-tile';
 import { getInitialBoardTiles } from '../../game-logic/constants';
@@ -12,6 +12,7 @@ import { Goal, GOALS } from '../../models/goals';
 import { SeasonInfoComponent } from '../components/season-info/season-info.component';
 import { Season, SEASONS, SeasonScore } from '../../models/season';
 import { SeasonGoalsComponent } from '../components/season-goals/season-goals.component';
+import { Coordinates } from '../../models/simple-types';
 
 @Component({
   selector: 'app-home',
@@ -22,6 +23,8 @@ import { SeasonGoalsComponent } from '../components/season-goals/season-goals.co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class HomeComponent {
+  @ViewChild(NextShapeComponent) nextShapeComponent!: NextShapeComponent;
+
   untouchedBoardState: BoardTile[][] = getInitialBoardTiles();
   temporaryBoardState: BoardTile[][] = [...this.untouchedBoardState];
   cardDeck: LandscapeCard[] = getShuffledCards();
@@ -101,6 +104,12 @@ export default class HomeComponent {
     this.scores = [...this.temporaryScores];
 
     this._startNewSeasonIfApplicable();
+  }
+
+  onPositionChange(position: Coordinates): void {
+    if (!this.currentShapeToPlace) return;
+
+    this.nextShapeComponent.updatePositionFromOutside(position);
   }
 
   updateShapeInBoard(shape: PlacedLandscapeShape | undefined, isTemporary: boolean) {
