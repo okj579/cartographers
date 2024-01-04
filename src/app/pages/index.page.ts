@@ -8,7 +8,7 @@ import { NextShapeComponent } from '../components/next-shape/next-shape.componen
 import { NgForOf, NgIf } from '@angular/common';
 import { LandscapeCard } from '../../models/landscape-card';
 import { GoalAreaComponent } from '../components/goal-area/goal-area.component';
-import { Goal, GOALS } from '../../models/goals';
+import { getShuffledGoals, Goal } from '../../models/goals';
 import { SeasonInfoComponent } from '../components/season-info/season-info.component';
 import { Season, SEASONS, SeasonScore } from '../../models/season';
 import { SeasonGoalsComponent } from '../components/season-goals/season-goals.component';
@@ -28,7 +28,7 @@ export default class HomeComponent {
   untouchedBoardState: BoardTile[][] = getInitialBoardTiles();
   temporaryBoardState: BoardTile[][] = [...this.untouchedBoardState];
   cardDeck: LandscapeCard[] = getShuffledCards();
-  goals: Goal[] = GOALS;
+  goals: Goal[] = getShuffledGoals();
   currentSeasonIndex: number = 0;
   coins: number = 0;
   newCoins: number = 0;

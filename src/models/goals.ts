@@ -130,3 +130,16 @@ export const GLOBAL_GOALS: Goal[] = [
 ];
 
 export const GOALS: Goal[] = [...FOREST_GOALS, ...VILLAGE_GOALS, ...FIELD_WATER_GOALS, ...GLOBAL_GOALS];
+
+export function getShuffledGoals(): Goal[] {
+  const goals = [...GOALS];
+  const shuffledGoals: Goal[] = [];
+
+  while (goals.length > 0) {
+    const index = Math.floor(Math.random() * goals.length);
+    shuffledGoals.push(goals[index]);
+    goals.splice(index, 1);
+  }
+
+  return shuffledGoals;
+}
