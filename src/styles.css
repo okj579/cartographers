@@ -118,5 +118,6 @@ button.submit-btn {
     right: 0;
     margin: 16px;
     z-index: 1;
+    width: calc(100% - 32px);
   }
 }
