@@ -21,8 +21,8 @@ export interface FindPositionResult {
   isMirrored?: boolean;
 }
 
-interface LandscapeArea {
-  landscape: LandscapeType;
+export interface LandscapeArea {
+  landscape: LandscapeType | undefined;
   tiles: BoardTile[];
 }
 
@@ -210,7 +210,7 @@ function canPlaceShapeOnBoard(board: BoardTile[][], shape: BaseShape, position: 
 }
 
 // group all tiles of the same landscape type that are directly connected via edges
-export function getIndividualAreas(boardState: BoardTile[][], landscapeType: LandscapeType): LandscapeArea[] {
+export function getIndividualAreas(boardState: BoardTile[][], landscapeType: LandscapeType | undefined): LandscapeArea[] {
   const connectedAreas: LandscapeArea[] = [];
   const visitedTiles: BoardTile[] = [];
   const tilesToVisit: BoardTile[] = [];
