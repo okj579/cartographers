@@ -5,6 +5,7 @@ import { NgClass, NgForOf, NgIf } from '@angular/common';
 import { IndexToCharPipe } from '../goal-area/index-to-char.pipe';
 import { GoalEmojisPipe } from './goal-emojis.pipe';
 import { getSeasonScore } from '../../../game-logic/functions';
+import { MONSTER_SCORE_INDEX } from '../../../game-logic/constants';
 
 @Component({
   selector: 'app-season-goals',
@@ -29,7 +30,7 @@ export class SeasonGoalsComponent {
   @Output() endSeason = new EventEmitter<void>();
 
   protected showAllGoals: boolean = false;
-  protected monsterScoreIndex: number = 4;
+  protected monsterScoreIndex: number = MONSTER_SCORE_INDEX;
 
   get totalSeasonScore(): number {
     return getSeasonScore(this.currentSeason, this.scores, this.coins);

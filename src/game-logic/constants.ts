@@ -3,6 +3,7 @@ import { BoardTile } from '../models/board-tile';
 import { LandscapeType } from '../models/landscape-type';
 
 export const BOARD_SIZE = 11;
+export const MONSTER_SCORE_INDEX = 4;
 
 const MOUNTAIN_COORDINATES: Coordinates[] = [
   { x: 1, y: 1 },

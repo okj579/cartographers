@@ -4,6 +4,7 @@ import { NgForOf, NgIf } from '@angular/common';
 import { IndexToCharPipe } from './index-to-char.pipe';
 import { Season } from '../../../models/season';
 import { getSeasonScore } from '../../../game-logic/functions';
+import { MONSTER_SCORE_INDEX } from '../../../game-logic/constants';
 
 @Component({
   selector: 'app-goal-area',
@@ -22,7 +23,7 @@ export class GoalAreaComponent {
   @Input() temporaryScores: number[] = [];
   @Input() previousScores: number[] = [];
 
-  protected monsterScoreIndex: number = 4;
+  protected monsterScoreIndex: number = MONSTER_SCORE_INDEX;
 
   get totalScoreDiff(): number {
     return this.temporaryScores.reduce((acc, score) => acc + score, 0) + this.coins + this.newCoins - this.totalPreviousScore;

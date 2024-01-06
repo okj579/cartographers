@@ -110,6 +110,11 @@ button.submit-btn {
   }
 }
 
+h3,
+h4 {
+  margin: 0;
+}
+
 @media (max-width: 600px) {
   .submit-btn {
     position: fixed;

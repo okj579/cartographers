@@ -5,7 +5,7 @@ import { areShapesEqual, BaseShape, copyShape } from '../models/base-shape';
 import { Coordinates } from '../models/simple-types';
 import { copyLandscapeCard, LandscapeCard } from '../models/landscape-card';
 import { Season } from '../models/season';
-import { BOARD_SIZE } from './constants';
+import { BOARD_SIZE, MONSTER_SCORE_INDEX } from './constants';
 import { mirrorShape, rotateShapeClockwise } from './transformation-functions';
 
 interface PlaceShapeResult {
@@ -44,7 +44,9 @@ export function getCurrentTimeProgress(playedCards: LandscapeCard[]): number {
 }
 
 export function getSeasonScore(season: Season, scores: number[], coins: number): number {
-  return coins + season.goalIndices.reduce((acc: number, index: number): number => acc + (scores[index] ?? 0), 0);
+  return (
+    coins + season.goalIndices.reduce((acc: number, index: number): number => acc + (scores[index] ?? 0), 0) + scores[MONSTER_SCORE_INDEX]
+  );
 }
 
 export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape, isTemporary: boolean): PlaceShapeResult {

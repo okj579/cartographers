@@ -4,20 +4,6 @@
   <span *ngIf="isEndOfSeason" class="season-end"> - End of season</span>
 </h3>
 
-<div *ngIf="!isEndOfSeason && !isEndOfGame">Duration: {{ currentSeason.duration }} <i class="fa-solid fa-clock"></i></div>
-
-<ng-container *ngIf="!isEndOfGame">
-  <h4>Season goals</h4>
-  <div class="goal-list">
-    <ng-container *ngFor="let goalIndex of currentSeason.goalIndices">
-      <div class="goal-id">{{ goalIndex | indexToChar }}</div>
-      <div>{{ goals[goalIndex] | goalEmojis }}</div>
-      <div>{{ goals[goalIndex].name }}</div>
-      <div>{{ goals[goalIndex].description }}</div>
-    </ng-container>
-  </div>
-</ng-container>
-
 <ng-container *ngIf="!isStartOfSeason">
   <h4>Season Score</h4>
   <div class="goal-scores" [class.is-end]="isEndOfSeason || isEndOfGame">
@@ -34,6 +20,20 @@
 
     <div class="goal-id total-score">Σ</div>
     <div class="total-score">{{ totalSeasonScore }}</div>
+  </div>
+</ng-container>
+
+<div *ngIf="isStartOfSeason">Duration: {{ currentSeason.duration }} <i class="fa-solid fa-clock"></i></div>
+
+<ng-container *ngIf="!isEndOfGame">
+  <h4>Season goals</h4>
+  <div class="goal-list">
+    <ng-container *ngFor="let goalIndex of currentSeason.goalIndices">
+      <div class="goal-id">{{ goalIndex | indexToChar }}</div>
+      <div>{{ goals[goalIndex] | goalEmojis }}</div>
+      <div>{{ goals[goalIndex].name }}</div>
+      <div>{{ goals[goalIndex].description }}</div>
+    </ng-container>
   </div>
 </ng-container>
 
