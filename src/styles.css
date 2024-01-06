@@ -72,6 +72,10 @@ button {
   &:not(.icon-btn) i:first-child {
     margin-right: 0.5em;
   }
+
+  [slot='end'] {
+    margin-left: 0.5em;
+  }
 }
 button:hover:not([disabled]) {
   cursor: pointer;

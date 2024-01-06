@@ -45,7 +45,9 @@ export function getCurrentTimeProgress(playedCards: LandscapeCard[]): number {
 
 export function getSeasonScore(season: Season, scores: number[], coins: number): number {
   return (
-    coins + season.goalIndices.reduce((acc: number, index: number): number => acc + (scores[index] ?? 0), 0) + scores[MONSTER_SCORE_INDEX]
+    coins +
+    season.goalIndices.reduce((acc: number, index: number): number => acc + (scores[index] ?? 0), 0) +
+    (scores[MONSTER_SCORE_INDEX] ?? 0)
   );
 }
 

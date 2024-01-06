@@ -13,10 +13,9 @@
   </div>
   <div class="score">
     {{ previousScores[index] ?? 0 }}
-    <ng-container *ngIf="getScoreDiff(index) as scoreDiff">
-      <span *ngIf="scoreDiff > 0" class="positive">+{{ scoreDiff }}</span>
-      <span *ngIf="scoreDiff < 0" class="negative">{{ scoreDiff }}</span>
-    </ng-container>
+    <span *ngIf="getScoreDiff(index) as scoreDiff" [class.positive]="scoreDiff > 0" [class.negative]="scoreDiff < 0">{{
+      scoreDiff | formatNumber
+    }}</span>
   </div>
 </div>
 
@@ -24,7 +23,7 @@
   <div>💎</div>
   <div class="score">
     {{ coins }}
-    <span *ngIf="newCoins > 0" class="positive">+{{ newCoins }}</span>
+    <span *ngIf="newCoins > 0" class="positive">{{ newCoins | formatNumber }}</span>
   </div>
 </div>
 
@@ -32,10 +31,9 @@
   <div>😈</div>
   <div class="score">
     {{ previousScores[monsterScoreIndex] ?? 0 }}
-    <ng-container *ngIf="getScoreDiff(monsterScoreIndex) as scoreDiff">
-      <span *ngIf="scoreDiff > 0" class="positive">+{{ scoreDiff }}</span>
-      <span *ngIf="scoreDiff < 0" class="negative">{{ scoreDiff }}</span>
-    </ng-container>
+    <span *ngIf="getScoreDiff(monsterScoreIndex) as scoreDiff" [class.positive]="scoreDiff > 0" [class.negative]="scoreDiff < 0"
+      >+{{ scoreDiff | formatNumber }}</span
+    >
   </div>
 </div>
 
@@ -44,8 +42,9 @@
   <div class="title">{{ currentSeason.name }}</div>
   <div class="score">
     {{ totalSeasonPreviousScore }}
-    <span *ngIf="totalSeasonScoreDiff > 0" class="positive">+{{ totalSeasonScoreDiff }}</span>
-    <span *ngIf="totalSeasonScoreDiff < 0" class="negative">{{ totalSeasonScoreDiff }}</span>
+    <span *ngIf="totalSeasonScoreDiff" [class.positive]="totalSeasonScoreDiff > 0" [class.negative]="totalSeasonScoreDiff < 0"
+      >+{{ totalSeasonScoreDiff | formatNumber }}</span
+    >
   </div>
 </div>
 
@@ -54,7 +53,8 @@
   <div class="title">Total</div>
   <div class="score">
     {{ totalPreviousScore }}
-    <span *ngIf="totalScoreDiff > 0" class="positive">+{{ totalScoreDiff }}</span>
-    <span *ngIf="totalScoreDiff < 0" class="negative">{{ totalScoreDiff }}</span>
+    <span *ngIf="totalScoreDiff" [class.positive]="totalScoreDiff > 0" [class.negative]="totalScoreDiff < 0">{{
+      totalScoreDiff | formatNumber
+    }}</span>
   </div>
 </div>
