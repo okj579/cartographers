@@ -1,7 +1,8 @@
 import { BoardTile } from './board-tile';
 import { LandscapeType } from './landscape-type';
 import { BOARD_SIZE } from '../game-logic/constants';
-import { getIndividualAreas } from '../game-logic/functions';
+import { getIndividualAreas, isTileFilled, isTileOfLandscape } from '../game-logic/functions';
+import { Coordinates } from './simple-types';
 
 export enum GoalCategory {
   FOREST = 'forest',
@@ -30,7 +31,7 @@ export const FOREST_GOALS: Goal[] = [
       for (let y = 0; y < BOARD_SIZE; y++) {
         let forestTiles = 0;
         for (let x = 0; x < BOARD_SIZE; x++) {
-          if (boardState[x][y].landscape === LandscapeType.FOREST) {
+          if (isTileOfLandscape(boardState[x][y], LandscapeType.FOREST)) {
             forestTiles++;
           }
         }
@@ -80,9 +81,9 @@ export const FIELD_WATER_GOALS: Goal[] = [
         let waterTiles = 0;
         let fieldTiles = 0;
         for (let y = 0; y < BOARD_SIZE; y++) {
-          if (boardState[x][y].landscape === LandscapeType.WATER) {
+          if (isTileOfLandscape(boardState[x][y], LandscapeType.WATER)) {
             waterTiles++;
-          } else if (boardState[x][y].landscape === LandscapeType.FIELD) {
+          } else if (isTileOfLandscape(boardState[x][y], LandscapeType.FIELD)) {
             fieldTiles++;
           }
         }
@@ -115,7 +116,7 @@ export const GLOBAL_GOALS: Goal[] = [
 
         let tiles = 0;
         for (let y = 0; y < BOARD_SIZE; y++) {
-          if (boardState[x][y].landscape !== undefined) {
+          if (isTileFilled(boardState[x][y])) {
             tiles++;
           }
         }

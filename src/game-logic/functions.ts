@@ -79,14 +79,14 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
 
 function checkForMountainCoin(board: BoardTile[][], cell: Coordinates): number {
   const adjacentTiles = getAdjacentTiles(board, cell);
-  const mountainTiles = adjacentTiles.filter((tile) => tile.landscape === LandscapeType.MOUNTAIN);
+  const mountainTiles = adjacentTiles.filter((tile) => isTileOfLandscape(tile, LandscapeType.MOUNTAIN));
   let coins = 0;
 
   for (let mountainTile of mountainTiles) {
     if (!mountainTile.hasCoin) continue;
 
     let adjacentMountainTiles = getAdjacentTiles(board, mountainTile.position);
-    let isMountainSurrounded = adjacentMountainTiles.every((tile) => tile.landscape !== undefined);
+    let isMountainSurrounded = adjacentMountainTiles.every((tile) => isTileFilled(tile));
 
     if (isMountainSurrounded) {
       mountainTile.hasCoin = false;
@@ -109,7 +109,7 @@ function getAdjacentTiles(board: BoardTile[][], cell: Coordinates): BoardTile[] 
 }
 
 function applyShapeToTile(tile: BoardTile, shape: PlacedLandscapeShape, isHeroStar: boolean): BoardTile {
-  const alreadyHasLandscape = tile.landscape !== undefined;
+  const alreadyHasLandscape = isTileFilled(tile);
 
   if (alreadyHasLandscape && !isHeroStar) {
     tile.conflicted = true;
@@ -118,7 +118,7 @@ function applyShapeToTile(tile: BoardTile, shape: PlacedLandscapeShape, isHeroSt
   tile.landscape = isHeroStar ? tile.landscape : shape.type;
   tile.heroStar = isHeroStar || tile.heroStar;
 
-  if (tile.landscape === LandscapeType.MONSTER && tile.heroStar) {
+  if (isTileOfLandscape(tile, LandscapeType.MONSTER) && tile.heroStar) {
     tile.destroyed = true;
   }
 
@@ -197,7 +197,7 @@ function canPlaceShapeOnBoard(board: BoardTile[][], shape: BaseShape, position: 
   for (let cell of shape.filledCells) {
     const tile = board[position.x + cell.x][position.y + cell.y];
 
-    if (tile.landscape !== undefined) {
+    if (isTileFilled(tile)) {
       return false;
     }
   }
@@ -217,7 +217,7 @@ export function getIndividualAreas(boardState: BoardTile[][], landscapeType: Lan
     for (let y = 0; y < boardSize; y++) {
       const tile = boardState[x][y];
       // if tile is of the landscape type and not yet visited
-      if (tile.landscape === landscapeType && !visitedTiles.includes(tile)) {
+      if (isTileOfLandscape(tile, landscapeType) && !visitedTiles.includes(tile)) {
         // add tile to tiles to visit
         tilesToVisit.push(tile);
         // create new area
@@ -251,7 +251,7 @@ export function getIndividualAreas(boardState: BoardTile[][], landscapeType: Lan
             ];
             // add adjacent tiles that are of the landscape type and not yet visited to tiles to visit
             adjacentTiles.forEach((adjacentTile) => {
-              if (adjacentTile?.landscape === landscapeType && !visitedTiles.includes(adjacentTile)) {
+              if (isTileOfLandscape(adjacentTile, landscapeType) && !visitedTiles.includes(adjacentTile)) {
                 tilesToVisit.push(adjacentTile);
               }
             });
@@ -262,4 +262,12 @@ export function getIndividualAreas(boardState: BoardTile[][], landscapeType: Lan
   }
 
   return connectedAreas;
+}
+
+export function isTileFilled(tile: BoardTile): boolean {
+  return !isTileOfLandscape(tile, undefined);
+}
+
+export function isTileOfLandscape(tile: BoardTile, landscapeType: LandscapeType | undefined): boolean {
+  return tile.landscape === landscapeType && !tile.destroyed;
 }
