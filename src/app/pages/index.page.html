@@ -1,13 +1,15 @@
-<app-season-info [currentSeason]="currentSeason" [playedCards]="playedCards" [isEndOfSeason]="isEndOfSeason" />
+<div class="sticky-header">
+  <app-season-info [currentSeason]="currentSeason" [playedCards]="playedCards" [isEndOfSeason]="isEndOfSeason" />
 
-<app-goal-area
-  [goals]="goals"
-  [coins]="coins"
-  [newCoins]="newCoins"
-  [previousScores]="scores"
-  [temporaryScores]="temporaryScores"
-  [currentSeason]="currentSeason"
-></app-goal-area>
+  <app-goal-area
+    [goals]="goals"
+    [coins]="coins"
+    [newCoins]="newCoins"
+    [previousScores]="scores"
+    [temporaryScores]="temporaryScores"
+    [currentSeason]="currentSeason"
+  ></app-goal-area>
+</div>
 
 <div class="content">
   <app-game-board
