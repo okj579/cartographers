@@ -8,7 +8,7 @@ import { NextShapeComponent } from '../components/next-shape/next-shape.componen
 import { NgForOf, NgIf } from '@angular/common';
 import { HERO_CARDS, LANDSCAPE_CARDS, LandscapeCard, MONSTER_CARDS } from '../../models/landscape-card';
 import { GoalAreaComponent } from '../components/goal-area/goal-area.component';
-import { getShuffledGoals, Goal } from '../../models/goals';
+import { getMonsterScore, getShuffledGoals, Goal } from '../../models/goals';
 import { SeasonInfoComponent } from '../components/season-info/season-info.component';
 import { Season, SEASONS, SeasonScore } from '../../models/season';
 import { SeasonGoalsComponent } from '../components/season-goals/season-goals.component';
@@ -148,17 +148,25 @@ export default class HomeComponent {
   }
 
   private _updateScores(): void {
-    this.scores = this.goals.map((goal) => {
-      return goal.scoreAlgorithm(this.untouchedBoardState);
-    });
+    const monsterScore = getMonsterScore(this.untouchedBoardState);
+    this.scores = [
+      ...this.goals.map((goal) => {
+        return goal.scoreAlgorithm(this.untouchedBoardState);
+      }),
+      monsterScore,
+    ];
 
     if (this.hasConflict) {
       this.temporaryScores = this.scores;
       return;
     }
 
-    this.temporaryScores = this.goals.map((goal) => {
-      return goal.scoreAlgorithm(this.temporaryBoardState);
-    });
+    const temporaryMonsterScore = getMonsterScore(this.temporaryBoardState);
+    this.temporaryScores = [
+      ...this.goals.map((goal) => {
+        return goal.scoreAlgorithm(this.temporaryBoardState);
+      }),
+      temporaryMonsterScore,
+    ];
   }
 }

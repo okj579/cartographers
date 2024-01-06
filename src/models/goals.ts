@@ -144,3 +144,38 @@ export function getShuffledGoals(): Goal[] {
 
   return shuffledGoals;
 }
+
+export function getMonsterScore(boardState: BoardTile[][]): number {
+  const monsterAreas = getIndividualAreas(boardState, LandscapeType.MONSTER);
+
+  // one minus point for each empty tile that is adjacent to at least one monster tile
+  const adjacentTiles: Coordinates[] = monsterAreas
+    .map((area) => area.tiles)
+    .flat()
+    .reduce((acc: Coordinates[], tile: BoardTile) => {
+      const adjacentTiles = [
+        { x: tile.position.x - 1, y: tile.position.y },
+        { x: tile.position.x + 1, y: tile.position.y },
+        { x: tile.position.x, y: tile.position.y - 1 },
+        { x: tile.position.x, y: tile.position.y + 1 },
+      ];
+
+      return [...acc, ...adjacentTiles];
+    }, []);
+
+  // remove duplicates
+  const uniqueAdjacentTiles = adjacentTiles.reduce((acc: Coordinates[], tile: Coordinates) => {
+    if (!acc.find((accTile) => accTile.x === tile.x && accTile.y === tile.y)) {
+      return [...acc, tile];
+    }
+
+    return acc;
+  }, []);
+
+  const emptyAdjacentTiles = uniqueAdjacentTiles.filter((tile) => {
+    const boardTile = boardState[tile.x]?.[tile.y];
+    return boardTile && isTileOfLandscape(boardTile, undefined);
+  });
+
+  return emptyAdjacentTiles.length * -1;
+}

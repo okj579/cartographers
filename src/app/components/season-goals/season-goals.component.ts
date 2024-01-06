@@ -29,6 +29,7 @@ export class SeasonGoalsComponent {
   @Output() endSeason = new EventEmitter<void>();
 
   protected showAllGoals: boolean = false;
+  protected monsterScoreIndex: number = 4;
 
   get totalSeasonScore(): number {
     return getSeasonScore(this.currentSeason, this.scores, this.coins);

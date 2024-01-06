@@ -28,6 +28,17 @@
   </div>
 </div>
 
+<div class="goal">
+  <div>😈</div>
+  <div class="score">
+    {{ previousScores[monsterScoreIndex] ?? 0 }}
+    <ng-container *ngIf="getScoreDiff(monsterScoreIndex) as scoreDiff">
+      <span *ngIf="scoreDiff > 0" class="positive">+{{ scoreDiff }}</span>
+      <span *ngIf="scoreDiff < 0" class="negative">{{ scoreDiff }}</span>
+    </ng-container>
+  </div>
+</div>
+
 <div *ngIf="currentSeason" class="goal">
   <div><strong>Σ</strong> {{ currentSeason.emoji }}</div>
   <div class="title">{{ currentSeason.name }}</div>

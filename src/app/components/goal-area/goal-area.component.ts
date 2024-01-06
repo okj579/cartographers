@@ -22,6 +22,8 @@ export class GoalAreaComponent {
   @Input() temporaryScores: number[] = [];
   @Input() previousScores: number[] = [];
 
+  protected monsterScoreIndex: number = 4;
+
   get totalScoreDiff(): number {
     return this.temporaryScores.reduce((acc, score) => acc + score, 0) + this.coins + this.newCoins - this.totalPreviousScore;
   }
