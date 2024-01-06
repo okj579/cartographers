@@ -43,6 +43,7 @@ export default class HomeComponent {
   conflictedCellIndices: number[] = [];
 
   protected currentCardIndex: number = -1;
+  protected numberOfPlayedCards: number = 0;
   protected seasons: Season[] = SEASONS;
 
   protected isEndOfSeason: boolean = false;
@@ -71,7 +72,7 @@ export default class HomeComponent {
   }
 
   startSeason(): void {
-    const remainingCards = this.cardDeck.slice(this.currentCardIndex + 1);
+    const remainingCards = this.cardDeck.slice(this.numberOfPlayedCards);
     const monsters = remainingCards.filter((card) => card.landscapeTypes[0] === 'monster');
     const heroes = remainingCards.filter((card) => card.landscapeTypes[0] === 'hero');
     monsters.push(this._shuffledMonsters.pop()!);
@@ -92,6 +93,7 @@ export default class HomeComponent {
     }
 
     this.currentSeasonIndex++;
+    this.numberOfPlayedCards = this.currentCardIndex + 1;
     this.currentCardIndex = -1;
     this.isEndOfSeason = false;
 
