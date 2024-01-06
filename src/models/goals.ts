@@ -14,6 +14,7 @@ export enum GoalCategory {
 export interface Goal {
   name: string;
   description: string;
+  emojiDescription: string;
   category: string;
   singlePlayerValue: number;
   scoreAlgorithm: (boardState: BoardTile[][]) => number;
@@ -23,6 +24,7 @@ export const FOREST_GOALS: Goal[] = [
   {
     name: 'Sleepy Forest',
     description: '4 points for each row with at least 3 forest tiles',
+    emojiDescription: '4🎖️ / 1↔️: 3+🌳',
     category: GoalCategory.FOREST,
     singlePlayerValue: 24,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
@@ -49,6 +51,7 @@ export const VILLAGE_GOALS: Goal[] = [
   {
     name: 'Caravan',
     description: '1 point for each column and row of 1 of the village landscape areas',
+    emojiDescription: '1🎖️ / x↔️+y↕️: 1🏠+',
     category: GoalCategory.VILLAGE,
     singlePlayerValue: 16,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
@@ -72,6 +75,7 @@ export const FIELD_WATER_GOALS: Goal[] = [
   {
     name: 'Jorek castle',
     description: '4 points for each column with the same amount of water and field tiles',
+    emojiDescription: '4🎖️ /  ↕️: Σ🌾 = Σ🐟',
     category: GoalCategory.FIELD_WATER,
     singlePlayerValue: 18,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
@@ -101,6 +105,7 @@ export const GLOBAL_GOALS: Goal[] = [
   {
     name: 'Silos',
     description: '10 points for each fully filled odd column',
+    emojiDescription: '10🎖️ / odd 💯↕️',
     category: GoalCategory.GLOBAL,
     singlePlayerValue: 30,
     scoreAlgorithm: (boardState: BoardTile[][]) => {

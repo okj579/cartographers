@@ -31,19 +31,16 @@
   <div class="goal-list">
     <ng-container *ngFor="let goalIndex of currentSeason.goalIndices">
       <div class="goal-id">{{ goalIndex | indexToChar }}</div>
-      <div>{{ goals[goalIndex] | goalEmojis }}</div>
-      <div>{{ goals[goalIndex].name }}</div>
+      <div>{{ goals[goalIndex].emojiDescription }}</div>
       <div>{{ goals[goalIndex].description }}</div>
     </ng-container>
 
     <div class="goal-id">💎</div>
-    <div></div>
-    <div>Diamonds</div>
+    <div>{{ coinEmojiDescription }}</div>
     <div>{{ coinDescription }}</div>
 
     <div class="goal-id">😈</div>
-    <div></div>
-    <div>Monsters</div>
+    <div>{{ monsterEmojiDescription }}</div>
     <div>{{ monsterScoreDescription }}</div>
   </div>
 </ng-container>
