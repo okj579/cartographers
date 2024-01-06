@@ -1,14 +1,14 @@
 :host {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 32px;
+  gap: var(--gap-8) var(--gap-32);
   align-items: center;
   justify-content: center;
 }
 
 .goal {
   display: flex;
-  gap: 8px;
+  gap: var(--gap-8);
   align-items: center;
   min-width: 56px;
 
@@ -30,6 +30,7 @@
 
   .score {
     font-size: 1.5rem;
+    line-height: 1;
     font-weight: bold;
     position: relative;
     font-variant-numeric: tabular-nums;
@@ -37,9 +38,10 @@
     .positive,
     .negative {
       font-size: 0.8rem;
+      line-height: 1;
       position: absolute;
-      top: -8px;
-      right: -16px;
+      top: calc(-1 * var(--gap-8));
+      right: calc(-1 * var(--gap-16));
     }
 
     .positive {

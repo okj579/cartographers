@@ -1,17 +1,17 @@
 :host {
   text-align: left;
   background: var(--bg-color-2);
-  padding: 16px;
-  border-radius: 8px;
+  padding: var(--gap-16);
+  border-radius: var(--gap-8);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--gap-24);
 }
 
 .goal-list,
 .goal-scores {
   display: grid;
-  gap: 8px;
+  gap: var(--gap-8);
   max-width: 480px;
   grid-template-columns: repeat(3, auto) 1fr;
 
@@ -29,18 +29,18 @@
 
 .goal-scores {
   grid-template-columns: repeat(8, max-content);
-  gap: 8px 32px;
+  gap: var(--gap-8) var(--gap-32);
   text-align: end;
 }
 
 .submit-btn {
-  margin-top: 32px;
+  margin-top: var(--gap-32);
 }
 
 .toggle-trigger {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--gap-8);
   cursor: pointer;
-  margin-top: 32px;
+  margin-top: var(--gap-32);
 }

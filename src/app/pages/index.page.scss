@@ -10,18 +10,18 @@
   top: 0;
   z-index: 1;
   background: var(--bg-color);
-  padding: 24px 24px 16px;
+  padding: var(--gap-24) var(--gap-24) var(--gap-16);
   box-sizing: border-box;
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--gap-16);
 }
 
 .content {
   margin: 0 auto;
-  padding: 16px;
-  gap: 24px;
+  padding: var(--gap-16);
+  gap: var(--gap-24);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -31,22 +31,23 @@
 .controls-and-info {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: var(--gap-32);
 }
 
 .end-score {
   font-size: 3rem;
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--gap-8);
   width: 100%;
-  margin: 32px 0;
+  margin: var(--gap-32) 0;
 }
 
 @media (max-width: 600px) {
   .sticky-header {
-    padding: 16px;
+    padding: var(--gap-16);
   }
 
   .content {

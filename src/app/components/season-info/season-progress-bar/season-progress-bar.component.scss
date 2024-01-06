@@ -19,7 +19,7 @@
   &.zero-width {
     position: absolute;
     height: 2rem;
-    width: 8px;
+    width: var(--gap-8);
     grid-column: var(--grid-column);
     z-index: 0;
 
@@ -71,6 +71,6 @@
   }
 
   100% {
-    width: 8px;
+    width: var(--gap-8);
   }
 }
