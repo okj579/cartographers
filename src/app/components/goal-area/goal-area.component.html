@@ -7,7 +7,6 @@
   (click)="showDescription(index)"
 >
   <div class="goal-id">{{ index | indexToChar }}</div>
-  <i class="goal-description fa-solid fa-circle-info"></i>
   <div class="title">
     {{ goal.name }}
   </div>
@@ -19,7 +18,7 @@
   </div>
 </div>
 
-<div class="goal">
+<div class="goal" [attr.title]="coinDescription" (click)="showCoinsDescription()">
   <div>💎</div>
   <div class="score">
     {{ coins }}
@@ -27,7 +26,7 @@
   </div>
 </div>
 
-<div class="goal">
+<div class="goal" [attr.title]="monsterScoreDescription" (click)="showMonsterScoreDescription()">
   <div>😈</div>
   <div class="score">
     {{ previousScores[monsterScoreIndex] ?? 0 }}

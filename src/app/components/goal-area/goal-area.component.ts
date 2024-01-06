@@ -26,6 +26,9 @@ export class GoalAreaComponent {
 
   protected monsterScoreIndex: number = MONSTER_SCORE_INDEX;
 
+  coinDescription: string = 'Collect 💎 by surrounding mountains on the 4 edges, and from some of the landscape shapes.';
+  monsterScoreDescription: string = 'One minus point for each empty tile that is adjacent to at least one monster tile';
+
   get totalScoreDiff(): number {
     return this.temporaryScores.reduce((acc, score) => acc + score, 0) + this.coins + this.newCoins - this.totalPreviousScore;
   }
@@ -52,5 +55,13 @@ export class GoalAreaComponent {
 
   showDescription(index: number): void {
     window.alert(this.goals[index].name + ': ' + this.goals[index].description);
+  }
+
+  showCoinsDescription(): void {
+    window.alert(this.coinDescription);
+  }
+
+  showMonsterScoreDescription(): void {
+    window.alert(this.monsterScoreDescription);
   }
 }

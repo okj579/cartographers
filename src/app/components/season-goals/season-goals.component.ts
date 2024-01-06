@@ -32,6 +32,9 @@ export class SeasonGoalsComponent {
   protected showAllGoals: boolean = false;
   protected monsterScoreIndex: number = MONSTER_SCORE_INDEX;
 
+  protected coinDescription: string = 'Collect 💎 by surrounding mountains on the 4 edges, and from some of the landscape shapes.';
+  protected monsterScoreDescription: string = 'One minus point for each empty tile that is adjacent to at least one monster tile';
+
   get totalSeasonScore(): number {
     return getSeasonScore(this.currentSeason, this.scores, this.coins);
   }
