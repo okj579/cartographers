@@ -1,13 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape, ShapeDimensions } from '../../../models/landscape-shape';
-import {
-  findFirstPositionForShape,
-  FindPositionResult,
-  getHeroInformation,
-  mirrorLandscapeShape,
-  rotateLandscapeShapeClockwise,
-  rotateLandscapeShapeCounterClockwise,
-} from '../../../game-logic/functions';
+import { findFirstPositionForShape, FindPositionResult, getHeroInformation } from '../../../game-logic/functions';
 import { BoardTileComponent } from '../game-board/board-tile.component';
 import { BoardTile } from '../../../models/board-tile';
 import { NgForOf, NgIf } from '@angular/common';
@@ -15,6 +8,11 @@ import { BOARD_SIZE } from '../../../game-logic/constants';
 import { getPortalCard, LandscapeCard } from '../../../models/landscape-card';
 import { Coordinates } from '../../../models/simple-types';
 import { LandscapeType } from '../../../models/landscape-type';
+import {
+  mirrorLandscapeShape,
+  rotateLandscapeShapeClockwise,
+  rotateLandscapeShapeCounterClockwise,
+} from '../../../game-logic/transformation-functions';
 
 @Component({
   selector: 'app-next-shape',
