@@ -105,7 +105,7 @@ export const GLOBAL_GOALS: Goal[] = [
   {
     name: 'Silos',
     description: '10 points for each fully filled odd column',
-    emojiDescription: '10🎖️ / odd 💯↕️',
+    emojiDescription: '10🎖️ / odd↕️: 💯',
     category: GoalCategory.GLOBAL,
     singlePlayerValue: 30,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
