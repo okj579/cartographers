@@ -27,10 +27,21 @@
   }
 }
 
-.goal-scores {
-  grid-template-columns: repeat(8, max-content);
-  gap: var(--gap-8) var(--gap-32);
-  text-align: end;
+.goal-container {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-32);
+
+  .goal-scores {
+    grid-template-columns: repeat(4, max-content);
+    gap: var(--gap-8) var(--gap-32);
+    text-align: end;
+  }
+
+  .total-score {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
 }
 
 .submit-btn {
