@@ -249,7 +249,7 @@ export function getIndividualAreas(boardState: BoardTile[][], landscapeType: Lan
             ];
             // add adjacent tiles that are of the landscape type and not yet visited to tiles to visit
             adjacentTiles.forEach((adjacentTile) => {
-              if (isTileOfLandscape(adjacentTile, landscapeType) && !visitedTiles.includes(adjacentTile)) {
+              if (adjacentTile && isTileOfLandscape(adjacentTile, landscapeType) && !visitedTiles.includes(adjacentTile)) {
                 tilesToVisit.push(adjacentTile);
               }
             });
