@@ -225,8 +225,6 @@ export function getIndividualAreas(boardState: BoardTile[][], landscapeType: Lan
           landscape: landscapeType,
           tiles: [],
         };
-        // add tile to area
-        area.tiles.push(tile);
         // add area to connected areas
         connectedAreas.push(area);
         // while there are tiles to visit
