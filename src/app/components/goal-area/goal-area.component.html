@@ -6,7 +6,7 @@
   [class.inactive]="currentSeason?.goalIndices?.indexOf(index) === -1"
   (click)="showDescription(index)"
 >
-  <div class="goal-id">{{ index | indexToChar }}</div>
+  <app-goal-id class="goal-id" [goal]="goal" [index]="index" />
   <div class="title">
     {{ goal.name }}
   </div>
@@ -19,7 +19,7 @@
 </div>
 
 <div class="goal" [attr.title]="coinDescription" (click)="showCoinsDescription()">
-  <div>💎</div>
+  <div class="goal-id">💎</div>
   <div class="score">
     {{ coins }}
     <span *ngIf="newCoins > 0" class="positive">{{ newCoins | formatNumber }}</span>
@@ -27,7 +27,7 @@
 </div>
 
 <div class="goal" [attr.title]="monsterScoreDescription" (click)="showMonsterScoreDescription()">
-  <div>😈</div>
+  <div class="goal-id">😈</div>
   <div class="score">
     {{ previousScores[monsterScoreIndex] ?? 0 }}
     <span *ngIf="getScoreDiff(monsterScoreIndex) as scoreDiff" [class.positive]="scoreDiff > 0" [class.negative]="scoreDiff < 0">{{

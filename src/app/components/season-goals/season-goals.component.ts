@@ -6,11 +6,12 @@ import { IndexToCharPipe } from '../goal-area/index-to-char.pipe';
 import { GoalEmojisPipe } from './goal-emojis.pipe';
 import { getSeasonScore } from '../../../game-logic/functions';
 import { MONSTER_SCORE_INDEX } from '../../../game-logic/constants';
+import { GoalIdComponent } from '../goal-area/goal-id/goal-id.component';
 
 @Component({
   selector: 'app-season-goals',
   standalone: true,
-  imports: [NgForOf, IndexToCharPipe, GoalEmojisPipe, NgIf, NgClass],
+  imports: [NgForOf, IndexToCharPipe, GoalEmojisPipe, NgIf, NgClass, GoalIdComponent],
   templateUrl: './season-goals.component.html',
   styleUrl: './season-goals.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

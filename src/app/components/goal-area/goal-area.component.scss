@@ -16,7 +16,9 @@
     display: none;
   }
 
-  .goal-id {
+  div.goal-id {
+    font-size: 1.5rem;
+    line-height: 1;
     font-weight: 600;
   }
 
@@ -52,34 +54,4 @@
       color: red;
     }
   }
-
-  &[data-category='village'] {
-    .goal-id {
-      @extend %goal-id;
-      background: #823;
-    }
-  }
-
-  &[data-category='forest'] {
-    .goal-id {
-      @extend %goal-id;
-      background: #060;
-    }
-  }
-
-  &[data-category='field-water'] {
-    .goal-id {
-      @extend %goal-id;
-      background: linear-gradient(125deg, #fa0, #00a);
-    }
-  }
-}
-
-%goal-id {
-  height: 1.5rem;
-  width: 1.5rem;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  color: white;
 }

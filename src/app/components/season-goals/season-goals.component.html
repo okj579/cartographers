@@ -9,7 +9,7 @@
   <div class="goal-container">
     <div class="goal-scores" [class.is-end]="isEndOfSeason || isEndOfGame">
       <ng-container *ngFor="let goalIndex of currentSeason.goalIndices">
-        <div class="goal-id">{{ goalIndex | indexToChar }}</div>
+        <app-goal-id class="goal-id" [goal]="goals[goalIndex]" [index]="goalIndex" />
         <div>{{ scores[goalIndex] ?? 0 }}</div>
       </ng-container>
 
@@ -30,7 +30,7 @@
   <h4>Season goals</h4>
   <div class="goal-list">
     <ng-container *ngFor="let goalIndex of currentSeason.goalIndices">
-      <div class="goal-id">{{ goalIndex | indexToChar }}</div>
+      <app-goal-id class="goal-id" [goal]="goals[goalIndex]" [index]="goalIndex" />
       <div>{{ goals[goalIndex].emojiDescription }}</div>
       <div>{{ goals[goalIndex].description }}</div>
     </ng-container>
@@ -57,9 +57,8 @@
 </h4>
 <div *ngIf="showAllGoals" class="goal-list">
   <ng-container *ngFor="let goal of goals; let goalIndex = index">
-    <div class="goal-id">{{ goalIndex | indexToChar }}</div>
-    <div>{{ goal | goalEmojis }}</div>
-    <div>{{ goal.name }}</div>
+    <app-goal-id class="goal-id" [goal]="goal" [index]="goalIndex" />
+    <div>{{ goal.emojiDescription }}</div>
     <div>{{ goal.description }}</div>
   </ng-container>
 </div>

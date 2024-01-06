@@ -6,11 +6,12 @@ import { Season } from '../../../models/season';
 import { getSeasonScore } from '../../../game-logic/functions';
 import { MONSTER_SCORE_INDEX } from '../../../game-logic/constants';
 import { FormatNumberPipe } from '../../pipes/format-number.pipe';
+import { GoalIdComponent } from './goal-id/goal-id.component';
 
 @Component({
   selector: 'app-goal-area',
   standalone: true,
-  imports: [NgForOf, NgIf, IndexToCharPipe, FormatNumberPipe],
+  imports: [NgForOf, NgIf, IndexToCharPipe, FormatNumberPipe, GoalIdComponent],
   templateUrl: './goal-area.component.html',
   styleUrl: './goal-area.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

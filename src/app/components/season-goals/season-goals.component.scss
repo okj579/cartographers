@@ -20,6 +20,11 @@
     font-weight: bold;
   }
 
+  div.goal-id {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
   &.is-end {
     .total-score {
       color: var(--success-color);

@@ -1,0 +1,25 @@
+:host {
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: 600;
+
+  &[data-category='global'] {
+    background: #666;
+  }
+
+  &[data-category='village'] {
+    background: #823;
+  }
+
+  &[data-category='forest'] {
+    background: #060;
+  }
+
+  &[data-category='field-water'] {
+    background: linear-gradient(125deg, #fa0, #00a);
+  }
+}
