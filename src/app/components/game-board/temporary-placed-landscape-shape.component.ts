@@ -46,6 +46,7 @@ export class TemporaryPlacedLandscapeShapeComponent {
         position: { x: position.x + cell.x, y: position.y + cell.y },
         landscape: isHeroStar ? undefined : shape.type,
         heroStar: isHeroStar,
+        monsterType: shape.monsterType,
       });
     }
 

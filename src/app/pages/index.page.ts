@@ -6,7 +6,7 @@ import { PlacedLandscapeShape } from '../../models/landscape-shape';
 import { getCurrentTimeProgress, getSeasonScore, getShuffledCards, tryPlaceShapeOnBoard } from '../../game-logic/functions';
 import { NextShapeComponent } from '../components/next-shape/next-shape.component';
 import { NgForOf, NgIf } from '@angular/common';
-import { LandscapeCard } from '../../models/landscape-card';
+import { HERO_CARDS, LANDSCAPE_CARDS, LandscapeCard, MONSTER_CARDS } from '../../models/landscape-card';
 import { GoalAreaComponent } from '../components/goal-area/goal-area.component';
 import { getShuffledGoals, Goal } from '../../models/goals';
 import { SeasonInfoComponent } from '../components/season-info/season-info.component';
@@ -27,7 +27,7 @@ export default class HomeComponent {
 
   untouchedBoardState: BoardTile[][] = getInitialBoardTiles();
   temporaryBoardState: BoardTile[][] = [...this.untouchedBoardState];
-  cardDeck: LandscapeCard[] = getShuffledCards();
+  cardDeck: LandscapeCard[] = [];
   goals: Goal[] = getShuffledGoals();
   currentSeasonIndex: number = 0;
   coins: number = 0;
@@ -46,6 +46,9 @@ export default class HomeComponent {
   protected seasons: Season[] = SEASONS;
 
   protected isEndOfSeason: boolean = false;
+
+  private _shuffledMonsters: LandscapeCard[] = getShuffledCards(MONSTER_CARDS);
+  private _shuffledHeroes: LandscapeCard[] = getShuffledCards(HERO_CARDS);
 
   get isStartOfSeason(): boolean {
     return this.currentCardIndex === -1 && !!this.currentSeason;
@@ -68,6 +71,13 @@ export default class HomeComponent {
   }
 
   startSeason(): void {
+    const remainingCards = this.cardDeck.slice(this.currentCardIndex + 1);
+    const monsters = remainingCards.filter((card) => card.landscapeTypes[0] === 'monster');
+    const heroes = remainingCards.filter((card) => card.landscapeTypes[0] === 'hero');
+    monsters.push(this._shuffledMonsters.pop()!);
+    heroes.push(this._shuffledHeroes.pop()!);
+    this.cardDeck = getShuffledCards([...monsters, ...heroes, ...LANDSCAPE_CARDS]);
+
     this.currentCardIndex = 0;
   }
 
@@ -85,9 +95,7 @@ export default class HomeComponent {
     this.currentCardIndex = -1;
     this.isEndOfSeason = false;
 
-    if (this.currentSeason) {
-      this.cardDeck = getShuffledCards();
-    } else {
+    if (!this.currentSeason) {
       this.cardDeck = [];
     }
   }

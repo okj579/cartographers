@@ -1,22 +1,105 @@
 import { LandscapeType } from './landscape-type';
-import { BaseShape, ShapeName, SHAPES } from './base-shape';
+import { BaseShape, copyShape, ShapeName, SHAPES } from './base-shape';
+import { Monster, MONSTER_MAP, MonsterType } from './monster';
 
 export interface LandscapeCard {
   name: string;
   timeValue: 0 | 1 | 2;
   landscapeTypes: LandscapeType[];
   baseShapes: BaseShape[];
+  monster?: Monster;
+  heroPosition?: { x: number; y: number };
 }
 
-export function getPortalCard(): LandscapeCard {
+export function copyLandscapeCard(card: LandscapeCard): LandscapeCard {
+  return {
+    name: card.name,
+    timeValue: card.timeValue,
+    landscapeTypes: [...card.landscapeTypes],
+    baseShapes: card.baseShapes.map((shape) => copyShape(shape)),
+    monster: card.monster ? { ...card.monster } : undefined,
+    heroPosition: card.heroPosition ? { ...card.heroPosition } : undefined,
+  };
+}
+
+export function getPortalCard(type?: LandscapeType): LandscapeCard {
+  if (type === LandscapeType.MONSTER) {
+    return {
+      ...LANDSCAPE_CARDS[0],
+      landscapeTypes: [LandscapeType.MONSTER],
+    };
+  }
+
   return LANDSCAPE_CARDS[0];
 }
+
+export const MONSTER_CARDS: LandscapeCard[] = [
+  {
+    name: 'Dragon',
+    timeValue: 0,
+    landscapeTypes: [LandscapeType.MONSTER],
+    baseShapes: [SHAPES[ShapeName.Z_BIG]],
+    monster: MONSTER_MAP[MonsterType.DRAGON],
+  },
+  {
+    name: 'Troll',
+    timeValue: 0,
+    landscapeTypes: [LandscapeType.MONSTER],
+    baseShapes: [SHAPES[ShapeName.T_SMALL]],
+    monster: MONSTER_MAP[MonsterType.TROLL],
+  },
+  {
+    name: 'Zombie',
+    timeValue: 0,
+    landscapeTypes: [LandscapeType.MONSTER],
+    baseShapes: [SHAPES[ShapeName.DOT]],
+    monster: MONSTER_MAP[MonsterType.ZOMBIE],
+  },
+  {
+    name: 'Gorgon',
+    timeValue: 0,
+    landscapeTypes: [LandscapeType.MONSTER],
+    baseShapes: [SHAPES[ShapeName.V]],
+    monster: MONSTER_MAP[MonsterType.GORGON],
+  },
+];
+
+export const HERO_CARDS: LandscapeCard[] = [
+  {
+    name: 'Dwarf Fighter',
+    timeValue: 0,
+    landscapeTypes: [LandscapeType.HERO],
+    baseShapes: [SHAPES[ShapeName.PLUS]],
+    heroPosition: { x: 1, y: 1 },
+  },
+  {
+    name: 'Elf Archer',
+    timeValue: 0,
+    landscapeTypes: [LandscapeType.HERO],
+    baseShapes: [SHAPES[ShapeName.I_BIG]],
+    heroPosition: { x: 0, y: 0 },
+  },
+  {
+    name: 'Halfling Wizard',
+    timeValue: 0,
+    landscapeTypes: [LandscapeType.HERO],
+    baseShapes: [SHAPES[ShapeName.X]],
+    heroPosition: { x: 1, y: 1 },
+  },
+  {
+    name: 'Human Knight',
+    timeValue: 0,
+    landscapeTypes: [LandscapeType.HERO],
+    baseShapes: [SHAPES[ShapeName.T_BIG_GAP]],
+    heroPosition: { x: 1, y: 2 },
+  },
+];
 
 export const LANDSCAPE_CARDS: LandscapeCard[] = [
   {
     name: 'Portal',
     timeValue: 0,
-    landscapeTypes: [LandscapeType.FOREST, LandscapeType.VILLAGE, LandscapeType.FIELD, LandscapeType.WATER /* LandscapeType.MONSTER*/], // todo
+    landscapeTypes: [LandscapeType.FOREST, LandscapeType.VILLAGE, LandscapeType.FIELD, LandscapeType.WATER, LandscapeType.MONSTER],
     baseShapes: [SHAPES[ShapeName.DOT]],
   },
   {

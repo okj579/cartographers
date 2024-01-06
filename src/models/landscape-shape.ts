@@ -1,11 +1,13 @@
 import { LandscapeType } from './landscape-type';
 import { Coordinates } from './simple-types';
 import { BaseShape } from './base-shape';
+import { MonsterType } from './monster';
 
 export interface LandscapeShape {
   type: LandscapeType;
   baseShape: BaseShape;
   heroPosition?: Coordinates;
+  monsterType?: MonsterType;
 }
 
 export interface PlacedLandscapeShape extends LandscapeShape {

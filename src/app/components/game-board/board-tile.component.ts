@@ -6,7 +6,8 @@ import { NgIf } from '@angular/common';
   selector: 'app-board-tile',
   standalone: true,
   imports: [NgIf],
-  template: `<div *ngIf="tile.destroyed" class="destroyed"></div>`,
+  template: `<div *ngIf="tile.destroyed" class="destroyed"></div>
+    <div *ngIf="tile.monsterType" class="monster-type">{{ tile.monsterType }}</div>`,
   styleUrl: './board-tile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
