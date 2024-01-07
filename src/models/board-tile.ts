@@ -13,3 +13,7 @@ export interface BoardTile {
   hasCoin?: boolean;
   monsterType?: MonsterType;
 }
+
+export function tilesToCoordinates(tiles: BoardTile[]): Coordinates[] {
+  return tiles.map((tile) => tile.position);
+}

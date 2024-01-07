@@ -101,7 +101,7 @@ function checkForMountainCoin(board: BoardTile[][], cell: Coordinates): number {
   return coins;
 }
 
-function getAdjacentTiles(board: BoardTile[][], cell: Coordinates): BoardTile[] {
+export function getAdjacentTiles(board: BoardTile[][], cell: Coordinates): BoardTile[] {
   const adjacentTiles: BoardTile[] = [];
 
   if (cell.x > 0) adjacentTiles.push(board[cell.x - 1][cell.y]);

@@ -1,8 +1,8 @@
-import { BoardTile } from './board-tile';
+import { BoardTile, tilesToCoordinates } from './board-tile';
 import { LandscapeType } from './landscape-type';
 import { BOARD_SIZE } from '../game-logic/constants';
-import { getIndividualAreas, isTileFilled, isTileOfLandscape, LandscapeArea } from '../game-logic/functions';
-import { Coordinates, includesCoordinates } from './simple-types';
+import { getAdjacentTiles, getIndividualAreas, isTileFilled, isTileOfLandscape, LandscapeArea } from '../game-logic/functions';
+import { includesCoordinates } from './simple-types';
 
 export enum GoalCategory {
   FOREST = 'forest',
@@ -60,16 +60,10 @@ export const FOREST_GOALS: Goal[] = [
         }
 
         for (const tile of area.tiles) {
-          const adjacentTiles: Coordinates[] = [
-            { x: tile.position.x - 1, y: tile.position.y },
-            { x: tile.position.x + 1, y: tile.position.y },
-            { x: tile.position.x, y: tile.position.y - 1 },
-            { x: tile.position.x, y: tile.position.y + 1 },
-          ];
+          const adjacentTiles: BoardTile[] = getAdjacentTiles(boardState, tile.position);
 
-          for (const adjacentTile of adjacentTiles) {
-            const boardTile = boardState[adjacentTile.x]?.[adjacentTile.y];
-            if (boardTile && isTileOfLandscape(boardTile, LandscapeType.VILLAGE)) {
+          for (const boardTile of adjacentTiles) {
+            if (isTileOfLandscape(boardTile, LandscapeType.VILLAGE)) {
               return false;
             }
           }
@@ -127,19 +121,9 @@ export const FOREST_GOALS: Goal[] = [
         for (let y = 0; y < BOARD_SIZE; y++) {
           const tile = boardState[x][y];
           if (isTileOfLandscape(tile, LandscapeType.FOREST)) {
-            const adjacentTiles: Coordinates[] = [
-              { x: tile.position.x - 1, y: tile.position.y },
-              { x: tile.position.x + 1, y: tile.position.y },
-              { x: tile.position.x, y: tile.position.y - 1 },
-              { x: tile.position.x, y: tile.position.y + 1 },
-            ];
+            const adjacentTiles: BoardTile[] = getAdjacentTiles(boardState, tile.position);
 
-            const areAllAdjacentTilesForest: boolean = adjacentTiles.every((adjacentTile) => {
-              const boardTile = boardState[adjacentTile.x]?.[adjacentTile.y];
-              return !boardTile || isTileOfLandscape(boardTile, LandscapeType.FOREST);
-            });
-
-            if (areAllAdjacentTilesForest) {
+            if (adjacentTiles.every((boardTile) => isTileOfLandscape(boardTile, LandscapeType.FOREST))) {
               score += 2;
             }
           }
@@ -162,10 +146,10 @@ export const VILLAGE_GOALS: Goal[] = [
       const villageAreas = getIndividualAreas(boardState, LandscapeType.VILLAGE);
 
       const scorePerVillageArea = villageAreas.map((area) => {
-        const areaWidth =
-          Math.max(...area.tiles.map((tile) => tile.position.x)) - Math.min(...area.tiles.map((tile) => tile.position.x)) + 1;
-        const areaHeight =
-          Math.max(...area.tiles.map((tile) => tile.position.y)) - Math.min(...area.tiles.map((tile) => tile.position.y)) + 1;
+        const xValues: number[] = area.tiles.map((tile) => tile.position.x);
+        const yValues: number[] = area.tiles.map((tile) => tile.position.y);
+        const areaWidth = Math.max(...xValues) - Math.min(...xValues) + 1;
+        const areaHeight = Math.max(...yValues) - Math.min(...yValues) + 1;
 
         return areaWidth + areaHeight;
       });
@@ -237,23 +221,13 @@ export const VILLAGE_GOALS: Goal[] = [
       const villageAreas = getIndividualAreas(boardState, LandscapeType.VILLAGE);
 
       const scorePerVillageArea = villageAreas.map((area) => {
-        const emptyAdjacentTiles: Coordinates[] = area.tiles.reduce((acc: Coordinates[], tile: BoardTile) => {
-          const adjacentTiles: Coordinates[] = [
-            { x: tile.position.x - 1, y: tile.position.y },
-            { x: tile.position.x + 1, y: tile.position.y },
-            { x: tile.position.x, y: tile.position.y - 1 },
-            { x: tile.position.x, y: tile.position.y + 1 },
-          ];
+        const emptyAdjacentTiles: BoardTile[] = area.tiles.reduce((acc: BoardTile[], tile: BoardTile) => {
+          const adjacentTiles: BoardTile[] = getAdjacentTiles(boardState, tile.position);
 
           return [
             ...acc,
-            ...adjacentTiles.filter((adjacentTile) => {
-              const boardTile = boardState[adjacentTile.x]?.[adjacentTile.y];
-              return (
-                boardTile &&
-                isTileOfLandscape(boardTile, undefined) &&
-                !acc.find((accTile) => accTile.x === adjacentTile.x && accTile.y === adjacentTile.y)
-              );
+            ...adjacentTiles.filter((boardTile) => {
+              return isTileOfLandscape(boardTile, undefined) && !includesCoordinates(boardTile.position, tilesToCoordinates(acc));
             }),
           ];
         }, []);
@@ -307,17 +281,8 @@ export const FIELD_WATER_GOALS: Goal[] = [
         for (let y = 0; y < BOARD_SIZE; y++) {
           const tile = boardState[x][y];
           if (isTileOfLandscape(tile, LandscapeType.WATER)) {
-            const adjacentTiles: Coordinates[] = [
-              { x: tile.position.x - 1, y: tile.position.y },
-              { x: tile.position.x + 1, y: tile.position.y },
-              { x: tile.position.x, y: tile.position.y - 1 },
-              { x: tile.position.x, y: tile.position.y + 1 },
-            ];
-
-            const adjacentFieldTiles = adjacentTiles.filter((adjacentTile) => {
-              const boardTile = boardState[adjacentTile.x]?.[adjacentTile.y];
-              return boardTile && isTileOfLandscape(boardTile, LandscapeType.FIELD);
-            });
+            const adjacentTiles: BoardTile[] = getAdjacentTiles(boardState, tile.position);
+            const adjacentFieldTiles = adjacentTiles.filter((boardTile) => isTileOfLandscape(boardTile, LandscapeType.FIELD));
 
             if (adjacentFieldTiles.length >= 2) {
               score += 4;
@@ -339,23 +304,13 @@ export const FIELD_WATER_GOALS: Goal[] = [
       const fieldAreas = getIndividualAreas(boardState, LandscapeType.FIELD);
 
       const filteredFieldAreas = fieldAreas.filter((area: LandscapeArea): boolean => {
-        const adjacentWaterTiles: Coordinates[] = area.tiles.reduce((acc: Coordinates[], tile: BoardTile) => {
-          const adjacentTiles: Coordinates[] = [
-            { x: tile.position.x - 1, y: tile.position.y },
-            { x: tile.position.x + 1, y: tile.position.y },
-            { x: tile.position.x, y: tile.position.y - 1 },
-            { x: tile.position.x, y: tile.position.y + 1 },
-          ];
+        const adjacentWaterTiles: BoardTile[] = area.tiles.reduce((acc: BoardTile[], tile: BoardTile) => {
+          const adjacentTiles: BoardTile[] = getAdjacentTiles(boardState, tile.position);
 
           return [
             ...acc,
-            ...adjacentTiles.filter((adjacentTile) => {
-              const boardTile = boardState[adjacentTile.x]?.[adjacentTile.y];
-              return (
-                boardTile &&
-                isTileOfLandscape(boardTile, LandscapeType.WATER) &&
-                !acc.find((accTile) => accTile.x === adjacentTile.x && accTile.y === adjacentTile.y)
-              );
+            ...adjacentTiles.filter((boardTile) => {
+              return isTileOfLandscape(boardTile, LandscapeType.WATER) && !includesCoordinates(boardTile.position, tilesToCoordinates(acc));
             }),
           ];
         }, []);
@@ -368,7 +323,7 @@ export const FIELD_WATER_GOALS: Goal[] = [
   },
   {
     name: 'Mountain reservoir',
-    description: '5 points for each mointain tile that is connected to a field tile by a path of water tiles',
+    description: '5 points for each mountain tile that is connected to a field tile by a path of water tiles',
     emojiDescription: '5🎖️ / 🏔️⏭️🐟+ 🌾',
     category: GoalCategory.FIELD_WATER,
     singlePlayerValue: 15,
@@ -376,54 +331,49 @@ export const FIELD_WATER_GOALS: Goal[] = [
       const waterAreas = getIndividualAreas(boardState, LandscapeType.WATER);
 
       const possibleMountainReservoirs: PossibleMountainReservoir[] = waterAreas.map((area: LandscapeArea): PossibleMountainReservoir => {
-        let adjacentFieldTiles: Coordinates[] = [];
-        let adjacentMountainTiles: Coordinates[] = [];
+        let adjacentFieldTiles: BoardTile[] = [];
+        let adjacentMountainTiles: BoardTile[] = [];
 
         for (const tile of area.tiles) {
-          const { x, y } = tile.position;
-          const adjacentTiles: Coordinates[] = [
-            { x: x - 1, y },
-            { x: x + 1, y },
-            { x, y: y - 1 },
-            { x, y: y + 1 },
-          ];
+          const adjacentTiles: BoardTile[] = getAdjacentTiles(boardState, tile.position);
 
-          for (const adjacentTile of adjacentTiles) {
-            const boardTile = boardState[adjacentTile.x]?.[adjacentTile.y];
-            if (boardTile && isTileOfLandscape(boardTile, LandscapeType.FIELD) && !includesCoordinates(adjacentTile, adjacentFieldTiles)) {
-              adjacentFieldTiles.push(adjacentTile);
-            } else if (
-              boardTile &&
-              isTileOfLandscape(boardTile, LandscapeType.MOUNTAIN) &&
-              !includesCoordinates(adjacentTile, adjacentMountainTiles)
-            ) {
-              adjacentMountainTiles.push(adjacentTile);
+          for (const boardTile of adjacentTiles) {
+            if (isTileOfLandscape(boardTile, LandscapeType.FIELD)) {
+              adjacentFieldTiles.push(boardTile);
+            } else if (isTileOfLandscape(boardTile, LandscapeType.MOUNTAIN)) {
+              adjacentMountainTiles.push(boardTile);
             }
           }
         }
 
         return {
-          numberOfFieldTiles: adjacentFieldTiles.length,
-          numberOfMountainTiles: adjacentMountainTiles.length,
+          adjacentFieldTiles,
+          adjacentMountainTiles,
         };
       });
 
-      const numberOfMountainReservoirs = possibleMountainReservoirs.reduce((acc: number, reservoir: PossibleMountainReservoir) => {
-        if (reservoir.numberOfFieldTiles === 0 || reservoir.numberOfMountainTiles === 0) {
-          return acc;
+      const foundMountains: BoardTile[] = [];
+
+      for (const reservoir of possibleMountainReservoirs) {
+        if (reservoir.adjacentFieldTiles.length === 0 || reservoir.adjacentMountainTiles.length === 0) {
+          continue;
         }
 
-        return acc + reservoir.numberOfMountainTiles;
-      }, 0);
+        for (const mountainTile of reservoir.adjacentMountainTiles) {
+          if (!includesCoordinates(mountainTile.position, tilesToCoordinates(foundMountains))) {
+            foundMountains.push(mountainTile);
+          }
+        }
+      }
 
-      return 5 * numberOfMountainReservoirs;
+      return 5 * foundMountains.length;
     },
   },
 ];
 
 interface PossibleMountainReservoir {
-  numberOfFieldTiles: number;
-  numberOfMountainTiles: number;
+  adjacentFieldTiles: BoardTile[];
+  adjacentMountainTiles: BoardTile[];
 }
 
 export const GLOBAL_GOALS: Goal[] = [
@@ -470,8 +420,9 @@ export const GLOBAL_GOALS: Goal[] = [
       for (let y = 0; y < BOARD_SIZE; y++) {
         let landscapeTypes = new Set<LandscapeType>();
         for (let x = 0; x < BOARD_SIZE; x++) {
-          const type = boardState[x][y].landscape;
-          if (type) {
+          const tile = boardState[x][y];
+          const type = tile.landscape;
+          if (type && !tile.destroyed) {
             landscapeTypes.add(type);
           }
         }
@@ -490,11 +441,8 @@ export const GLOBAL_GOALS: Goal[] = [
     category: GoalCategory.GLOBAL,
     singlePlayerValue: 30,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
-      const emptyAreas = getIndividualAreas(boardState, undefined);
-
-      const filteredEmptyAreas = emptyAreas.filter((area: LandscapeArea): boolean => {
-        return area.tiles.length === 3;
-      });
+      const emptyAreas: LandscapeArea[] = getIndividualAreas(boardState, undefined);
+      const filteredEmptyAreas: LandscapeArea[] = emptyAreas.filter((area: LandscapeArea): boolean => area.tiles.length === 3);
 
       return 4 * filteredEmptyAreas.length;
     },
@@ -568,36 +516,21 @@ export function getShuffledGoals(): Goal[] {
 }
 
 export function getMonsterScore(boardState: BoardTile[][]): number {
-  const monsterAreas = getIndividualAreas(boardState, LandscapeType.MONSTER);
-
   // one minus point for each empty tile that is adjacent to at least one monster tile
-  const adjacentTiles: Coordinates[] = monsterAreas
-    .map((area) => area.tiles)
-    .flat()
-    .reduce((acc: Coordinates[], tile: BoardTile) => {
-      const adjacentTiles = [
-        { x: tile.position.x - 1, y: tile.position.y },
-        { x: tile.position.x + 1, y: tile.position.y },
-        { x: tile.position.x, y: tile.position.y - 1 },
-        { x: tile.position.x, y: tile.position.y + 1 },
-      ];
+  let score: number = 0;
 
-      return [...acc, ...adjacentTiles];
-    }, []);
+  for (let x = 0; x < BOARD_SIZE; x++) {
+    for (let y = 0; y < BOARD_SIZE; y++) {
+      const tile = boardState[x][y];
+      if (isTileOfLandscape(tile, undefined)) {
+        const adjacentTiles: BoardTile[] = getAdjacentTiles(boardState, tile.position);
 
-  // remove duplicates
-  const uniqueAdjacentTiles = adjacentTiles.reduce((acc: Coordinates[], tile: Coordinates) => {
-    if (!acc.find((accTile) => accTile.x === tile.x && accTile.y === tile.y)) {
-      return [...acc, tile];
+        if (adjacentTiles.some((boardTile) => isTileOfLandscape(boardTile, LandscapeType.MONSTER))) {
+          score--;
+        }
+      }
     }
+  }
 
-    return acc;
-  }, []);
-
-  const emptyAdjacentTiles = uniqueAdjacentTiles.filter((tile) => {
-    const boardTile = boardState[tile.x]?.[tile.y];
-    return boardTile && isTileOfLandscape(boardTile, undefined);
-  });
-
-  return emptyAdjacentTiles.length * -1;
+  return score;
 }
