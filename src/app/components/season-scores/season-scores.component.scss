@@ -27,7 +27,7 @@
   }
 
   &.is-end {
-    .total-score {
+    + .total-score {
       color: var(--success-color);
     }
   }

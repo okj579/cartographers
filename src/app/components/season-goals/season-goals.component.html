@@ -5,7 +5,10 @@
 </h3>
 
 <ng-container *ngIf="!isStartOfSeason">
-  <h4>Season Score</h4>
+  <h4>
+    <span>Season Score</span>
+    <span *ngIf="!isEndOfSeason"> - preliminary</span>
+  </h4>
   <app-season-scores [currentSeason]="currentSeason" [goals]="goals" [scores]="scores" [isFinalScore]="isEndOfSeason || isEndOfGame" />
 </ng-container>
 
