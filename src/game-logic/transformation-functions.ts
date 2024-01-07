@@ -5,13 +5,13 @@ import { LandscapeShape } from '../models/landscape-shape';
 export function rotateShapeClockwise(shape: BaseShape): BaseShape {
   const filledCells: Coordinates[] = shape.filledCells.map((cell) => ({ x: shape.height - cell.y - 1, y: cell.x }));
 
-  return { width: shape.height, height: shape.width, filledCells };
+  return { ...shape, width: shape.height, height: shape.width, filledCells };
 }
 
 function rotateShapeCounterClockwise(shape: BaseShape): BaseShape {
   const filledCells: Coordinates[] = shape.filledCells.map((cell) => ({ x: cell.y, y: shape.width - cell.x - 1 }));
 
-  return { width: shape.height, height: shape.width, filledCells };
+  return { ...shape, width: shape.height, height: shape.width, filledCells };
 }
 
 export function mirrorShape(shape: BaseShape): BaseShape {
