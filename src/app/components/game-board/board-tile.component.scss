@@ -23,7 +23,8 @@
     }
   }
 
-  &.conflicted {
+  &.conflicted,
+  &.sibling-is-outside {
     z-index: 3;
 
     &::after {

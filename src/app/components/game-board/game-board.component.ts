@@ -3,8 +3,8 @@ import { NgForOf, NgIf } from '@angular/common';
 import { BoardTileComponent } from './board-tile.component';
 import { TemporaryPlacedLandscapeShapeComponent } from './temporary-placed-landscape-shape.component';
 import { BoardTile } from '../../../models/board-tile';
-import { PlacedLandscapeShape } from '../../../models/landscape-shape';
-import { Coordinates } from '../../../models/simple-types';
+import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape } from '../../../models/landscape-shape';
+import { Coordinates, includesCoordinates } from '../../../models/simple-types';
 import { BOARD_SIZE } from '../../../game-logic/constants';
 
 @Component({
@@ -33,18 +33,40 @@ export class GameBoardComponent {
   onTileClick(x: number, y: number): void {
     if (!this.allowPlacing || !this.currentShapeToPlace) return;
 
-    const diffXToMiddle = Math.floor((this.currentShapeToPlace.baseShape.width - 0.1) / 2);
-    const diffYToMiddle = Math.floor((this.currentShapeToPlace.baseShape.height - 0.1) / 2);
+    const targetPosition = this._getTargetPositionWithinBaseShape(this.currentShapeToPlace);
+    const targetX = x - targetPosition.x;
+    const targetY = y - targetPosition.y;
 
-    const centeredX = x - diffXToMiddle;
-    const centeredY = y - diffYToMiddle;
+    const shapeDimensions = getShapeDimensions(this.currentShapeToPlace);
 
-    const diffXToNotOverflow = Math.min(0, BOARD_SIZE - this.currentShapeToPlace.baseShape.width - centeredX);
-    const diffYToNotOverflow = Math.min(0, BOARD_SIZE - this.currentShapeToPlace.baseShape.height - centeredY);
+    const diffXToNotOverflow = Math.min(0, BOARD_SIZE - shapeDimensions.width - targetX);
+    const diffYToNotOverflow = Math.min(0, BOARD_SIZE - shapeDimensions.height - targetY);
 
-    const xToPlace = Math.max(0, centeredX + diffXToNotOverflow);
-    const yToPlace = Math.max(0, centeredY + diffYToNotOverflow);
+    const minVal = !!this.currentShapeToPlace.heroPosition ? -7 : 0;
+
+    const xToPlace = Math.max(minVal, targetX + diffXToNotOverflow);
+    const yToPlace = Math.max(minVal, targetY + diffYToNotOverflow);
 
     this.positionChange.emit({ x: xToPlace, y: yToPlace });
+  }
+
+  private _getTargetPositionWithinBaseShape(shape: LandscapeShape): Coordinates {
+    if (shape.heroPosition) return shape.heroPosition;
+
+    const baseShape = shape.baseShape;
+
+    for (let x = 0; x < baseShape.width; x++) {
+      for (let y = 0; y < baseShape.height; y++) {
+        if (includesCoordinates({ x, y }, baseShape.filledCells)) {
+          if (baseShape.width === 3 && baseShape.height === 3 && x !== y && includesCoordinates({ x: y, y: x }, baseShape.filledCells)) {
+            continue;
+          }
+
+          return { x, y };
+        }
+      }
+    }
+
+    return { x: 0, y: 0 };
   }
 }

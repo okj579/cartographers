@@ -7,6 +7,7 @@ export interface BoardTile {
   landscape?: LandscapeType;
   destroyed?: boolean;
   conflicted?: boolean;
+  isOutOfBounds?: boolean;
   heroStar?: boolean;
   isBase?: boolean;
   isTemporary?: boolean;

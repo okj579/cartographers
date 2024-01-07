@@ -6,6 +6,10 @@ app-board-tile {
   animation: opacityBlink 1.5s infinite;
   margin: -1px;
   pointer-events: none;
+
+  &.is-outside {
+    display: none;
+  }
 }
 
 @keyframes opacityBlink {

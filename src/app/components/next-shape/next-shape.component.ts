@@ -63,19 +63,19 @@ export class NextShapeComponent {
   }
 
   get disableLeft(): boolean {
-    return !this.shapeDimensions || this.shapeDimensions.x === 0;
+    return !this.shapeDimensions || this.shapeDimensions.x <= 0;
   }
 
   get disableRight(): boolean {
-    return !this.shapeDimensions || this.shapeDimensions.x + this.shapeDimensions.width === BOARD_SIZE;
+    return !this.shapeDimensions || this.shapeDimensions.x + this.shapeDimensions.width >= BOARD_SIZE;
   }
 
   get disableUp(): boolean {
-    return !this.shapeDimensions || this.shapeDimensions.y === 0;
+    return !this.shapeDimensions || this.shapeDimensions.y <= 0;
   }
 
   get disableDown(): boolean {
-    return !this.shapeDimensions || this.shapeDimensions.y + this.shapeDimensions.height === BOARD_SIZE;
+    return !this.shapeDimensions || this.shapeDimensions.y + this.shapeDimensions.height >= BOARD_SIZE;
   }
 
   @HostListener('window:keydown', ['$event'])

@@ -129,6 +129,10 @@ function applyShapeToTile(tile: BoardTile, shape: PlacedLandscapeShape, isHeroSt
   return tile;
 }
 
+export function isOutOfBoard(cell: Coordinates): boolean {
+  return cell.x < 0 || cell.y < 0 || cell.x >= BOARD_SIZE || cell.y >= BOARD_SIZE;
+}
+
 export function getHeroInformation(shape: LandscapeShape, cell: Coordinates) {
   const isHeroShape = shape.type === LandscapeType.HERO;
   const isHeroPosition = isHeroShape && shape.heroPosition && cell.x === shape.heroPosition.x && cell.y === shape.heroPosition.y;
