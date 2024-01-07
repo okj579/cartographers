@@ -1,0 +1,34 @@
+:host {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-32);
+}
+
+.goal-scores {
+  display: grid;
+  max-width: 480px;
+  grid-template-columns: repeat(4, max-content);
+  gap: var(--gap-8) var(--gap-32);
+  text-align: end;
+
+  .goal-id,
+  .total-score {
+    font-weight: bold;
+  }
+
+  .total-score {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  div.goal-id {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  &.is-end {
+    .total-score {
+      color: var(--success-color);
+    }
+  }
+}

@@ -7,11 +7,13 @@ import { GoalEmojisPipe } from './goal-emojis.pipe';
 import { getSeasonScore } from '../../../game-logic/functions';
 import { MONSTER_SCORE_INDEX } from '../../../game-logic/constants';
 import { GoalIdComponent } from '../goal-area/goal-id/goal-id.component';
+import { GoalListComponent } from '../goal-list/goal-list.component';
+import { SeasonScoresComponent } from '../season-scores/season-scores.component';
 
 @Component({
   selector: 'app-season-goals',
   standalone: true,
-  imports: [NgForOf, IndexToCharPipe, GoalEmojisPipe, NgIf, NgClass, GoalIdComponent],
+  imports: [NgForOf, IndexToCharPipe, GoalEmojisPipe, NgIf, NgClass, GoalIdComponent, GoalListComponent, SeasonScoresComponent],
   templateUrl: './season-goals.component.html',
   styleUrl: './season-goals.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,10 +35,9 @@ export class SeasonGoalsComponent {
   protected showAllGoals: boolean = false;
   protected monsterScoreIndex: number = MONSTER_SCORE_INDEX;
 
-  protected readonly coinDescription: string = 'Collect 💎 by surrounding mountains on the 4 edges, and from some of the landscape shapes.';
-  protected readonly monsterScoreDescription: string = 'One minus point for each empty tile that is adjacent to at least one monster tile';
-  protected readonly coinEmojiDescription: string = '1🎖️ / 💎';
-  protected readonly monsterEmojiDescription: string = '-1🎖️ / 🔲⏭️😈';
+  get seasonGoals(): Goal[] {
+    return this.goals.filter((goal, index) => this.currentSeason.goalIndices.includes(index));
+  }
 
   get totalSeasonScore(): number {
     return getSeasonScore(this.currentSeason, this.scores, this.coins);

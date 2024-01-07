@@ -8,47 +8,6 @@
   gap: var(--gap-24);
 }
 
-.goal-list,
-.goal-scores {
-  display: grid;
-  gap: var(--gap-8);
-  max-width: 480px;
-  grid-template-columns: repeat(2, auto) 1fr;
-
-  .goal-id,
-  .total-score {
-    font-weight: bold;
-  }
-
-  div.goal-id {
-    font-size: 1.5rem;
-    line-height: 1;
-  }
-
-  &.is-end {
-    .total-score {
-      color: var(--success-color);
-    }
-  }
-}
-
-.goal-container {
-  display: flex;
-  align-items: center;
-  gap: var(--gap-32);
-
-  .goal-scores {
-    grid-template-columns: repeat(4, max-content);
-    gap: var(--gap-8) var(--gap-32);
-    text-align: end;
-  }
-
-  .total-score {
-    font-size: 1.5rem;
-    line-height: 1;
-  }
-}
-
 .submit-btn {
   margin-top: var(--gap-32);
 }

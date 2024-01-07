@@ -1,0 +1,15 @@
+<ng-container *ngFor="let goal of goals; let index = index">
+  <app-goal-id class="goal-id" [goal]="goal" [index]="getGoalIndex(index)" />
+  <div>{{ goal.emojiDescription }}</div>
+  <div>{{ goal.description }}</div>
+</ng-container>
+
+<ng-container *ngIf="showDefaultGoals">
+  <div class="goal-id">💎</div>
+  <div>{{ coinEmojiDescription }}</div>
+  <div>{{ coinDescription }}</div>
+
+  <div class="goal-id">😈</div>
+  <div>{{ monsterEmojiDescription }}</div>
+  <div>{{ monsterScoreDescription }}</div>
+</ng-container>

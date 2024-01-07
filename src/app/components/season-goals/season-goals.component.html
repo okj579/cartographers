@@ -6,43 +6,14 @@
 
 <ng-container *ngIf="!isStartOfSeason">
   <h4>Season Score</h4>
-  <div class="goal-container">
-    <div class="goal-scores" [class.is-end]="isEndOfSeason || isEndOfGame">
-      <ng-container *ngFor="let goalIndex of currentSeason.goalIndices">
-        <app-goal-id class="goal-id" [goal]="goals[goalIndex]" [index]="goalIndex" />
-        <div>{{ scores[goalIndex] ?? 0 }}</div>
-      </ng-container>
-
-      <div class="goal-id">💎</div>
-      <div>{{ coins }}</div>
-
-      <div class="goal-id">😈</div>
-      <div>{{ scores[monsterScoreIndex] }}</div>
-    </div>
-
-    <div class="total-score">Σ {{ totalSeasonScore }}</div>
-  </div>
+  <app-season-scores [currentSeason]="currentSeason" [goals]="goals" [scores]="scores" [isFinalScore]="isEndOfSeason || isEndOfGame" />
 </ng-container>
 
 <div *ngIf="isStartOfSeason">Duration: {{ currentSeason.duration }} <i class="fa-solid fa-clock"></i></div>
 
 <ng-container *ngIf="!isEndOfGame">
   <h4>Season goals</h4>
-  <div class="goal-list">
-    <ng-container *ngFor="let goalIndex of currentSeason.goalIndices">
-      <app-goal-id class="goal-id" [goal]="goals[goalIndex]" [index]="goalIndex" />
-      <div>{{ goals[goalIndex].emojiDescription }}</div>
-      <div>{{ goals[goalIndex].description }}</div>
-    </ng-container>
-
-    <div class="goal-id">💎</div>
-    <div>{{ coinEmojiDescription }}</div>
-    <div>{{ coinDescription }}</div>
-
-    <div class="goal-id">😈</div>
-    <div>{{ monsterEmojiDescription }}</div>
-    <div>{{ monsterScoreDescription }}</div>
-  </div>
+  <app-goal-list [goals]="seasonGoals" [goalIndices]="currentSeason.goalIndices" showDefaultGoals />
 </ng-container>
 
 <button *ngIf="isStartOfSeason" class="submit-btn" (click)="startSeason.emit()">Start season</button>
@@ -55,10 +26,4 @@
   <i class="fa-solid fa-chevron-right" [ngClass]="{ 'fa-rotate-90': showAllGoals }"></i>
   <span>All goals</span>
 </h4>
-<div *ngIf="showAllGoals" class="goal-list">
-  <ng-container *ngFor="let goal of goals; let goalIndex = index">
-    <app-goal-id class="goal-id" [goal]="goal" [index]="goalIndex" />
-    <div>{{ goal.emojiDescription }}</div>
-    <div>{{ goal.description }}</div>
-  </ng-container>
-</div>
+<app-goal-list *ngIf="showAllGoals" [goals]="goals" />
