@@ -24,7 +24,7 @@ export const FOREST_GOALS: Goal[] = [
   {
     name: 'Sleepy Forest',
     description: '4 points for each row with at least 3 forest tiles',
-    emojiDescription: '4🎖️ / 1↔️: 3+🌳',
+    emojiDescription: '4🎖️ / ↔️: 3+🌳',
     category: GoalCategory.FOREST,
     singlePlayerValue: 24,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
@@ -48,7 +48,7 @@ export const FOREST_GOALS: Goal[] = [
   {
     name: 'Remote Forest',
     description: '6 points for each forest area that contains at least 5 forest tiles and has no adjacent village tiles',
-    emojiDescription: '6🎖️ / 5+🌳, 🏠⛔',
+    emojiDescription: '6🎖️ / 5+🌳 ⛔🏠',
     category: GoalCategory.FOREST,
     singlePlayerValue: 18,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
@@ -139,7 +139,7 @@ export const VILLAGE_GOALS: Goal[] = [
   {
     name: 'Caravan',
     description: '1 point for each column and row of 1 of the village landscape areas',
-    emojiDescription: '1🎖️ / x↔️+y↕️: 1🏠+',
+    emojiDescription: '1🎖️ / ↔️+↕️: 1🏠+',
     category: GoalCategory.VILLAGE,
     singlePlayerValue: 16,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
@@ -250,7 +250,7 @@ export const FIELD_WATER_GOALS: Goal[] = [
   {
     name: 'Jorek castle',
     description: '4 points for each column with the same amount of water and field tiles',
-    emojiDescription: '4🎖️ /  ↕️: Σ🌾 = Σ🐟',
+    emojiDescription: '4🎖️ /  ↕️: Σ🌾=Σ🐟',
     category: GoalCategory.FIELD_WATER,
     singlePlayerValue: 18,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
@@ -330,7 +330,7 @@ export const FIELD_WATER_GOALS: Goal[] = [
   {
     name: 'Mountain reservoir',
     description: '5 points for each mountain tile that is connected to a field tile by a path of water tiles',
-    emojiDescription: '5🎖️ / 🏔️⏭️🐟+ 🌾',
+    emojiDescription: '5🎖️ / 🏔️⏭️🐟🌾',
     category: GoalCategory.FIELD_WATER,
     singlePlayerValue: 15,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
@@ -386,7 +386,7 @@ export const GLOBAL_GOALS: Goal[] = [
   {
     name: 'Silos',
     description: '10 points for each fully filled odd column',
-    emojiDescription: '10🎖️ / odd↕️: 💯',
+    emojiDescription: '10🎖️ / odd↕️💯',
     category: GoalCategory.GLOBAL,
     singlePlayerValue: 30,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
@@ -417,7 +417,7 @@ export const GLOBAL_GOALS: Goal[] = [
   {
     name: 'Hills of Tolerance',
     description: '4 points for each row with at least 5 different landscape types',
-    emojiDescription: '4🎖️ / 1↔️: 5+🌈',
+    emojiDescription: '4🎖️ / 1↔️:5🌈',
     category: GoalCategory.GLOBAL,
     singlePlayerValue: 28,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
@@ -456,7 +456,7 @@ export const GLOBAL_GOALS: Goal[] = [
   {
     name: 'Dwarf castles',
     description: '7 points for each row or column which is completely filled and contains a mountain tile',
-    emojiDescription: '7🎖️ / 1↔️+↕️: 💯+🏔️',
+    emojiDescription: '7🎖️ / ↔️+↕️:💯+🏔️',
     category: GoalCategory.GLOBAL,
     singlePlayerValue: 28,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
