@@ -26,7 +26,10 @@ export interface PlayerGameState {
 export interface CurrentGameState {
   readonly season: Season | undefined;
   readonly seasonGoals: Goal[];
+  readonly isStartOfSeason: boolean;
+  readonly isEndOfSeason: boolean;
   readonly cardDeck: LandscapeCard[];
+  readonly playedCards: LandscapeCard[];
   readonly cardToPlace: LandscapeCard | undefined;
   readonly playerStates: CurrentPlayerGameState[];
 }

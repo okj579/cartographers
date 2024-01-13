@@ -1,5 +1,9 @@
 <div class="sticky-header">
-  <app-season-info [currentSeason]="currentGameState.season" [playedCards]="playedCards" [isEndOfSeason]="isEndOfSeason" />
+  <app-season-info
+    [currentSeason]="currentGameState.season"
+    [playedCards]="currentGameState.playedCards"
+    [isEndOfSeason]="currentGameState.isEndOfSeason"
+  />
 
   <app-goal-area
     [goals]="gameState.goals"
@@ -21,7 +25,7 @@
 
   <div class="controls-and-info">
     <app-next-shape
-      *ngIf="currentGameState.cardToPlace && !isStartOfSeason && !isEndOfSeason"
+      *ngIf="currentGameState.cardToPlace && !currentGameState.isStartOfSeason && !currentGameState.isEndOfSeason"
       [landscapeCard]="currentGameState.cardToPlace"
       [hasConflict]="tempPlayerState.hasConflict"
       [untouchedBoardState]="currentPlayerState.boardState"
@@ -35,8 +39,8 @@
       [goals]="gameState.goals"
       [coins]="currentPlayerState.coins"
       [scores]="currentPlayerState.scores"
-      [isStartOfSeason]="isStartOfSeason"
-      [isEndOfSeason]="isEndOfSeason"
+      [isStartOfSeason]="currentGameState.isStartOfSeason"
+      [isEndOfSeason]="currentGameState.isEndOfSeason"
       (startSeason)="startSeason()"
       (endSeason)="endSeason()"
     ></app-season-goals>

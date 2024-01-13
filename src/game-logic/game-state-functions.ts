@@ -32,11 +32,19 @@ export function stateToCurrentState(state: GameState, playerIndex: number = 0): 
   const playerStates: CurrentPlayerGameState[] = state.playerStates.map((playerState) => ({
     ...playerStateToCurrentPlayerState(playerState, state.goals),
   }));
+  const isStartOfSeason = currentCardIndex === -1 && !!season;
+  const cardDeck = seasonSetups[currentSeasonIndex]?.cardDeck ?? [];
+  const playedCards = cardDeck.slice(0, currentCardIndex + 1);
+  const isEndOfSeason = getCurrentTimeProgress(playedCards) >= season?.duration ?? false;
+  const cardToPlace = isEndOfSeason ? undefined : cardDeck[currentCardIndex];
 
   return {
     season,
-    cardDeck: seasonSetups[currentSeasonIndex]?.cardDeck ?? [],
-    cardToPlace: seasonSetups[currentSeasonIndex]?.cardDeck[currentCardIndex],
+    isStartOfSeason,
+    isEndOfSeason,
+    cardDeck,
+    playedCards,
+    cardToPlace,
     seasonGoals,
     playerStates,
   };

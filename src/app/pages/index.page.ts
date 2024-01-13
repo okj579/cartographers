@@ -1,10 +1,8 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { GameBoardComponent } from '../components/game-board/game-board.component';
 import { PlacedLandscapeShape } from '../../models/landscape-shape';
-import { getCurrentTimeProgress } from '../../game-logic/functions';
 import { NextShapeComponent } from '../components/next-shape/next-shape.component';
 import { NgForOf, NgIf } from '@angular/common';
-import { LandscapeCard } from '../../models/landscape-card';
 import { GoalAreaComponent } from '../components/goal-area/goal-area.component';
 import { SeasonInfoComponent } from '../components/season-info/season-info.component';
 import { SeasonGoalsComponent } from '../components/season-goals/season-goals.component';
@@ -32,13 +30,13 @@ export default class HomeComponent {
 
   readonly playerIndex: number = 0;
 
-  get gameState(): GameState {
-    return this._gameState;
-  }
-
   set gameState(value: GameState) {
     this._gameState = value;
     this.currentGameState = stateToCurrentState(this._gameState);
+  }
+
+  get gameState(): GameState {
+    return this._gameState;
   }
 
   private _gameState: GameState = createNewGame();
@@ -47,18 +45,8 @@ export default class HomeComponent {
 
   currentShapeToPlace: PlacedLandscapeShape | undefined;
 
-  protected isEndOfSeason: boolean = false;
-
   get currentPlayerState(): CurrentPlayerGameState {
     return this.currentGameState.playerStates[this.playerIndex];
-  }
-
-  get isStartOfSeason(): boolean {
-    return this.currentPlayerState.currentCardIndex === -1 && !!this.currentGameState.season;
-  }
-
-  get playedCards(): LandscapeCard[] {
-    return this.currentGameState.cardDeck.slice(0, this.currentPlayerState.currentCardIndex + 1);
   }
 
   get totalEndScore(): number {
@@ -71,18 +59,18 @@ export default class HomeComponent {
 
   endSeason(): void {
     this.gameState = endSeason(this.gameState, this.currentGameState);
-    this.isEndOfSeason = false;
   }
 
   submitShape(shape: PlacedLandscapeShape): void {
     if (this.tempPlayerState.hasConflict) return;
 
     this.updateShapeInBoard(shape);
-    this.gameState = updatePlayerState(this.gameState, this.tempPlayerState);
+    this.gameState = updatePlayerState(this.gameState, {
+      ...this.tempPlayerState,
+      currentCardIndex: this.currentPlayerState.currentCardIndex + 1,
+    });
 
     this.currentShapeToPlace = undefined;
-
-    this._handleSeasonEndIfApplicable();
   }
 
   onPositionChange(position: Coordinates): void {
@@ -94,20 +82,7 @@ export default class HomeComponent {
   updateShapeInBoard(shape: PlacedLandscapeShape | undefined) {
     if (shape) {
       this.currentShapeToPlace = shape;
-
       this.tempPlayerState = getTempPlayerStateWithShape(this.gameState, shape);
     }
-  }
-
-  private _handleSeasonEndIfApplicable(): void {
-    if (this.currentGameState.season && getCurrentTimeProgress(this.playedCards) < this.currentGameState.season.duration) {
-      this.gameState = updatePlayerState(this.gameState, {
-        ...this.currentPlayerState,
-        currentCardIndex: this.currentPlayerState.currentCardIndex + 1,
-      });
-      return;
-    }
-
-    this.isEndOfSeason = true;
   }
 }
