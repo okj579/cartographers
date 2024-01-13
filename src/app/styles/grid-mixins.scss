@@ -1,8 +1,9 @@
 $squareCount: 11;
 $gap: 2px;
-$totalGap: ($squareCount - 1) * $gap;
-$buffer: 96px;
-$maxWidth: 600px + $buffer + $totalGap;
+$gapRem: 0.125rem;
+$totalGap: ($squareCount - 1) * $gapRem;
+$buffer: 4rem;
+$maxWidth: 40rem + $buffer + $totalGap;
 $squareSize: calc(calc(min(100vw, 100vh, $maxWidth) - $buffer - $totalGap) / $squareCount);
 $font-size: calc(0.6 * $squareSize);
 
