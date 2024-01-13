@@ -159,8 +159,8 @@ export const VILLAGE_GOALS: Goal[] = [
   },
   {
     name: 'Monastry',
-    description: '7 points for each village area that contains at least 4 village tiles in a straight column',
-    emojiDescription: '7🎖️ / 4+🏠, ↕️',
+    description: '7 points for each village area that contains at least 4 village tiles in a straight line',
+    emojiDescription: '7🎖️ / 1x4🏠',
     category: GoalCategory.VILLAGE,
     singlePlayerValue: 14,
     scoreAlgorithm: (boardState: BoardTile[][]) => {
@@ -176,6 +176,12 @@ export const VILLAGE_GOALS: Goal[] = [
           const columnTiles: BoardTile[] = [boardState[x][y], boardState[x][y + 1], boardState[x][y + 2], boardState[x][y + 3]];
 
           if (columnTiles.every((tile) => tile && isTileOfLandscape(tile, LandscapeType.VILLAGE))) {
+            return true;
+          }
+
+          const rowTiles: BoardTile[] = [boardState[x][y], boardState[x + 1]?.[y], boardState[x + 2]?.[y], boardState[x + 3]?.[y]];
+
+          if (rowTiles.every((tile) => tile && isTileOfLandscape(tile, LandscapeType.VILLAGE))) {
             return true;
           }
         }
