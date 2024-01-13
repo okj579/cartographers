@@ -1,14 +1,14 @@
 <div class="goal-scores" [class.is-end]="isFinalScore">
   <ng-container *ngFor="let goalIndex of currentSeason.goalIndices">
     <app-goal-id class="goal-id" [goal]="goals[goalIndex]" [index]="goalIndex" />
-    <div>{{ scores[goalIndex] ?? 0 }}</div>
+    <div>{{ scores?.[goalIndex] ?? "?" }}</div>
   </ng-container>
 
   <div class="goal-id">💎</div>
-  <div>{{ coins }}</div>
+  <div>{{ coins ?? "?" }}</div>
 
   <div class="goal-id">😈</div>
-  <div>{{ scores[monsterScoreIndex] }}</div>
+  <div>{{ scores?.[monsterScoreIndex] ?? "?" }}</div>
 </div>
 
-<div class="total-score">Σ {{ totalSeasonScore }}</div>
+<div class="total-score">Σ {{ totalSeasonScore ?? "?" }}</div>

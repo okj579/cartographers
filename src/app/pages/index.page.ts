@@ -16,13 +16,23 @@ import {
   stateToCurrentState,
   updatePlayerState,
 } from '../../game-logic/game-state-functions';
+import { GameSetupInfoComponent } from '../components/game-setup-info/game-setup-info.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './index.page.html',
   styleUrl: './index.page.scss',
-  imports: [GameBoardComponent, NextShapeComponent, NgIf, GoalAreaComponent, SeasonInfoComponent, SeasonGoalsComponent, NgForOf],
+  imports: [
+    GameBoardComponent,
+    NextShapeComponent,
+    NgIf,
+    GoalAreaComponent,
+    SeasonInfoComponent,
+    SeasonGoalsComponent,
+    NgForOf,
+    GameSetupInfoComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class HomeComponent {
@@ -43,6 +53,8 @@ export default class HomeComponent {
   private _gameState: GameState = createNewGame();
   currentGameState: CurrentGameState = stateToCurrentState(this._gameState);
   tempPlayerState: TempPlayerGameState = { ...this.currentPlayerState, hasConflict: false, conflictedCellIndices: [] };
+
+  isStartOfGame: boolean = true;
 
   currentShapeToPlace: PlacedLandscapeShape | undefined;
 

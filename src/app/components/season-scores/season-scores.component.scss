@@ -4,6 +4,15 @@
   gap: var(--gap-32);
 }
 
+:host(.narrow) {
+  gap: var(--gap-32) var(--gap-24);
+
+  .goal-scores {
+    gap: var(--gap-8) var(--gap-24);
+    max-width: 240px;
+  }
+}
+
 .goal-scores {
   display: grid;
   max-width: 480px;

@@ -1,0 +1,20 @@
+<h3>Game parameters</h3>
+
+<h4>All goals</h4>
+<app-goal-list [goals]="goals" />
+
+<div class="season-container">
+  <h4>All seasons</h4>
+  <div *ngFor="let season of seasons; let index = index">
+    <h5>{{ season.emoji }} {{ season.name }} - <i class="fa-solid fa-clock"></i> {{ season.duration }}</h5>
+    <app-season-scores
+      narrow
+      [currentSeason]="season"
+      [goals]="goals"
+      [coins]="seasonScores[index]?.coins"
+      [scores]="seasonScores[index]?.goalScores"
+    />
+  </div>
+</div>
+
+<button *ngIf="isStartOfGame" class="submit-btn" (click)="startGame.emit()">Start game</button>

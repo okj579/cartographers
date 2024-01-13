@@ -23,7 +23,7 @@
     (positionChange)="onPositionChange($event)"
   />
 
-  <div class="controls-and-info">
+  <div class="controls-and-info" [class.is-start]="isStartOfGame">
     <app-next-shape
       *ngIf="currentGameState.cardToPlace && !currentGameState.isStartOfSeason && !currentGameState.isEndOfSeason"
       [landscapeCard]="currentGameState.cardToPlace"
@@ -34,7 +34,7 @@
     ></app-next-shape>
 
     <app-season-goals
-      *ngIf="currentGameState.season"
+      *ngIf="!isStartOfGame && currentGameState.season"
       [currentSeason]="currentGameState.season"
       [goals]="gameState.goals"
       [coins]="currentPlayerState.coins"
@@ -44,6 +44,14 @@
       (startSeason)="startSeason()"
       (endSeason)="endSeason()"
     ></app-season-goals>
+
+    <app-game-setup-info
+      *ngIf="currentGameState.season"
+      [isStartOfGame]="isStartOfGame"
+      [goals]="gameState.goals"
+      [seasonScores]="currentPlayerState.seasonScores"
+      (startGame)="isStartOfGame = false;"
+    />
 
     <ng-container *ngIf="!currentGameState.season">
       <div class="end-score">

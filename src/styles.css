@@ -17,6 +17,7 @@
   --bg-color-4-alpha-a: #404040aa;
   --success-color: lime;
   --color-text-secondary: #808080;
+  --border-secondary: #303030;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -109,6 +110,7 @@ button.submit-btn {
     --bg-color-4-alpha-a: #eaeaeaaa;
     --success-color: #00b300;
     --color-text-secondary: #707070;
+    --border-secondary: #eaeaea;
   }
   a:hover {
     color: #747bff;
@@ -124,7 +126,9 @@ button.submit-btn {
 }
 
 h3,
-h4 {
+h4,
+h5,
+h6 {
   margin: 0;
 }
 

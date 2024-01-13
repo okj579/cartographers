@@ -24,9 +24,3 @@
   <span *ngIf="currentSeason.emoji !== '❄️'">Proceed to next season</span>
   <span *ngIf="currentSeason.emoji === '❄️'">Show final score</span>
 </button>
-
-<h4 *ngIf="!isEndOfGame" class="toggle-trigger" (click)="toggleShowAllGoals()">
-  <i class="fa-solid fa-chevron-right" [ngClass]="{ 'fa-rotate-90': showAllGoals }"></i>
-  <span>All goals</span>
-</h4>
-<app-goal-list *ngIf="showAllGoals" [goals]="goals" />
