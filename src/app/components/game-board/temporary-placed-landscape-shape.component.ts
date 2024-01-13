@@ -19,6 +19,7 @@ interface TemporaryBoardTile extends BoardTile {
   template: ` <app-board-tile
     *ngFor="let tile of boardTiles; trackBy: trackByIndexAndShapeSize"
     [tile]="tile"
+    [class.base]="false"
     [class.sibling-is-outside]="hasOutOfBoardTiles"
     [class.is-outside]="tile.isOutOfBounds"
     [class.has-neighbor-top]="isSameAreaAsNeighbor('top', tile)"
