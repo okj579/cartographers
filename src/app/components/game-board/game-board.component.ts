@@ -4,7 +4,7 @@ import { BoardTileComponent } from './board-tile.component';
 import { TemporaryPlacedLandscapeShapeComponent } from './temporary-placed-landscape-shape.component';
 import { BoardTile } from '../../../models/board-tile';
 import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape } from '../../../models/landscape-shape';
-import { Coordinates, includesCoordinates } from '../../../models/simple-types';
+import { Coordinates, Direction, getNeighborCoordinates, includesCoordinates } from '../../../models/simple-types';
 import { BOARD_SIZE } from '../../../game-logic/constants';
 
 @Component({
@@ -28,6 +28,17 @@ export class GameBoardComponent {
 
   trackByIndex(index: number): number {
     return index;
+  }
+
+  isSameAreaAsNeighbor(direction: Direction, tile: BoardTile): boolean {
+    if (!tile.landscape) return false;
+
+    const { x, y } = tile.position;
+    const neighbor = this._getNeighbor(direction, tile.position);
+
+    if (!neighbor) return false;
+
+    return neighbor.landscape === this.currentBoardState[x][y].landscape;
   }
 
   onTileClick(x: number, y: number): void {
@@ -64,5 +75,11 @@ export class GameBoardComponent {
     }
 
     return { x: 0, y: 0 };
+  }
+
+  private _getNeighbor(direction: Direction, position: Coordinates): BoardTile | undefined {
+    const neighborCoordinates = getNeighborCoordinates(direction, position);
+
+    return this.currentBoardState[neighborCoordinates.x]?.[neighborCoordinates.y];
   }
 }

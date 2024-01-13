@@ -4,8 +4,13 @@ import { NgForOf } from '@angular/common';
 import { BoardTile } from '../../../models/board-tile';
 import { LandscapeType } from '../../../models/landscape-type';
 import { PlacedLandscapeShape } from '../../../models/landscape-shape';
-import { Coordinates } from '../../../models/simple-types';
+import { Coordinates, Direction, getNeighborCoordinates, includesCoordinates } from '../../../models/simple-types';
 import { isOutOfBoard } from '../../../game-logic/functions';
+
+interface TemporaryBoardTile extends BoardTile {
+  isOutOfBounds: boolean;
+  positionWithinBaseShape: Coordinates;
+}
 
 @Component({
   selector: 'app-temporary-placed-landscape-shape',
@@ -16,6 +21,10 @@ import { isOutOfBoard } from '../../../game-logic/functions';
     [tile]="tile"
     [class.sibling-is-outside]="hasOutOfBoardTiles"
     [class.is-outside]="tile.isOutOfBounds"
+    [class.has-neighbor-top]="isSameAreaAsNeighbor('top', tile)"
+    [class.has-neighbor-right]="isSameAreaAsNeighbor('right', tile)"
+    [class.has-neighbor-bottom]="isSameAreaAsNeighbor('bottom', tile)"
+    [class.has-neighbor-left]="isSameAreaAsNeighbor('left', tile)"
   />`,
   styleUrl: './temporary-placed-landscape-shape.component.scss',
 })
@@ -23,7 +32,7 @@ export class TemporaryPlacedLandscapeShapeComponent implements OnChanges {
   @Input({ required: true }) placedShape!: PlacedLandscapeShape;
   @Input() conflictedCellIndices: number[] = [];
 
-  boardTiles: BoardTile[] = [];
+  boardTiles: TemporaryBoardTile[] = [];
   hasOutOfBoardTiles: boolean = false;
 
   trackByIndexAndShapeSize = (index: number): number => {
@@ -35,8 +44,14 @@ export class TemporaryPlacedLandscapeShapeComponent implements OnChanges {
     this.hasOutOfBoardTiles = this.boardTiles.some((tile) => tile.isOutOfBounds && !tile.heroStar);
   }
 
-  private _shapeToBoardTiles(shape: PlacedLandscapeShape): BoardTile[] {
-    const boardTiles: BoardTile[] = [];
+  isSameAreaAsNeighbor(direction: Direction, tile: TemporaryBoardTile): boolean {
+    const neighborCoordinates = getNeighborCoordinates(direction, tile.positionWithinBaseShape);
+
+    return includesCoordinates(neighborCoordinates, this.placedShape.baseShape.filledCells);
+  }
+
+  private _shapeToBoardTiles(shape: PlacedLandscapeShape): TemporaryBoardTile[] {
+    const boardTiles: TemporaryBoardTile[] = [];
     const position = shape.position;
 
     for (let i = 0; i < shape.baseShape.filledCells.length; i++) {
@@ -50,6 +65,7 @@ export class TemporaryPlacedLandscapeShapeComponent implements OnChanges {
 
       boardTiles.push({
         position: tilePosition,
+        positionWithinBaseShape: cell,
         landscape: isHeroStar ? undefined : shape.type,
         heroStar: isHeroStar,
         monsterType: shape.monsterType,

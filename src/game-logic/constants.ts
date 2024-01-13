@@ -24,7 +24,7 @@ export function getInitialBoardTiles(): BoardTile[][] {
     let column: BoardTile[] = [];
 
     for (let y = 0; y < BOARD_SIZE; y++) {
-      const tile: BoardTile = { position: { x, y }, isBase: true };
+      const tile: BoardTile = { position: { x, y } };
 
       if (isMountainTile(tile.position)) {
         tile.landscape = LandscapeType.MOUNTAIN;

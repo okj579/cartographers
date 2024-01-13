@@ -17,7 +17,7 @@ import { NgIf } from '@angular/common';
     '[class.conflicted]': 'tile.conflicted',
     '[class.hero-star]': 'tile.heroStar',
     '[class.has-coin]': 'tile.hasCoin',
-    '[class.base]': 'tile.isBase',
+    '[class.base]': '!tile.landscape',
   },
 })
 export class BoardTileComponent {

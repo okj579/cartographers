@@ -1,6 +1,14 @@
 <ng-container *ngFor="let column of currentBoardState; trackBy: trackByIndex; let x = index">
   <ng-container *ngFor="let tile of column; trackBy: trackByIndex; let y = index">
-    <app-board-tile [tile]="tile" [class.interactive]="allowPlacing" (click)="onTileClick(x, y)"></app-board-tile>
+    <app-board-tile
+      [tile]="tile"
+      [class.interactive]="allowPlacing"
+      [class.has-neighbor-top]="isSameAreaAsNeighbor('top', tile)"
+      [class.has-neighbor-right]="isSameAreaAsNeighbor('right', tile)"
+      [class.has-neighbor-bottom]="isSameAreaAsNeighbor('bottom', tile)"
+      [class.has-neighbor-left]="isSameAreaAsNeighbor('left', tile)"
+      (click)="onTileClick(x, y)"
+    ></app-board-tile>
   </ng-container>
 </ng-container>
 

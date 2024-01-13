@@ -8,4 +8,6 @@ app-board-tile {
   &.interactive {
     cursor: pointer;
   }
+
+  @include grid-mixins.neighbors;
 }

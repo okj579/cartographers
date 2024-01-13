@@ -18,3 +18,21 @@ $font-size: calc(0.6 * $squareSize);
   --square-size: #{$squareSize};
   --gap: #{$gap};
 }
+
+@mixin neighbors {
+  &.has-neighbor-top {
+    margin-top: -1px;
+  }
+
+  &.has-neighbor-left {
+    margin-left: -1px;
+  }
+
+  &.has-neighbor-right {
+    margin-right: -1px;
+  }
+
+  &.has-neighbor-bottom {
+    margin-bottom: -1px;
+  }
+}
