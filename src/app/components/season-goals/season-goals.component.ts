@@ -32,6 +32,10 @@ export class SeasonGoalsComponent {
 
   protected showAllGoals: boolean = false;
 
+  get isFinalScore(): boolean {
+    return this.isEndOfGame || this.isEndOfSeason;
+  }
+
   get seasonGoals(): Goal[] {
     return this.goals.filter((goal, index) => this.currentSeason.goalIndices.includes(index));
   }

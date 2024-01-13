@@ -7,15 +7,9 @@
 <ng-container *ngIf="!isStartOfSeason">
   <h4>
     <span>Season Score</span>
-    <span *ngIf="!isEndOfSeason"> - preliminary</span>
+    <span *ngIf="!isFinalScore"> - preliminary</span>
   </h4>
-  <app-season-scores
-    [currentSeason]="currentSeason"
-    [coins]="coins"
-    [goals]="goals"
-    [scores]="scores"
-    [isFinalScore]="isEndOfSeason || isEndOfGame"
-  />
+  <app-season-scores [currentSeason]="currentSeason" [coins]="coins" [goals]="goals" [scores]="scores" [isFinalScore]="isFinalScore" />
 </ng-container>
 
 <div *ngIf="isStartOfSeason">Duration: {{ currentSeason.duration }} <i class="fa-solid fa-clock"></i></div>
