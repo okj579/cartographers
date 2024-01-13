@@ -10,7 +10,6 @@ export interface BoardTile {
   isOutOfBounds?: boolean;
   heroStar?: boolean;
   isBase?: boolean;
-  isTemporary?: boolean;
   hasCoin?: boolean;
   monsterType?: MonsterType;
 }

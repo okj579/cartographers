@@ -51,7 +51,7 @@ export function getSeasonScore(season: Season, scores: number[], coins: number):
   );
 }
 
-export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape, isTemporary: boolean): PlaceShapeResult {
+export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape): PlaceShapeResult {
   const updatedBoard: BoardTile[][] = board.map((column) => column.map((tile) => ({ ...tile })));
   const conflictedCellIndices: number[] = [];
   let newCoins = 0;
@@ -65,7 +65,6 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
     const { isHeroStar } = getHeroInformation(shape, cell);
 
     if (tile) {
-      tile.isTemporary = isTemporary;
       tile.monsterType = shape.monsterType;
       applyShapeToTile(tile, shape, isHeroStar);
       newCoins += checkForMountainCoin(updatedBoard, tile.position);

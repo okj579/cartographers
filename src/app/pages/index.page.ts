@@ -1,18 +1,23 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { GameBoardComponent } from '../components/game-board/game-board.component';
-import { BoardTile } from '../../models/board-tile';
-import { getInitialBoardTiles } from '../../game-logic/constants';
 import { PlacedLandscapeShape } from '../../models/landscape-shape';
-import { getCurrentTimeProgress, getSeasonScore, getShuffledCards, tryPlaceShapeOnBoard } from '../../game-logic/functions';
+import { getCurrentTimeProgress } from '../../game-logic/functions';
 import { NextShapeComponent } from '../components/next-shape/next-shape.component';
 import { NgForOf, NgIf } from '@angular/common';
-import { HERO_CARDS, LANDSCAPE_CARDS, LandscapeCard, MONSTER_CARDS } from '../../models/landscape-card';
+import { LandscapeCard } from '../../models/landscape-card';
 import { GoalAreaComponent } from '../components/goal-area/goal-area.component';
-import { getMonsterScore, getShuffledGoals, Goal } from '../../models/goals';
 import { SeasonInfoComponent } from '../components/season-info/season-info.component';
-import { Season, SEASONS, SeasonScore } from '../../models/season';
 import { SeasonGoalsComponent } from '../components/season-goals/season-goals.component';
 import { Coordinates } from '../../models/simple-types';
+import { CurrentGameState, CurrentPlayerGameState, GameState, TempPlayerGameState } from '../../models/game-state';
+import {
+  createNewGame,
+  endSeason,
+  getTempPlayerStateWithShape,
+  startSeason,
+  stateToCurrentState,
+  updatePlayerState,
+} from '../../game-logic/game-state-functions';
 
 @Component({
   selector: 'app-home',
@@ -25,95 +30,62 @@ import { Coordinates } from '../../models/simple-types';
 export default class HomeComponent {
   @ViewChild(NextShapeComponent) nextShapeComponent!: NextShapeComponent;
 
-  untouchedBoardState: BoardTile[][] = getInitialBoardTiles();
-  temporaryBoardState: BoardTile[][] = [...this.untouchedBoardState];
-  cardDeck: LandscapeCard[] = [];
-  goals: Goal[] = getShuffledGoals();
-  currentSeasonIndex: number = 0;
-  coins: number = 0;
-  newCoins: number = 0;
-  temporaryScores: number[] = [];
-  scores: number[] = [];
+  readonly playerIndex: number = 0;
 
-  seasonScores: SeasonScore[] = [];
+  get gameState(): GameState {
+    return this._gameState;
+  }
+
+  set gameState(value: GameState) {
+    this._gameState = value;
+    this.currentGameState = stateToCurrentState(this._gameState);
+  }
+
+  private _gameState: GameState = createNewGame();
+  currentGameState: CurrentGameState = stateToCurrentState(this._gameState);
+  tempPlayerState: TempPlayerGameState = { ...this.currentPlayerState, hasConflict: false, conflictedCellIndices: [] };
+
+  newCoins: number = 0;
 
   currentShapeToPlace: PlacedLandscapeShape | undefined;
 
-  hasConflict: boolean = false;
-  conflictedCellIndices: number[] = [];
-
-  protected currentCardIndex: number = -1;
-  protected numberOfPlayedCards: number = 0;
-  protected seasons: Season[] = SEASONS;
-
   protected isEndOfSeason: boolean = false;
 
-  private _shuffledMonsters: LandscapeCard[] = getShuffledCards(MONSTER_CARDS);
-  private _shuffledHeroes: LandscapeCard[] = getShuffledCards(HERO_CARDS);
-
-  get isStartOfSeason(): boolean {
-    return this.currentCardIndex === -1 && !!this.currentSeason;
+  get currentPlayerState(): CurrentPlayerGameState {
+    return this.currentGameState.playerStates[this.playerIndex];
   }
 
-  get currentCard(): LandscapeCard | undefined {
-    return this.cardDeck[this.currentCardIndex];
+  get isStartOfSeason(): boolean {
+    return this.currentPlayerState.currentCardIndex === -1 && !!this.currentGameState.season;
   }
 
   get playedCards(): LandscapeCard[] {
-    return this.cardDeck.slice(0, this.currentCardIndex + 1);
-  }
-
-  get currentSeason(): Season | undefined {
-    return this.seasons[this.currentSeasonIndex];
+    return this.currentGameState.cardDeck.slice(0, this.currentPlayerState.currentCardIndex + 1);
   }
 
   get totalEndScore(): number {
-    return this.seasonScores.reduce((sum, score) => sum + score.totalScore, 0);
+    return this.currentPlayerState.seasonScores.reduce((sum, score) => sum + score.totalScore, 0);
   }
 
   startSeason(): void {
-    const remainingCards = this.cardDeck.slice(this.numberOfPlayedCards);
-    const monsters = remainingCards.filter((card) => card.landscapeTypes[0] === 'monster');
-    const heroes = remainingCards.filter((card) => card.landscapeTypes[0] === 'hero');
-    monsters.push(this._shuffledMonsters.pop()!);
-    heroes.push(this._shuffledHeroes.pop()!);
-    this.cardDeck = getShuffledCards([...monsters, ...heroes, ...LANDSCAPE_CARDS]);
-
-    this.currentCardIndex = 0;
+    this.gameState = startSeason(this.gameState);
   }
 
   endSeason(): void {
-    if (!!this.currentSeason) {
-      this.seasonScores.push({
-        season: this.currentSeason,
-        goalScores: this.scores,
-        coins: this.coins,
-        totalScore: getSeasonScore(this.currentSeason, this.scores, this.coins),
-      });
-    }
-
-    this.currentSeasonIndex++;
-    this.numberOfPlayedCards = this.currentCardIndex + 1;
-    this.currentCardIndex = -1;
+    this.gameState = endSeason(this.gameState);
     this.isEndOfSeason = false;
-
-    if (!this.currentSeason) {
-      this.cardDeck = [];
-    }
   }
 
   submitShape(shape: PlacedLandscapeShape): void {
-    if (this.hasConflict) return;
+    if (this.tempPlayerState.hasConflict) return;
 
-    this.updateShapeInBoard(shape, false);
-    this.untouchedBoardState = this.temporaryBoardState;
+    this.updateShapeInBoard(shape);
+    this.gameState = updatePlayerState(this.gameState, this.tempPlayerState);
+
     this.currentShapeToPlace = undefined;
-    this.coins += this.newCoins;
     this.newCoins = 0;
 
-    this.scores = [...this.temporaryScores];
-
-    this._startNewSeasonIfApplicable();
+    this._handleSeasonEndIfApplicable();
   }
 
   onPositionChange(position: Coordinates): void {
@@ -122,53 +94,24 @@ export default class HomeComponent {
     this.nextShapeComponent.updatePositionFromOutside(position);
   }
 
-  updateShapeInBoard(shape: PlacedLandscapeShape | undefined, isTemporary: boolean) {
+  updateShapeInBoard(shape: PlacedLandscapeShape | undefined) {
     if (shape) {
       this.currentShapeToPlace = shape;
-      this.newCoins = shape.baseShape.hasCoin ? 1 : 0;
-      const placeResult = tryPlaceShapeOnBoard(this.untouchedBoardState, shape, isTemporary);
-      this.newCoins += placeResult.newCoins;
-      this.temporaryBoardState = placeResult.updatedBoard;
-      this.hasConflict = placeResult.conflictedCellIndices.length > 0;
-      this.conflictedCellIndices = placeResult.conflictedCellIndices;
 
-      if (this.hasConflict) {
-        this.newCoins = 0;
-      }
-
-      this._updateScores();
+      this.tempPlayerState = getTempPlayerStateWithShape(this.gameState, shape);
+      this.newCoins = this.tempPlayerState.coins - this.currentPlayerState.coins;
     }
   }
 
-  private _startNewSeasonIfApplicable(): void {
-    if (this.currentSeason && getCurrentTimeProgress(this.playedCards) < this.currentSeason.duration) {
-      this.currentCardIndex++;
+  private _handleSeasonEndIfApplicable(): void {
+    if (this.currentGameState.season && getCurrentTimeProgress(this.playedCards) < this.currentGameState.season.duration) {
+      this.gameState = updatePlayerState(this.gameState, {
+        ...this.currentPlayerState,
+        currentCardIndex: this.currentPlayerState.currentCardIndex + 1,
+      });
       return;
     }
 
     this.isEndOfSeason = true;
-  }
-
-  private _updateScores(): void {
-    const monsterScore = getMonsterScore(this.untouchedBoardState);
-    this.scores = [
-      ...this.goals.map((goal) => {
-        return goal.scoreAlgorithm(this.untouchedBoardState);
-      }),
-      monsterScore,
-    ];
-
-    if (this.hasConflict) {
-      this.temporaryScores = this.scores;
-      return;
-    }
-
-    const temporaryMonsterScore = getMonsterScore(this.temporaryBoardState);
-    this.temporaryScores = [
-      ...this.goals.map((goal) => {
-        return goal.scoreAlgorithm(this.temporaryBoardState);
-      }),
-      temporaryMonsterScore,
-    ];
   }
 }
