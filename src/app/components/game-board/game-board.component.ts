@@ -6,11 +6,12 @@ import { BoardTile } from '../../../models/board-tile';
 import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape } from '../../../models/landscape-shape';
 import { Coordinates, Direction, getNeighborCoordinates, includesCoordinates } from '../../../models/simple-types';
 import { BOARD_SIZE } from '../../../game-logic/constants';
+import { IndexToCharPipe } from '../goal-area/index-to-char.pipe';
 
 @Component({
   selector: 'app-game-board',
   standalone: true,
-  imports: [NgForOf, BoardTileComponent, TemporaryPlacedLandscapeShapeComponent, NgIf],
+  imports: [NgForOf, BoardTileComponent, TemporaryPlacedLandscapeShapeComponent, NgIf, IndexToCharPipe],
   templateUrl: './game-board.component.html',
   styleUrl: './game-board.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

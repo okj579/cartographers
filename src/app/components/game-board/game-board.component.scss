@@ -11,3 +11,23 @@ app-board-tile {
 
   @include grid-mixins.neighbors;
 }
+
+.num-entry {
+  font-family: monospace;
+  font-size: 0.4em;
+  padding: var(--gap-4);
+  color: var(--color-text-secondary);
+
+  &.col {
+    height: min-content;
+    font-weight: 600;
+  }
+
+  &.row {
+    transform: translateX(-100%);
+    width: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

@@ -3,7 +3,7 @@
 @import '@fortawesome/fontawesome-free/css/all.css';
 
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Verdana, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
@@ -16,6 +16,7 @@
   --bg-color-4: #404040;
   --bg-color-4-alpha-a: #404040aa;
   --success-color: lime;
+  --color-text-secondary: #808080;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -107,6 +108,7 @@ button.submit-btn {
     --bg-color-4: #eaeaea;
     --bg-color-4-alpha-a: #eaeaeaaa;
     --success-color: #00b300;
+    --color-text-secondary: #707070;
   }
   a:hover {
     color: #747bff;
