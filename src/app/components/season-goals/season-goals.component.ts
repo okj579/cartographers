@@ -4,8 +4,6 @@ import { Goal } from '../../../models/goals';
 import { NgClass, NgForOf, NgIf } from '@angular/common';
 import { IndexToCharPipe } from '../goal-area/index-to-char.pipe';
 import { GoalEmojisPipe } from './goal-emojis.pipe';
-import { getSeasonScore } from '../../../game-logic/functions';
-import { MONSTER_SCORE_INDEX } from '../../../game-logic/constants';
 import { GoalIdComponent } from '../goal-area/goal-id/goal-id.component';
 import { GoalListComponent } from '../goal-list/goal-list.component';
 import { SeasonScoresComponent } from '../season-scores/season-scores.component';
@@ -33,14 +31,9 @@ export class SeasonGoalsComponent {
   @Output() endSeason = new EventEmitter<void>();
 
   protected showAllGoals: boolean = false;
-  protected monsterScoreIndex: number = MONSTER_SCORE_INDEX;
 
   get seasonGoals(): Goal[] {
     return this.goals.filter((goal, index) => this.currentSeason.goalIndices.includes(index));
-  }
-
-  get totalSeasonScore(): number {
-    return getSeasonScore(this.currentSeason, this.scores, this.coins);
   }
 
   toggleShowAllGoals(): void {

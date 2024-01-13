@@ -20,7 +20,7 @@ export class GoalAreaComponent {
   @Input() goals: Goal[] = [];
   @Input() currentSeason: Season | undefined = undefined;
   @Input() coins: number = 0;
-  @Input() newCoins: number = 0;
+  @Input() temporaryCoins: number = 0;
 
   @Input() temporaryScores: number[] = [];
   @Input() previousScores: number[] = [];
@@ -30,8 +30,12 @@ export class GoalAreaComponent {
   coinDescription: string = 'Collect 💎 by surrounding mountains on the 4 edges, and from some of the landscape shapes.';
   monsterScoreDescription: string = 'One minus point for each empty tile that is adjacent to at least one monster tile';
 
+  get coinDiff(): number {
+    return this.temporaryCoins - this.coins;
+  }
+
   get totalScoreDiff(): number {
-    return this.temporaryScores.reduce((acc, score) => acc + score, 0) + this.coins + this.newCoins - this.totalPreviousScore;
+    return this.temporaryScores.reduce((acc, score) => acc + score, 0) + this.temporaryCoins - this.totalPreviousScore;
   }
 
   get totalPreviousScore(): number {
@@ -39,7 +43,7 @@ export class GoalAreaComponent {
   }
 
   get totalSeasonScore(): number {
-    return this.currentSeason ? getSeasonScore(this.currentSeason, this.temporaryScores, this.coins + this.newCoins) : 0;
+    return this.currentSeason ? getSeasonScore(this.currentSeason, this.temporaryScores, this.temporaryCoins) : 0;
   }
 
   get totalSeasonPreviousScore(): number {

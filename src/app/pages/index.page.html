@@ -4,7 +4,7 @@
   <app-goal-area
     [goals]="gameState.goals"
     [coins]="currentPlayerState.coins"
-    [newCoins]="newCoins"
+    [temporaryCoins]="tempPlayerState.coins"
     [previousScores]="currentPlayerState.scores"
     [temporaryScores]="tempPlayerState.scores"
     [currentSeason]="currentGameState.season"
@@ -21,8 +21,8 @@
 
   <div class="controls-and-info">
     <app-next-shape
-      *ngIf="currentPlayerState.cardToPlace && !isStartOfSeason && !isEndOfSeason"
-      [landscapeCard]="currentPlayerState.cardToPlace"
+      *ngIf="currentGameState.cardToPlace && !isStartOfSeason && !isEndOfSeason"
+      [landscapeCard]="currentGameState.cardToPlace"
       [hasConflict]="tempPlayerState.hasConflict"
       [untouchedBoardState]="currentPlayerState.boardState"
       (landscapeShapeChange)="updateShapeInBoard($event)"

@@ -22,7 +22,7 @@
   <div class="goal-id">💎</div>
   <div class="score">
     {{ coins }}
-    <span *ngIf="newCoins > 0" class="positive">{{ newCoins | formatNumber }}</span>
+    <span *ngIf="coinDiff > 0" class="positive">{{ coinDiff | formatNumber }}</span>
   </div>
 </div>
 

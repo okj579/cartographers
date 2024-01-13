@@ -18,23 +18,25 @@ export function createNewGame(): GameState {
   return {
     goals: getShuffledGoals(),
     seasonSetups: createSeasonSetups(),
-    currentSeasonIndex: 0,
     playerStates: [createPlayerState()],
   };
 }
 
-export function stateToCurrentState(state: GameState): CurrentGameState {
-  const { currentSeasonIndex, seasonSetups, goals } = state;
+export function stateToCurrentState(state: GameState, playerIndex: number = 0): CurrentGameState {
+  const { seasonSetups, goals } = state;
+  const mainPlayerState = state.playerStates[playerIndex];
+  const currentSeasonIndex = mainPlayerState.currentSeasonIndex ?? 0;
+  const currentCardIndex = mainPlayerState.currentCardIndex ?? -1;
   const season: Season | undefined = SEASONS[currentSeasonIndex];
   const seasonGoals = goals.filter((_goal, index) => season?.goalIndices.includes(index));
-  const playerStates = state.playerStates.map((playerState) => ({
+  const playerStates: CurrentPlayerGameState[] = state.playerStates.map((playerState) => ({
     ...playerStateToCurrentPlayerState(playerState, state.goals),
-    cardToPlace: seasonSetups[currentSeasonIndex]?.cardDeck[playerState.currentCardIndex],
   }));
 
   return {
     season,
     cardDeck: seasonSetups[currentSeasonIndex]?.cardDeck ?? [],
+    cardToPlace: seasonSetups[currentSeasonIndex]?.cardDeck[currentCardIndex],
     seasonGoals,
     playerStates,
   };
@@ -86,22 +88,20 @@ export function startSeason(state: GameState): GameState {
   };
 }
 
-export function endSeason(state: GameState): GameState {
-  const currentState = stateToCurrentState(state);
-
+export function endSeason(state: GameState, currentState: CurrentGameState): GameState {
   return {
     ...state,
-    currentSeasonIndex: state.currentSeasonIndex + 1,
     playerStates: state.playerStates.map((playerState, index) => ({
       ...playerState,
       currentCardIndex: -1,
+      currentSeasonIndex: playerState.currentSeasonIndex + 1,
       seasonScores: [
         ...playerState.seasonScores,
         {
-          season: SEASONS[state.currentSeasonIndex],
+          season: SEASONS[playerState.currentSeasonIndex],
           goalScores: currentState.playerStates[index].scores,
           coins: playerState.coins,
-          totalScore: getSeasonScore(SEASONS[state.currentSeasonIndex], currentState.playerStates[index].scores, playerState.coins),
+          totalScore: getSeasonScore(SEASONS[playerState.currentSeasonIndex], currentState.playerStates[index].scores, playerState.coins),
         },
       ],
     })),
@@ -114,6 +114,7 @@ function createPlayerState(): PlayerGameState {
     boardState: getInitialBoardTiles(),
     coins: 0,
     currentCardIndex: -1,
+    currentSeasonIndex: 0,
     seasonScores: [],
   };
 }

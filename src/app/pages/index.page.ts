@@ -45,8 +45,6 @@ export default class HomeComponent {
   currentGameState: CurrentGameState = stateToCurrentState(this._gameState);
   tempPlayerState: TempPlayerGameState = { ...this.currentPlayerState, hasConflict: false, conflictedCellIndices: [] };
 
-  newCoins: number = 0;
-
   currentShapeToPlace: PlacedLandscapeShape | undefined;
 
   protected isEndOfSeason: boolean = false;
@@ -72,7 +70,7 @@ export default class HomeComponent {
   }
 
   endSeason(): void {
-    this.gameState = endSeason(this.gameState);
+    this.gameState = endSeason(this.gameState, this.currentGameState);
     this.isEndOfSeason = false;
   }
 
@@ -83,7 +81,6 @@ export default class HomeComponent {
     this.gameState = updatePlayerState(this.gameState, this.tempPlayerState);
 
     this.currentShapeToPlace = undefined;
-    this.newCoins = 0;
 
     this._handleSeasonEndIfApplicable();
   }
@@ -99,7 +96,6 @@ export default class HomeComponent {
       this.currentShapeToPlace = shape;
 
       this.tempPlayerState = getTempPlayerStateWithShape(this.gameState, shape);
-      this.newCoins = this.tempPlayerState.coins - this.currentPlayerState.coins;
     }
   }
 

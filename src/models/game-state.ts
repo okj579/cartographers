@@ -6,7 +6,6 @@ import { Goal } from './goals';
 export interface GameState {
   readonly goals: Goal[];
   readonly seasonSetups: SeasonSetup[];
-  readonly currentSeasonIndex: number;
   readonly playerStates: PlayerGameState[];
 }
 
@@ -20,19 +19,20 @@ export interface PlayerGameState {
   readonly boardState: BoardTile[][];
   readonly coins: number;
   readonly currentCardIndex: number;
+  readonly currentSeasonIndex: number;
   readonly seasonScores: SeasonScore[];
 }
 
 export interface CurrentGameState {
-  readonly season: Season;
-  readonly cardDeck: LandscapeCard[];
+  readonly season: Season | undefined;
   readonly seasonGoals: Goal[];
+  readonly cardDeck: LandscapeCard[];
+  readonly cardToPlace: LandscapeCard | undefined;
   readonly playerStates: CurrentPlayerGameState[];
 }
 
 export interface CurrentPlayerGameState extends PlayerGameState {
   readonly scores: number[];
-  readonly cardToPlace?: LandscapeCard;
 }
 
 export interface TempPlayerGameState extends CurrentPlayerGameState {
