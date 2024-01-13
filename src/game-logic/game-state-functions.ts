@@ -34,8 +34,9 @@ export function stateToCurrentState(state: GameState, playerIndex: number = 0): 
   }));
   const isStartOfSeason = currentCardIndex === -1 && !!season;
   const cardDeck = seasonSetups[currentSeasonIndex]?.cardDeck ?? [];
-  const playedCards = cardDeck.slice(0, currentCardIndex + 1);
-  const isEndOfSeason = getCurrentTimeProgress(playedCards) >= season?.duration ?? false;
+  const previouslyPlayedCards = isStartOfSeason ? [] : cardDeck.slice(0, currentCardIndex);
+  const isEndOfSeason = getCurrentTimeProgress(previouslyPlayedCards) >= season?.duration ?? false;
+  const playedCards = isEndOfSeason ? previouslyPlayedCards : cardDeck.slice(0, currentCardIndex + 1);
   const cardToPlace = isEndOfSeason ? undefined : cardDeck[currentCardIndex];
 
   return {
