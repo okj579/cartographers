@@ -58,10 +58,6 @@ export class GameBoardComponent {
     for (let x = 0; x < baseShape.width; x++) {
       for (let y = 0; y < baseShape.height; y++) {
         if (includesCoordinates({ x, y }, baseShape.filledCells)) {
-          if (baseShape.width === 3 && baseShape.height === 3 && x !== y && includesCoordinates({ x: y, y: x }, baseShape.filledCells)) {
-            continue;
-          }
-
           return { x, y };
         }
       }
