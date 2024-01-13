@@ -82,6 +82,8 @@ export const MONSTER_EFFECTS: Record<MonsterType, MonsterEffect> = {
       const gorgonTiles = board
         .flat()
         .filter((tile) => isTileOfLandscape(tile, LandscapeType.MONSTER) && tile.monsterType === MonsterType.GORGON);
+
+      const emptyTilesNextToGorgon: BoardTile[] = [];
       for (const gorgonTile of gorgonTiles) {
         const adjacentTiles = getAdjacentTiles(board, gorgonTile.position);
         const landscapeAdjacentTiles = adjacentTiles.filter(
@@ -93,12 +95,14 @@ export const MONSTER_EFFECTS: Record<MonsterType, MonsterEffect> = {
           return copyBoard(board);
         } else {
           const emptyAdjacentTiles = adjacentTiles.filter((tile) => isTileOfLandscape(tile, undefined));
-          if (emptyAdjacentTiles.length) {
-            const tileToDestroy = emptyAdjacentTiles[0];
-            tileToDestroy.destroyed = true;
-            return copyBoard(board);
-          }
+          emptyTilesNextToGorgon.push(...emptyAdjacentTiles);
         }
+      }
+
+      if (emptyTilesNextToGorgon.length) {
+        const tileToDestroy = emptyTilesNextToGorgon[0];
+        tileToDestroy.destroyed = true;
+        return copyBoard(board);
       }
 
       return board;
