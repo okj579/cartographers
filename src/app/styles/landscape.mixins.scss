@@ -59,7 +59,7 @@
     }
   }
 
-  &[data-landscape='monster'] {
+  &[data-landscape='monster']:not(.has-monster-type) {
     &::before {
       content: '😈';
     }

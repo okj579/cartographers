@@ -33,6 +33,7 @@ export default class HomeComponent {
   set gameState(value: GameState) {
     this._gameState = value;
     this.currentGameState = stateToCurrentState(this._gameState);
+    this.tempPlayerState = { ...this.currentPlayerState, hasConflict: false, conflictedCellIndices: [] };
   }
 
   get gameState(): GameState {

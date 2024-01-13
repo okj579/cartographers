@@ -26,4 +26,9 @@
     <div class="variant-info">{{ index + 1 }}</div>
     <div *ngIf="variant.baseShape.hasCoin" class="coin">💎</div>
   </div>
+
+  <div *ngIf="currentMonsterEffect" class="monster-effect">
+    <div class="monster-name">{{ currentMonsterEffect.name }}</div>
+    <div class="monster-description">{{ currentMonsterEffect.description }}</div>
+  </div>
 </div>

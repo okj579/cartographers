@@ -32,14 +32,13 @@ export class GameBoardComponent {
   }
 
   isSameAreaAsNeighbor(direction: Direction, tile: BoardTile): boolean {
-    if (!tile.landscape) return false;
+    if (!tile.landscape || tile.destroyed) return false;
 
-    const { x, y } = tile.position;
     const neighbor = this._getNeighbor(direction, tile.position);
 
-    if (!neighbor) return false;
+    if (!neighbor || neighbor.destroyed) return false;
 
-    return neighbor.landscape === this.currentBoardState[x][y].landscape;
+    return neighbor.landscape === tile.landscape && neighbor.monsterType === tile.monsterType;
   }
 
   onTileClick(x: number, y: number): void {

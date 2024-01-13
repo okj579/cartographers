@@ -15,3 +15,7 @@ export interface BoardTile {
 export function tilesToCoordinates(tiles: BoardTile[]): Coordinates[] {
   return tiles.map((tile) => tile.position);
 }
+
+export function copyBoard(board: BoardTile[][]): BoardTile[][] {
+  return board.map((row) => row.map((tile) => ({ ...tile })));
+}

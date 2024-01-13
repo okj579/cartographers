@@ -13,6 +13,7 @@ import {
   rotateLandscapeShapeClockwise,
   rotateLandscapeShapeCounterClockwise,
 } from '../../../game-logic/transformation-functions';
+import { MONSTER_EFFECTS, MonsterEffect } from '../../../game-logic/monster-effects';
 
 @Component({
   selector: 'app-next-shape',
@@ -48,6 +49,12 @@ export class NextShapeComponent {
 
   constructor() {
     this._resetValues();
+  }
+
+  get currentMonsterEffect(): MonsterEffect | undefined {
+    const monsterType = this.currentVariant?.monsterType;
+
+    return monsterType ? MONSTER_EFFECTS[monsterType] : undefined;
   }
 
   get currentVariant(): PlacedLandscapeShape | undefined {

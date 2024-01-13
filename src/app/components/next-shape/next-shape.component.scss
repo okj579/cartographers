@@ -9,11 +9,23 @@
   @include grid-mixins.board-tile-grid-variables;
 }
 
+$shapeSelectionWidth: calc(3.5 * var(--square-size) + 3 * var(--gap));
+
 .shape-selection {
   display: flex;
   flex-direction: column;
   gap: var(--gap-24);
-  min-width: calc(3.5 * var(--square-size) + 3 * var(--gap));
+  min-width: $shapeSelectionWidth;
+}
+
+.monster-effect {
+  max-width: $shapeSelectionWidth;
+  text-align: left;
+  font-size: 0.75rem;
+
+  .monster-name {
+    font-weight: bold;
+  }
 }
 
 .shape-box {
