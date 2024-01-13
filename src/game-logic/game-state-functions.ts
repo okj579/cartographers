@@ -13,12 +13,14 @@ import { getCurrentTimeProgress, getSeasonScore, getShuffledCards, tryPlaceShape
 import { Season, SEASONS } from '../models/season';
 import { LandscapeType } from '../models/landscape-type';
 import { PlacedLandscapeShape } from '../models/landscape-shape';
+import { applyPlacingMonsterEffect, applySeasonEndMonsterEffect } from './monster-effects';
 
 export function createNewGame(): GameState {
   return {
     goals: getShuffledGoals(),
     seasonSetups: createSeasonSetups(),
     playerStates: [createPlayerState()],
+    playedMonsterCards: [],
   };
 }
 
@@ -69,10 +71,14 @@ export function updatePlayerState(state: GameState, newPlayerState: PlayerGameSt
 
 export function getTempPlayerStateWithShape(state: GameState, shape: PlacedLandscapeShape): TempPlayerGameState {
   const playerState = state.playerStates[0];
-  const { updatedBoard, newCoins, conflictedCellIndices } = tryPlaceShapeOnBoard(playerState.boardState, shape);
+  let { updatedBoard, newCoins, conflictedCellIndices } = tryPlaceShapeOnBoard(playerState.boardState, shape);
   const hasConflict = conflictedCellIndices.length > 0;
   const coinsFromShape = shape.baseShape.hasCoin ? 1 : 0;
   const newCoinsToAdd = hasConflict ? 0 : newCoins + coinsFromShape;
+
+  if (shape.monsterType) {
+    updatedBoard = applyPlacingMonsterEffect(updatedBoard, shape.monsterType);
+  }
 
   const newPlayerState: PlayerGameState = {
     ...playerState,
@@ -98,22 +104,37 @@ export function startSeason(state: GameState): GameState {
 }
 
 export function endSeason(state: GameState, currentState: CurrentGameState): GameState {
+  const playedMonsterCards: LandscapeCard[] = [
+    ...state.playedMonsterCards,
+    ...currentState.playedCards.filter((card) => card.landscapeTypes.includes(LandscapeType.MONSTER)),
+  ];
+
   return {
     ...state,
-    playerStates: state.playerStates.map((playerState, index) => ({
-      ...playerState,
-      currentCardIndex: -1,
-      currentSeasonIndex: playerState.currentSeasonIndex + 1,
-      seasonScores: [
-        ...playerState.seasonScores,
-        {
-          season: SEASONS[playerState.currentSeasonIndex],
-          goalScores: currentState.playerStates[index].scores,
-          coins: playerState.coins,
-          totalScore: getSeasonScore(SEASONS[playerState.currentSeasonIndex], currentState.playerStates[index].scores, playerState.coins),
-        },
-      ],
-    })),
+    playedMonsterCards,
+    playerStates: state.playerStates.map((playerState, index) => {
+      let boardState = playerState.boardState;
+
+      playedMonsterCards.forEach((card) => {
+        boardState = applySeasonEndMonsterEffect(boardState, card.monster?.type);
+      });
+
+      return {
+        ...playerState,
+        boardState,
+        currentCardIndex: -1,
+        currentSeasonIndex: playerState.currentSeasonIndex + 1,
+        seasonScores: [
+          ...playerState.seasonScores,
+          {
+            season: SEASONS[playerState.currentSeasonIndex],
+            goalScores: currentState.playerStates[index].scores,
+            coins: playerState.coins,
+            totalScore: getSeasonScore(SEASONS[playerState.currentSeasonIndex], currentState.playerStates[index].scores, playerState.coins),
+          },
+        ],
+      };
+    }),
   };
 }
 

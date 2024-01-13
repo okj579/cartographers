@@ -8,33 +8,30 @@ export enum MonsterType {
 export interface Monster {
   type: MonsterType;
   name: string;
-  description: string;
   emoji: string;
 }
+
+export const DRAGON_COINS = 3;
 
 const MONSTERS: Monster[] = [
   {
     type: MonsterType.DRAGON,
     name: 'Dragon',
-    description: 'Get 3 coins when the dragon is defeated (no malus anymore).',
     emoji: '🐉',
   },
   {
     type: MonsterType.TROLL,
     name: 'Troll',
-    description: 'Destroys 1 adjacent empty landscape tile after each scoring.',
     emoji: '🤡',
   },
   {
     type: MonsterType.ZOMBIE,
     name: 'Zombie',
-    description: 'Expands to each adjacent empty landscape tile after each scoring.',
     emoji: '🧟',
   },
   {
     type: MonsterType.GORGON,
     name: 'Gorgon',
-    description: 'Destroys 1 adjacent landscape tile when placed (except mountain).',
     emoji: '🐍',
   },
 ];
