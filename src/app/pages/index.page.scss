@@ -20,18 +20,21 @@
 
 .content {
   margin: 0 auto;
-  padding: var(--gap-32);
+  padding: var(--gap-24);
   gap: var(--gap-24);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-content: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .controls-and-info {
   display: flex;
   flex-direction: column;
   gap: var(--gap-32);
+  flex: 1;
 
   &.is-start {
     app-game-setup-info {

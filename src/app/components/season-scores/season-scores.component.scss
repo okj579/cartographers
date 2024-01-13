@@ -5,10 +5,10 @@
 }
 
 :host(.narrow) {
-  gap: var(--gap-32) var(--gap-24);
+  gap: var(--gap-32) var(--gap-16);
 
   .goal-scores {
-    gap: var(--gap-8) var(--gap-24);
+    gap: var(--gap-8) var(--gap-16);
     max-width: 240px;
   }
 }

@@ -10,8 +10,9 @@
 
 .season-container {
   display: grid;
-  grid-template-columns: repeat(2, max-content);
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
   gap: var(--gap-8);
+  width: 100%;
 
   h4 {
     grid-column: 1 / -1;
