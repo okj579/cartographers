@@ -11,12 +11,14 @@ import { CurrentGameState, CurrentPlayerGameState, GameState, TempPlayerGameStat
 import {
   createNewGame,
   endSeason,
+  findPlayerIndex,
   getTempPlayerStateWithShape,
   startSeason,
   stateToCurrentState,
   updatePlayerState,
 } from '../../game-logic/game-state-functions';
 import { GameSetupInfoComponent } from '../components/game-setup-info/game-setup-info.component';
+import { getCurrentUserId } from '../data/util';
 
 @Component({
   selector: 'app-home',
@@ -38,11 +40,11 @@ import { GameSetupInfoComponent } from '../components/game-setup-info/game-setup
 export default class HomeComponent {
   @ViewChild(NextShapeComponent) nextShapeComponent!: NextShapeComponent;
 
-  readonly playerIndex: number = 0;
+  readonly currentPlayerId: string;
 
   set gameState(value: GameState) {
     this._gameState = value;
-    this.currentGameState = stateToCurrentState(this._gameState);
+    this.currentGameState = stateToCurrentState(this._gameState, this.currentPlayerId);
     this.tempPlayerState = { ...this.currentPlayerState, hasConflict: false, conflictedCellIndices: [] };
   }
 
@@ -50,13 +52,17 @@ export default class HomeComponent {
     return this._gameState;
   }
 
-  private _gameState: GameState = createNewGame();
-  currentGameState: CurrentGameState = stateToCurrentState(this._gameState);
-  tempPlayerState: TempPlayerGameState = { ...this.currentPlayerState, hasConflict: false, conflictedCellIndices: [] };
+  private _gameState!: GameState;
+  currentGameState!: CurrentGameState;
+  tempPlayerState!: TempPlayerGameState;
 
   isStartOfGame: boolean = true;
 
   currentShapeToPlace: PlacedLandscapeShape | undefined;
+
+  get playerIndex(): number {
+    return findPlayerIndex(this.currentGameState.playerStates, this.currentPlayerId);
+  }
 
   get currentPlayerState(): CurrentPlayerGameState {
     return this.currentGameState.playerStates[this.playerIndex];
@@ -64,6 +70,10 @@ export default class HomeComponent {
 
   get totalEndScore(): number {
     return this.currentPlayerState.seasonScores.reduce((sum, score) => sum + score.totalScore, 0);
+  }
+  constructor() {
+    this.currentPlayerId = getCurrentUserId();
+    this.gameState = createNewGame();
   }
 
   startSeason(): void {

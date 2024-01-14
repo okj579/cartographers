@@ -14,6 +14,7 @@ import { Season, SEASONS } from '../models/season';
 import { LandscapeType } from '../models/landscape-type';
 import { PlacedLandscapeShape } from '../models/landscape-shape';
 import { applyPlacingMonsterEffect, applySeasonEndMonsterEffect } from './monster-effects';
+import { getCurrentUserId, getUserName } from '../app/data/util';
 
 export function createNewGame(): GameState {
   return {
@@ -24,8 +25,9 @@ export function createNewGame(): GameState {
   };
 }
 
-export function stateToCurrentState(state: GameState, playerIndex: number = 0): CurrentGameState {
+export function stateToCurrentState(state: GameState, playerId: string): CurrentGameState {
   const { seasonSetups, goals } = state;
+  const playerIndex = findPlayerIndex(state.playerStates, playerId);
   const mainPlayerState = state.playerStates[playerIndex];
   const currentSeasonIndex = mainPlayerState.currentSeasonIndex ?? 0;
   const currentCardIndex = mainPlayerState.currentCardIndex ?? -1;
@@ -64,7 +66,7 @@ export function updatePlayerState(state: GameState, newPlayerState: PlayerGameSt
   return {
     ...state,
     playerStates: state.playerStates.map((playerGameState) =>
-      playerGameState.name === newPlayerState.name ? newPlayerState : playerGameState,
+      playerGameState.player.id === newPlayerState.player.id ? newPlayerState : playerGameState,
     ),
   };
 }
@@ -139,8 +141,11 @@ export function endSeason(state: GameState, currentState: CurrentGameState): Gam
 }
 
 function createPlayerState(): PlayerGameState {
+  const id = getCurrentUserId();
+  const name = getUserName();
+
   return {
-    name: '',
+    player: { id, name },
     boardState: getInitialBoardTiles(),
     coins: 0,
     currentCardIndex: -1,
@@ -182,4 +187,8 @@ function getRemainingSpecialCardsFromSeason(seasonSetup: SeasonSetup | undefined
   }
 
   return remainingCards.filter((card) => [LandscapeType.MONSTER, LandscapeType.HERO].includes(card.landscapeTypes[0]));
+}
+
+export function findPlayerIndex(itemsWithPlayer: { player: { id: string } }[], playerId: string): number {
+  return itemsWithPlayer.findIndex((item) => item.player.id === playerId);
 }

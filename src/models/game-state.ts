@@ -16,12 +16,17 @@ export interface SeasonSetup {
 }
 
 export interface PlayerGameState {
-  readonly name: string;
+  readonly player: Player;
   readonly boardState: BoardTile[][];
   readonly coins: number;
   readonly currentCardIndex: number;
   readonly currentSeasonIndex: number;
   readonly seasonScores: SeasonScore[];
+}
+
+export interface Player {
+  readonly id: string;
+  readonly name: string;
 }
 
 export interface CurrentGameState {
