@@ -5,13 +5,12 @@ import { Router, RouterLink } from '@angular/router';
 import { getMyGames } from '../data/util';
 
 @Component({
-  selector: 'app-home',
   standalone: true,
   templateUrl: './index.page.html',
   styleUrl: './index.page.scss',
   imports: [NgForOf, RouterLink, NgIf],
 })
-export default class IndexPageComponent {
+export default class HomePageComponent {
   myGames: WritableSignal<string[]> = signal([]);
 
   private _myGames: string[] = getMyGames();
