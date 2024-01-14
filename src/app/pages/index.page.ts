@@ -3,6 +3,7 @@ import { ApiService } from '../api.service';
 import { NgForOf, NgIf } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { getMyGames } from '../data/util';
+import { Route } from '../data/routes';
 
 @Component({
   standalone: true,
@@ -12,6 +13,8 @@ import { getMyGames } from '../data/util';
 })
 export default class HomePageComponent {
   myGames: WritableSignal<string[]> = signal([]);
+
+  protected readonly gameRoute = Route.Game;
 
   private _myGames: string[] = getMyGames();
   private _allGameIds: string[] = [];
@@ -36,9 +39,9 @@ export default class HomePageComponent {
     const notMyGames = this._allGameIds.filter((gameId) => !this._myGames.includes(gameId));
 
     if (notMyGames.length === 0) {
-      void this._router.navigate(['game', 'new']);
+      void this._router.navigate([Route.Game, 'new']);
     }
     const randomGameId = notMyGames[Math.floor(Math.random() * notMyGames.length)];
-    void this._router.navigate(['game', randomGameId]);
+    void this._router.navigate([Route.Game, randomGameId]);
   }
 }

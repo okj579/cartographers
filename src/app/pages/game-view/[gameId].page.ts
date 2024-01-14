@@ -13,6 +13,7 @@ import { ApiService } from '../../api.service';
 import { generateId } from '../../../utils/general-util';
 import { Router } from '@angular/router';
 import { GameViewComponent } from '../../components/game-view/game-view.component';
+import { Route } from '../../data/routes';
 
 @Component({
   selector: 'app-game-page',
@@ -96,7 +97,7 @@ export default class GameIdPage implements OnInit {
       });
       this.gameState.set(await this._api.createGame(this.gameId, stateToPersist));
       addGameToMyGames(this.gameId);
-      void this._router.navigate(['game', this.gameId], { replaceUrl: true });
+      void this._router.navigate([Route.Game, this.gameId], { replaceUrl: true });
     }
     this.isSyncing.set(false);
     this._cdr.detectChanges(); // todo - why is this needed?
