@@ -15,7 +15,7 @@
     class="secondary"
     (click)="playerToShowId = player.id"
   >
-    {{ player.id === currentPlayerId ? '[Me]' : player.name }}
+    {{ player.name }} {{ player.id === currentPlayerId ? '[Me]' : '' }}
   </button>
 </div>
 

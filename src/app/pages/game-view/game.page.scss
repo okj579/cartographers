@@ -9,6 +9,7 @@
 .server-actions {
   padding: var(--gap-16);
   display: flex;
+  flex-wrap: wrap;
   gap: var(--gap-16);
   align-items: center;
   justify-content: center;
