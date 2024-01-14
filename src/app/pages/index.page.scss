@@ -54,6 +54,14 @@
   margin: var(--gap-32) 0;
 }
 
+.server-actions {
+  display: flex;
+  gap: var(--gap-16);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
 @media (max-width: 600px) {
   .sticky-header {
     padding: var(--gap-16);

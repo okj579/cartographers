@@ -69,4 +69,17 @@
       ></app-season-goals>
     </ng-container>
   </div>
+
+  <div class="server-actions">
+    <button [disabled]="isAutoSync()" (click)="syncGame()">
+      <i *ngIf="!isSyncing()" class="fa-solid fa-cloud-arrow-up"></i>
+      <i *ngIf="isSyncing()" class="fa-spin fa-solid fa-spinner"></i>
+      <span *ngIf="isAutoSync()">Auto Sync</span>
+      <span *ngIf="!isAutoSync()">Sync game</span>
+    </button>
+    <button (click)="loadGame()">
+      <i class="fa-solid fa-cloud-arrow-down"></i>
+      Load game
+    </button>
+  </div>
 </div>

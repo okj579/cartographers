@@ -7,7 +7,6 @@ export interface GameState {
   readonly goals: Goal[];
   readonly seasonSetups: SeasonSetup[];
   readonly playerStates: PlayerGameState[];
-  readonly playedMonsterCards: LandscapeCard[];
 }
 
 export interface SeasonSetup {
@@ -22,6 +21,7 @@ export interface PlayerGameState {
   readonly currentCardIndex: number;
   readonly currentSeasonIndex: number;
   readonly seasonScores: SeasonScore[];
+  readonly playedMonsterCards: LandscapeCard[];
 }
 
 export interface Player {

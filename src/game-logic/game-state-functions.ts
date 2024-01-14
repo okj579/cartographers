@@ -6,7 +6,7 @@ import {
   SeasonSetup,
   TempPlayerGameState,
 } from '../models/game-state';
-import { getMonsterScore, getShuffledGoals, Goal } from '../models/goals';
+import { findGoalByName, getMonsterScore, getShuffledGoals, Goal } from '../models/goals';
 import { getInitialBoardTiles } from './constants';
 import { HERO_CARDS, LANDSCAPE_CARDS, LandscapeCard, MONSTER_CARDS } from '../models/landscape-card';
 import { getCurrentTimeProgress, getSeasonScore, getShuffledCards, tryPlaceShapeOnBoard } from './functions';
@@ -21,16 +21,22 @@ export function createNewGame(): GameState {
     goals: getShuffledGoals(),
     seasonSetups: createSeasonSetups(),
     playerStates: [createPlayerState()],
-    playedMonsterCards: [],
+  };
+}
+
+export function addPlayer(state: GameState): GameState {
+  return {
+    ...state,
+    playerStates: [...state.playerStates, createPlayerState()],
   };
 }
 
 export function stateToCurrentState(state: GameState, playerId: string): CurrentGameState {
   const { seasonSetups, goals } = state;
   const playerIndex = findPlayerIndex(state.playerStates, playerId);
-  const mainPlayerState = state.playerStates[playerIndex];
-  const currentSeasonIndex = mainPlayerState.currentSeasonIndex ?? 0;
-  const currentCardIndex = mainPlayerState.currentCardIndex ?? -1;
+  const currentPlayerState = state.playerStates[playerIndex];
+  const currentSeasonIndex = currentPlayerState.currentSeasonIndex ?? 0;
+  const currentCardIndex = currentPlayerState.currentCardIndex ?? -1;
   const season: Season | undefined = SEASONS[currentSeasonIndex];
   const seasonGoals = goals.filter((_goal, index) => season?.goalIndices.includes(index));
   const playerStates: CurrentPlayerGameState[] = state.playerStates.map((playerState) => ({
@@ -58,21 +64,39 @@ export function stateToCurrentState(state: GameState, playerId: string): Current
 function playerStateToCurrentPlayerState(playerState: PlayerGameState, goals: Goal[]): CurrentPlayerGameState {
   return {
     ...playerState,
-    scores: [...goals.map((goal) => goal.scoreAlgorithm(playerState.boardState)), getMonsterScore(playerState.boardState)],
+    scores: [
+      ...goals.map((goal) => {
+        const localGoal = findGoalByName(goal.name);
+
+        if (!localGoal) return 0;
+
+        return localGoal.scoreAlgorithm(playerState.boardState);
+      }),
+      getMonsterScore(playerState.boardState),
+    ],
   };
 }
 
 export function updatePlayerState(state: GameState, newPlayerState: PlayerGameState): GameState {
+  const playerIndex = findPlayerIndex(state.playerStates, newPlayerState.player.id);
+  const playerStates =
+    playerIndex === -1
+      ? [...state.playerStates, newPlayerState]
+      : state.playerStates.map((playerState, index) => {
+          if (index !== playerIndex) return playerState;
+
+          return newPlayerState;
+        });
+
   return {
     ...state,
-    playerStates: state.playerStates.map((playerGameState) =>
-      playerGameState.player.id === newPlayerState.player.id ? newPlayerState : playerGameState,
-    ),
+    playerStates,
   };
 }
 
-export function getTempPlayerStateWithShape(state: GameState, shape: PlacedLandscapeShape): TempPlayerGameState {
-  const playerState = state.playerStates[0];
+export function getTempPlayerStateWithShape(state: GameState, shape: PlacedLandscapeShape, playerId: string): TempPlayerGameState {
+  const playerIndex = findPlayerIndex(state.playerStates, playerId);
+  const playerState = state.playerStates[playerIndex];
   let { updatedBoard, newCoins, conflictedCellIndices } = tryPlaceShapeOnBoard(playerState.boardState, shape);
   const hasConflict = conflictedCellIndices.length > 0;
   const coinsFromShape = shape.baseShape.hasCoin ? 1 : 0;
@@ -95,28 +119,28 @@ export function getTempPlayerStateWithShape(state: GameState, shape: PlacedLands
   };
 }
 
-export function startSeason(state: GameState): GameState {
+export function startSeason(state: GameState, playerId: string): GameState {
   return {
     ...state,
     playerStates: state.playerStates.map((playerState) => ({
       ...playerState,
-      currentCardIndex: 0,
+      currentCardIndex: playerState.player.id === playerId ? 0 : playerState.currentCardIndex,
     })),
   };
 }
 
-export function endSeason(state: GameState, currentState: CurrentGameState): GameState {
-  const playedMonsterCards: LandscapeCard[] = [
-    ...state.playedMonsterCards,
-    ...currentState.playedCards.filter((card) => card.landscapeTypes.includes(LandscapeType.MONSTER)),
-  ];
-
+export function endSeason(state: GameState, currentState: CurrentGameState, playerId: string): GameState {
   return {
     ...state,
-    playedMonsterCards,
     playerStates: state.playerStates.map((playerState, index) => {
-      let boardState = playerState.boardState;
+      if (playerState.player.id !== playerId) return playerState;
 
+      const playedMonsterCards = [
+        ...playerState.playedMonsterCards,
+        ...currentState.playedCards.filter((card) => card.landscapeTypes.includes(LandscapeType.MONSTER)),
+      ];
+
+      let boardState = playerState.boardState;
       playedMonsterCards.forEach((card) => {
         boardState = applySeasonEndMonsterEffect(boardState, card.monster?.type);
       });
@@ -135,6 +159,7 @@ export function endSeason(state: GameState, currentState: CurrentGameState): Gam
             totalScore: getSeasonScore(SEASONS[playerState.currentSeasonIndex], currentState.playerStates[index].scores, playerState.coins),
           },
         ],
+        playedMonsterCards,
       };
     }),
   };
@@ -151,6 +176,7 @@ function createPlayerState(): PlayerGameState {
     currentCardIndex: -1,
     currentSeasonIndex: 0,
     seasonScores: [],
+    playedMonsterCards: [],
   };
 }
 

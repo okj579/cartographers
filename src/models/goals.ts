@@ -499,6 +499,12 @@ export const GLOBAL_GOALS: Goal[] = [
   },
 ];
 
+export const ALL_GOALS: Goal[] = [...FOREST_GOALS, ...VILLAGE_GOALS, ...FIELD_WATER_GOALS, ...GLOBAL_GOALS];
+
+export function findGoalByName(name: string): Goal | undefined {
+  return ALL_GOALS.find((goal) => goal.name === name);
+}
+
 function getRandomArrayElement<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)];
 }
