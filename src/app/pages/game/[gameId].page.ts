@@ -5,7 +5,7 @@ import { NgForOf, NgIf } from '@angular/common';
 import { GoalAreaComponent } from '../../components/goal-area/goal-area.component';
 import { SeasonInfoComponent } from '../../components/season-info/season-info.component';
 import { SeasonGoalsComponent } from '../../components/season-goals/season-goals.component';
-import { GameState } from '../../../models/game-state';
+import { GameState, Player } from '../../../models/game-state';
 import { addPlayer, createNewGame, findPlayerIndex, updatePlayerState } from '../../../game-logic/game-state-functions';
 import { GameSetupInfoComponent } from '../../components/game-setup-info/game-setup-info.component';
 import { addGameToMyGames, getCurrentUserId, getUserName } from '../../data/util';
@@ -35,7 +35,8 @@ import { GameViewComponent } from '../../components/game-view/game-view.componen
 export default class GameIdPage implements OnInit {
   @Input() gameId: string | undefined;
 
-  readonly currentPlayerId: string;
+  readonly currentPlayerId: string = getCurrentUserId();
+  playerToShowId: string = this.currentPlayerId;
 
   gameState: WritableSignal<GameState | undefined> = signal(undefined);
 
@@ -46,13 +47,15 @@ export default class GameIdPage implements OnInit {
   isSyncing: WritableSignal<boolean> = signal(false);
   isAutoSync: WritableSignal<boolean> = signal(false);
 
+  get allPlayers(): Player[] {
+    return this.gameState()?.playerStates.map((playerState) => playerState.player) ?? [];
+  }
+
   constructor(
     private _api: ApiService,
     private _cdr: ChangeDetectorRef,
     private _router: Router,
-  ) {
-    this.currentPlayerId = getCurrentUserId();
-  }
+  ) {}
 
   ngOnInit() {
     if (this.isOnlineGame) {

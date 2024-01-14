@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { GameBoardComponent } from '../game-board/game-board.component';
 import { PlacedLandscapeShape } from '../../../models/landscape-shape';
 import { NextShapeComponent } from '../next-shape/next-shape.component';
@@ -36,31 +46,19 @@ import { getCurrentUserId } from '../../data/util';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GameViewComponent {
+export class GameViewComponent implements OnChanges {
   @ViewChild(NextShapeComponent) nextShapeComponent!: NextShapeComponent;
 
-  readonly currentPlayerId: string;
+  readonly currentPlayerId: string = getCurrentUserId();
 
   @Output() gameStateChange = new EventEmitter<GameState>();
+  @Output() backToMyGame = new EventEmitter<void>();
+
+  @Input() playerIdToShow: string = this.currentPlayerId;
 
   @Input({ required: true })
-  set gameState(value: GameState) {
-    this._gameState = value;
-    this.currentGameState = stateToCurrentState(this._gameState, this.currentPlayerId);
-    this.isStartOfGame = this.currentPlayerState.currentSeasonIndex === 0 && this.currentPlayerState.currentCardIndex === -1;
+  gameState!: GameState;
 
-    if (this.currentShapeToPlace) {
-      this.updateShapeInBoard(this.currentShapeToPlace);
-    } else {
-      this.tempPlayerState = { ...this.currentPlayerState, hasConflict: false, conflictedCellIndices: [] };
-    }
-  }
-
-  get gameState(): GameState {
-    return this._gameState;
-  }
-
-  private _gameState!: GameState;
   currentGameState!: CurrentGameState;
   tempPlayerState!: TempPlayerGameState;
 
@@ -68,20 +66,28 @@ export class GameViewComponent {
 
   currentShapeToPlace: PlacedLandscapeShape | undefined;
 
-  get playerIndex(): number {
-    return findPlayerIndex(this.currentGameState.playerStates, this.currentPlayerId);
+  get isCurrentPlayer(): boolean {
+    return this.playerIdToShow === this.currentPlayerId;
   }
 
-  get currentPlayerState(): CurrentPlayerGameState {
+  get playerIndex(): number {
+    return findPlayerIndex(this.currentGameState.playerStates, this.playerIdToShow);
+  }
+
+  get playerState(): CurrentPlayerGameState {
     return this.currentGameState.playerStates[this.playerIndex];
   }
 
   get totalEndScore(): number {
-    return this.currentPlayerState.seasonScores.reduce((sum, score) => sum + score.totalScore, 0);
+    return this.playerState.seasonScores.reduce((sum, score) => sum + score.totalScore, 0);
   }
 
-  constructor(private _cdr: ChangeDetectorRef) {
-    this.currentPlayerId = getCurrentUserId();
+  constructor(private _cdr: ChangeDetectorRef) {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['playerIdToShow'] || changes['gameState']) {
+      this._calculateCurrentGameState();
+    }
   }
 
   startSeason(): void {
@@ -100,7 +106,7 @@ export class GameViewComponent {
     this.updateShapeInBoard(shape);
     const newGameState = updatePlayerState(this.gameState, {
       ...this.tempPlayerState,
-      currentCardIndex: this.currentPlayerState.currentCardIndex + 1,
+      currentCardIndex: this.playerState.currentCardIndex + 1,
     });
 
     this.gameStateChange.emit(newGameState);
@@ -117,6 +123,17 @@ export class GameViewComponent {
     if (shape) {
       this.currentShapeToPlace = shape;
       this.tempPlayerState = getTempPlayerStateWithShape(this.gameState, shape, this.currentPlayerId);
+    }
+  }
+
+  private _calculateCurrentGameState(): void {
+    this.currentGameState = stateToCurrentState(this.gameState, this.playerIdToShow);
+    this.isStartOfGame = this.playerState.currentSeasonIndex === 0 && this.playerState.currentCardIndex === -1;
+
+    if (this.currentShapeToPlace && this.isCurrentPlayer) {
+      this.updateShapeInBoard(this.currentShapeToPlace);
+    } else {
+      this.tempPlayerState = { ...this.playerState, hasConflict: false, conflictedCellIndices: [] };
     }
   }
 }

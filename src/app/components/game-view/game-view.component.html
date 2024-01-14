@@ -7,9 +7,9 @@
 
   <app-goal-area
     [goals]="gameState.goals"
-    [coins]="currentPlayerState.coins"
+    [coins]="playerState.coins"
     [temporaryCoins]="tempPlayerState.coins"
-    [previousScores]="currentPlayerState.scores"
+    [previousScores]="playerState.scores"
     [temporaryScores]="tempPlayerState.scores"
     [currentSeason]="currentGameState.season"
   ></app-goal-area>
@@ -17,28 +17,33 @@
 
 <div class="content">
   <app-game-board
-    [currentBoardState]="currentPlayerState.boardState"
-    [currentShapeToPlace]="currentShapeToPlace"
+    [currentBoardState]="playerState.boardState"
+    [currentShapeToPlace]="isCurrentPlayer ? currentShapeToPlace : undefined"
     [conflictedCellIndices]="tempPlayerState.conflictedCellIndices"
     (positionChange)="onPositionChange($event)"
   />
 
   <div class="controls-and-info" [class.is-start]="isStartOfGame">
+    <div *ngIf="!isCurrentPlayer" class="other-player-info">
+      <h2><i class="fa-solid fa-info-circle"></i> {{ playerState.player.name }}'s game board</h2>
+      <button (click)="backToMyGame.emit()">Back to mine</button>
+    </div>
+
     <app-next-shape
-      *ngIf="currentGameState.cardToPlace && !currentGameState.isStartOfSeason && !currentGameState.isEndOfSeason"
+      *ngIf="isCurrentPlayer && currentGameState.cardToPlace && !currentGameState.isStartOfSeason && !currentGameState.isEndOfSeason"
       [landscapeCard]="currentGameState.cardToPlace"
       [hasConflict]="tempPlayerState.hasConflict"
-      [untouchedBoardState]="currentPlayerState.boardState"
+      [untouchedBoardState]="playerState.boardState"
       (landscapeShapeChange)="updateShapeInBoard($event)"
       (submit)="submitShape($event)"
     ></app-next-shape>
 
     <app-season-goals
-      *ngIf="!isStartOfGame && currentGameState.season"
+      *ngIf="isCurrentPlayer && !isStartOfGame && currentGameState.season"
       [currentSeason]="currentGameState.season"
       [goals]="gameState.goals"
-      [coins]="currentPlayerState.coins"
-      [scores]="currentPlayerState.scores"
+      [coins]="playerState.coins"
+      [scores]="playerState.scores"
       [isStartOfSeason]="currentGameState.isStartOfSeason"
       [isEndOfSeason]="currentGameState.isEndOfSeason"
       (startSeason)="startSeason()"
@@ -49,7 +54,7 @@
       *ngIf="currentGameState.season"
       [isStartOfGame]="isStartOfGame"
       [goals]="gameState.goals"
-      [seasonScores]="currentPlayerState.seasonScores"
+      [seasonScores]="playerState.seasonScores"
       (startGame)="isStartOfGame = false"
     />
 
@@ -60,7 +65,7 @@
       </div>
 
       <app-season-goals
-        *ngFor="let seasonScore of currentPlayerState.seasonScores"
+        *ngFor="let seasonScore of playerState.seasonScores"
         [currentSeason]="seasonScore.season"
         [goals]="gameState.goals"
         [coins]="seasonScore.coins"
