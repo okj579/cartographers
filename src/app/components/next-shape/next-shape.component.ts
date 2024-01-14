@@ -25,10 +25,14 @@ import { MONSTER_EFFECTS, MonsterEffect } from '../../../game-logic/monster-effe
 })
 export class NextShapeComponent {
   @Input({ required: true }) set landscapeCard(card: LandscapeCard) {
+    if (this._landscapeCard?.name === card.name) return;
+    console.debug('NextShapeComponent.landscapeCard', card);
+
     this._resetValues();
     this.allVariants = this._getAllVariants(card);
     this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
     this._hasDifferentShapes = card.baseShapes.length > 1;
+    this._landscapeCard = card;
 
     setTimeout(() => this.selectVariant(0));
   }
@@ -46,6 +50,8 @@ export class NextShapeComponent {
   protected currentPosition: Coordinates = { x: 0, y: 0 };
 
   private _hasDifferentShapes: boolean = false;
+
+  private _landscapeCard: LandscapeCard | undefined;
 
   constructor() {
     this._resetValues();

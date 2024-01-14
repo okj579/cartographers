@@ -1,5 +1,5 @@
 <div
-  *ngFor="let card of playedCards; let index = index; let last = last"
+  *ngFor="let card of playedCards; let index = index; let last = last; trackBy: trackByCard"
   class="card-progress"
   [class.zero-width]="card.timeValue === 0"
   [class.last]="last && !isEndOfSeason"
