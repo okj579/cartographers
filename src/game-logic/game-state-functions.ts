@@ -20,7 +20,7 @@ export function createNewGame(): GameState {
   return {
     goals: getShuffledGoals(),
     seasonSetups: createSeasonSetups(),
-    playerStates: [createPlayerState(true)],
+    playerStates: [createPlayerState()],
   };
 }
 
@@ -165,9 +165,9 @@ export function endSeason(state: GameState, currentState: CurrentGameState, play
   };
 }
 
-function createPlayerState(alwaysPromptName: boolean = false): PlayerGameState {
+function createPlayerState(shouldPromptName: boolean = false): PlayerGameState {
   const id = getCurrentUserId();
-  const name = getUserName(alwaysPromptName);
+  const name = getUserName(shouldPromptName);
 
   return {
     player: { id, name },

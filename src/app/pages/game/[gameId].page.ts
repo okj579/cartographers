@@ -19,7 +19,7 @@ import {
   updatePlayerState,
 } from '../../../game-logic/game-state-functions';
 import { GameSetupInfoComponent } from '../../components/game-setup-info/game-setup-info.component';
-import { addGameToMyGames, getCurrentUserId } from '../../data/util';
+import { addGameToMyGames, getCurrentUserId, getUserName } from '../../data/util';
 import { ApiService } from '../../api.service';
 import { generateId } from '../../../utils/general-util';
 import { Router } from '@angular/router';
@@ -109,6 +109,11 @@ export default class GameIdPage implements OnInit {
       this._cdr.markForCheck();
     } else {
       this.gameId = generateId();
+      const onlineUserName = getUserName(true);
+      this.gameState = updatePlayerState(this.gameState, {
+        ...this.currentPlayerState,
+        player: { id: this.currentPlayerId, name: onlineUserName },
+      });
       await this._api.createGame(this.gameId, this.gameState);
       addGameToMyGames(this.gameId);
       void this._router.navigate(['game', this.gameId], { replaceUrl: true });

@@ -10,14 +10,14 @@ export function getCurrentUserId() {
   return userId;
 }
 
-export function getUserName(alwaysPrompt: boolean = false): string {
+export function getUserName(shouldPrompt: boolean = false): string {
   if (typeof window === 'undefined') {
     return '';
   }
 
   let userName = getLocalStorageItem(LocalStorageKey.USER_NAME) || '';
-  if (!userName || alwaysPrompt) {
-    userName = prompt('Please enter your name', userName) || 'Anonymous';
+  if (shouldPrompt) {
+    userName = prompt('Please enter your online name', userName) || 'Anonymous';
     setLocalStorageItem(LocalStorageKey.USER_NAME, userName);
   }
   return userName;
