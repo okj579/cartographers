@@ -59,6 +59,8 @@ export default class GameIdPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    console.debug('GameIdPage.ngOnInit', this.gameId);
+
     if (this.isOnlineGame) {
       this.loadGame();
     } else {
