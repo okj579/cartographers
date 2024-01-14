@@ -1,6 +1,6 @@
 <ng-container *ngFor="let column of currentBoardState; trackBy: trackByIndex; let x = index">
   <ng-container *ngFor="let tile of column; trackBy: trackByIndex; let y = index">
-    <div class="num-entry row" [style.grid-column]="1" [style.grid-row]="y + 1">{{ y | indexToChar }}</div>
+    <div *ngIf="x === 0" class="num-entry row" [style.grid-column]="1" [style.grid-row]="y + 1">{{ y | indexToChar }}</div>
     <app-board-tile
       [tile]="tile"
       [class.interactive]="allowPlacing"
