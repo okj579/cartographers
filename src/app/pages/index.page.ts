@@ -5,7 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { getMyGames } from '../data/util';
 
 @Component({
-  selector: 'aap-index-page',
+  selector: 'app-home',
   standalone: true,
   templateUrl: './index.page.html',
   styleUrl: './index.page.scss',
