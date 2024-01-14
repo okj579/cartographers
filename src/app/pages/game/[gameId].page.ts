@@ -17,72 +17,8 @@ import { GameViewComponent } from '../../components/game-view/game-view.componen
 @Component({
   selector: 'app-game-page',
   standalone: true,
-  template: `
-    <ng-container *ngIf="gameState() as currentGameState">
-      <app-game-view
-        [gameState]="currentGameState"
-        [playerIdToShow]="playerToShowId"
-        (gameStateChange)="triggerGameStateSync($event)"
-        (backToMyGame)="playerToShowId = currentPlayerId"
-      />
-    </ng-container>
-
-    <div *ngIf="allPlayers.length > 1" class="server-actions">
-      <div>All players</div>
-      <button
-        *ngFor="let player of allPlayers"
-        [disabled]="playerToShowId === player.id"
-        class="secondary"
-        (click)="playerToShowId = player.id"
-      >
-        {{ player.id === currentPlayerId ? '[Me]' : player.name }}
-      </button>
-    </div>
-
-    <div class="server-actions">
-      <span *ngIf="isOnlineGame">synced</span>
-      <span *ngIf="!isOnlineGame">local game</span>
-      <button [disabled]="isAutoSync()" (click)="syncGame()">
-        <i *ngIf="!isSyncing()" class="fa-solid fa-cloud-arrow-up"></i>
-        <i *ngIf="isSyncing()" class="fa-spin fa-solid fa-spinner"></i>
-        <span *ngIf="isAutoSync()">Auto Sync</span>
-        <span *ngIf="!isAutoSync()">Save game</span>
-      </button>
-      <button (click)="goHome()">
-        <i class="fa-solid fa-home"></i>
-        Back to home
-      </button>
-    </div>
-  `,
-  styles: `
-:host {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: var(--gap-16);
-  box-sizing: border-box;
-}
-
-.server-actions {
-  padding: var(--gap-16);
-  display: flex;
-  gap: var(--gap-16);
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  box-sizing: border-box;
-
-  > span {
-    font-style: italic;
-  }
-}
-
-@media (max-width: 600px) {
-  :host {
-    padding-bottom: 80px; // to account for the submit button
-  }
-}
-  `,
+  templateUrl: './game.page.html',
+  styleUrl: './game.page.scss',
   imports: [
     GameBoardComponent,
     NextShapeComponent,
