@@ -1,85 +1,11 @@
-<div class="sticky-header">
-  <app-season-info
-    [currentSeason]="currentGameState.season"
-    [playedCards]="currentGameState.playedCards"
-    [isEndOfSeason]="currentGameState.isEndOfSeason"
-  />
+<h1>Cartographers</h1>
 
-  <app-goal-area
-    [goals]="gameState.goals"
-    [coins]="currentPlayerState.coins"
-    [temporaryCoins]="tempPlayerState.coins"
-    [previousScores]="currentPlayerState.scores"
-    [temporaryScores]="tempPlayerState.scores"
-    [currentSeason]="currentGameState.season"
-  ></app-goal-area>
-</div>
+<a [routerLink]="['/game', 'new']">New game</a>
+<a href="javascript:void(0)" (click)="joinRandomGame()">Join random game</a>
 
-<div class="content">
-  <app-game-board
-    [currentBoardState]="currentPlayerState.boardState"
-    [currentShapeToPlace]="currentShapeToPlace"
-    [conflictedCellIndices]="tempPlayerState.conflictedCellIndices"
-    (positionChange)="onPositionChange($event)"
-  />
-
-  <div class="controls-and-info" [class.is-start]="isStartOfGame">
-    <app-next-shape
-      *ngIf="currentGameState.cardToPlace && !currentGameState.isStartOfSeason && !currentGameState.isEndOfSeason"
-      [landscapeCard]="currentGameState.cardToPlace"
-      [hasConflict]="tempPlayerState.hasConflict"
-      [untouchedBoardState]="currentPlayerState.boardState"
-      (landscapeShapeChange)="updateShapeInBoard($event)"
-      (submit)="submitShape($event)"
-    ></app-next-shape>
-
-    <app-season-goals
-      *ngIf="!isStartOfGame && currentGameState.season"
-      [currentSeason]="currentGameState.season"
-      [goals]="gameState.goals"
-      [coins]="currentPlayerState.coins"
-      [scores]="currentPlayerState.scores"
-      [isStartOfSeason]="currentGameState.isStartOfSeason"
-      [isEndOfSeason]="currentGameState.isEndOfSeason"
-      (startSeason)="startSeason()"
-      (endSeason)="endSeason()"
-    ></app-season-goals>
-
-    <app-game-setup-info
-      *ngIf="currentGameState.season"
-      [isStartOfGame]="isStartOfGame"
-      [goals]="gameState.goals"
-      [seasonScores]="currentPlayerState.seasonScores"
-      (startGame)="isStartOfGame = false;"
-    />
-
-    <ng-container *ngIf="!currentGameState.season">
-      <div class="end-score">
-        <div>🎖️</div>
-        <div>{{totalEndScore}}</div>
-      </div>
-
-      <app-season-goals
-        *ngFor="let seasonScore of currentPlayerState.seasonScores"
-        [currentSeason]="seasonScore.season"
-        [goals]="gameState.goals"
-        [coins]="seasonScore.coins"
-        [scores]="seasonScore.goalScores"
-        [isEndOfGame]="true"
-      ></app-season-goals>
-    </ng-container>
-  </div>
-
-  <div class="server-actions">
-    <button [disabled]="isAutoSync()" (click)="syncGame()">
-      <i *ngIf="!isSyncing()" class="fa-solid fa-cloud-arrow-up"></i>
-      <i *ngIf="isSyncing()" class="fa-spin fa-solid fa-spinner"></i>
-      <span *ngIf="isAutoSync()">Auto Sync</span>
-      <span *ngIf="!isAutoSync()">Sync game</span>
-    </button>
-    <button (click)="loadGame()">
-      <i class="fa-solid fa-cloud-arrow-down"></i>
-      Load game
-    </button>
+<div *ngIf="myGames().length" class="game-list">
+  <h2>My games</h2>
+  <div *ngFor="let game of myGames()">
+    <a [routerLink]="['/game', game]">{{game}}</a>
   </div>
 </div>

@@ -20,14 +20,14 @@ export function createNewGame(): GameState {
   return {
     goals: getShuffledGoals(),
     seasonSetups: createSeasonSetups(),
-    playerStates: [createPlayerState()],
+    playerStates: [createPlayerState(true)],
   };
 }
 
 export function addPlayer(state: GameState): GameState {
   return {
     ...state,
-    playerStates: [...state.playerStates, createPlayerState()],
+    playerStates: [...state.playerStates, createPlayerState(true)],
   };
 }
 
@@ -165,9 +165,9 @@ export function endSeason(state: GameState, currentState: CurrentGameState, play
   };
 }
 
-function createPlayerState(): PlayerGameState {
+function createPlayerState(alwaysPromptName: boolean = false): PlayerGameState {
   const id = getCurrentUserId();
-  const name = getUserName();
+  const name = getUserName(alwaysPromptName);
 
   return {
     player: { id, name },

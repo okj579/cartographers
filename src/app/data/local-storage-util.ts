@@ -1,6 +1,7 @@
 export enum LocalStorageKey {
   USER_ID = 'userId',
   USER_NAME = 'userName',
+  MY_GAMES = 'myGames',
 }
 
 export function getLocalStorageItem(key: LocalStorageKey): string {
