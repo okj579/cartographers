@@ -9,7 +9,7 @@ import { getPortalCard, LandscapeCard } from '../../../models/landscape-card';
 import { Coordinates } from '../../../models/simple-types';
 import { LandscapeType } from '../../../models/landscape-type';
 import {
-  mirrorLandscapeShape,
+  flipLandscapeShape,
   rotateLandscapeShapeClockwise,
   rotateLandscapeShapeCounterClockwise,
 } from '../../../game-logic/transformation-functions';
@@ -147,10 +147,10 @@ export class NextShapeComponent {
 
   @HostListener('window:keydown.m', ['$event'])
   @HostListener('window:keydown.x', ['$event'])
-  mirror(shouldEmit: boolean = true) {
+  flip(shouldEmit: boolean = true) {
     const previousHeroPosition = this.currentVariant?.heroPosition;
     this.allVariants = this.allVariants.map((variant) => ({
-      ...mirrorLandscapeShape(variant),
+      ...flipLandscapeShape(variant),
     }));
     this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
     this._updateCoordinatesAfterHeroTransformation(previousHeroPosition);
@@ -217,8 +217,8 @@ export class NextShapeComponent {
     if (result.position) {
       this.currentPosition = { ...result.position };
 
-      if (result.isMirrored) {
-        this.mirror(false);
+      if (result.isFlipped) {
+        this.flip(false);
       }
 
       for (let i = 0; i < result.numberOfRotations; i++) {

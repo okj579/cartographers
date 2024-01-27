@@ -6,7 +6,7 @@ import { Coordinates } from '../models/simple-types';
 import { copyLandscapeCard, LandscapeCard } from '../models/landscape-card';
 import { Season } from '../models/season';
 import { BOARD_SIZE, MONSTER_SCORE_INDEX } from './constants';
-import { mirrorShape, rotateShapeClockwise } from './transformation-functions';
+import { flipShape, rotateShapeClockwise } from './transformation-functions';
 import { DRAGON_COINS, MonsterType } from '../models/monster';
 
 interface PlaceShapeResult {
@@ -19,7 +19,7 @@ export interface FindPositionResult {
   position: Coordinates | undefined;
   updatedShape: BaseShape;
   numberOfRotations: number;
-  isMirrored?: boolean;
+  isFlipped?: boolean;
 }
 
 export interface LandscapeArea {
@@ -170,11 +170,11 @@ export function getHeroInformation(shape: LandscapeShape, cell: Coordinates) {
 
 export function findFirstPositionForShape(board: BoardTile[][], shape: BaseShape): FindPositionResult {
   let { position, updatedShape, numberOfRotations } = findFirstPositionForShapeWithAllRotations(board, shape);
-  let isMirrored = false;
+  let isFlipped = false;
 
   if (!position) {
-    updatedShape = mirrorShape(shape);
-    isMirrored = true;
+    updatedShape = flipShape(shape);
+    isFlipped = true;
 
     if (!areShapesEqual(shape, updatedShape)) {
       let subResult = findFirstPositionForShapeWithAllRotations(board, updatedShape);
@@ -184,7 +184,7 @@ export function findFirstPositionForShape(board: BoardTile[][], shape: BaseShape
     }
   }
 
-  return { position, updatedShape, numberOfRotations, isMirrored };
+  return { position, updatedShape, numberOfRotations, isFlipped };
 }
 
 function findFirstPositionForShapeWithAllRotations(board: BoardTile[][], shape: BaseShape): FindPositionResult {

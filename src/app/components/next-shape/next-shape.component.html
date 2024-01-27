@@ -5,7 +5,7 @@
   <button class="icon-btn" [disabled]="disableLeft" (click)="moveLeft()"><i class="fa-solid fa-arrow-left fa-fw"></i></button>
   <button class="icon-btn" [disabled]="disableDown" (click)="moveDown()"><i class="fa-solid fa-arrow-down fa-fw"></i></button>
   <button class="icon-btn" [disabled]="disableRight" (click)="moveRight()"><i class="fa-solid fa-arrow-right fa-fw"></i></button>
-  <button class="secondary" (click)="mirror()"><i class="fa-solid fa-arrow-right-arrow-left"></i>Mirror</button>
+  <button class="secondary" (click)="flip()"><i class="fa-solid fa-arrow-right-arrow-left"></i>Flip</button>
   <button class="submit-btn" [disabled]="hasConflict || !currentVariant" (click)="submitShape()">
     <i class="fa-solid fa-location-pin-lock"></i>Confirm
   </button>
