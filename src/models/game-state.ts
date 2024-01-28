@@ -27,14 +27,6 @@ export interface Player {
 }
 
 export interface CurrentGameState {
-  readonly season: Season | undefined;
-  readonly seasonGoals: Goal[];
-  readonly isStartOfSeason: boolean;
-  readonly isEndOfSeason: boolean;
-  readonly cardDeck: LandscapeCard[];
-  readonly playedSeasonCards: LandscapeCard[];
-  readonly allPlayedCards: LandscapeCard[];
-  readonly cardToPlace: LandscapeCard | undefined;
   readonly playerStates: CurrentPlayerGameState[];
 }
 
@@ -46,6 +38,13 @@ export interface CurrentPlayerBoard extends PlayerGameState {
 
 export interface CurrentPlayerGameState extends CurrentPlayerBoard {
   readonly scores: number[];
+  readonly season: Season | undefined;
+  readonly seasonGoals: Goal[];
+  readonly isStartOfSeason: boolean;
+  readonly isEndOfSeason: boolean;
+  readonly allPlayedCards: LandscapeCard[];
+  readonly cardToPlace: LandscapeCard | undefined;
+  readonly playedSeasonCards: LandscapeCard[];
 }
 
 export interface TempPlayerGameState extends CurrentPlayerGameState {

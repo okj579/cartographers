@@ -36,36 +36,14 @@ export function addPlayer(state: GameState): GameState {
 }
 
 export function stateToCurrentState(state: GameState, playerId: string): CurrentGameState {
-  const { seasonSetups, goals } = state;
   const playerIndex = findPlayerIndex(state.playerStates, playerId);
   const activePlayerState = state.playerStates[playerIndex];
   const lengthOfMoveHistory = activePlayerState.moveHistory.length;
-  const seasonChangeMoves = activePlayerState.moveHistory.filter(isSeasonChange);
   const playerStates: CurrentPlayerGameState[] = state.playerStates.map((playerState) => ({
     ...playerStateToCurrentPlayerState(playerState, state, lengthOfMoveHistory),
   }));
-  const seasonMoves = getMovesOfCurrentSeason(activePlayerState.moveHistory);
-  const currentSeasonIndex = seasonChangeMoves.length;
-  const currentCardIndex = seasonMoves.length;
-  const season: Season | undefined = SEASONS[currentSeasonIndex];
-  const seasonGoals = goals.filter((_goal, index) => season?.goalIndices.includes(index));
-  const isStartOfSeason = currentCardIndex === 0 && !!season;
-  const cardDeck = seasonSetups[currentSeasonIndex]?.cardDeck ?? [];
-  const previouslyPlayedCards = cardDeck.slice(0, currentCardIndex);
-  const isEndOfSeason = getCurrentTimeProgress(previouslyPlayedCards) >= season?.duration || currentCardIndex >= cardDeck.length;
-  const playedSeasonCards = isEndOfSeason ? previouslyPlayedCards : cardDeck.slice(0, currentCardIndex + 1);
-  const allPlayedCards = [...seasonSetups.slice(0, currentSeasonIndex).flatMap((setup) => setup.cardDeck), ...playedSeasonCards];
-  const cardToPlace = isEndOfSeason ? undefined : cardDeck[currentCardIndex];
 
   return {
-    season,
-    isStartOfSeason,
-    isEndOfSeason,
-    cardDeck,
-    playedSeasonCards,
-    allPlayedCards,
-    cardToPlace,
-    seasonGoals,
     playerStates,
   };
 }
@@ -85,8 +63,30 @@ function playerStateToCurrentPlayerState(
 ): CurrentPlayerGameState {
   const board = getBoardStateFromMoveHistory(playerState, getAllPlayedCards(state), numberOfMoves, state.goals);
 
+  const moves = playerState.moveHistory.slice(0, numberOfMoves);
+  const seasonChangeMoves = moves.filter(isSeasonChange);
+  const seasonMoves = getMovesOfCurrentSeason(moves);
+  const currentSeasonIndex = seasonChangeMoves.length;
+  const currentCardIndex = seasonMoves.length;
+  const season: Season | undefined = SEASONS[currentSeasonIndex];
+  const seasonGoals = state.goals.filter((_goal, index) => season?.goalIndices.includes(index));
+  const isStartOfSeason = currentCardIndex === 0 && !!season;
+  const cardDeck = state.seasonSetups[currentSeasonIndex]?.cardDeck ?? [];
+  const previouslyPlayedCards = cardDeck.slice(0, currentCardIndex);
+  const isEndOfSeason = getCurrentTimeProgress(previouslyPlayedCards) >= season?.duration || currentCardIndex >= cardDeck.length;
+  const playedSeasonCards = isEndOfSeason ? previouslyPlayedCards : cardDeck.slice(0, currentCardIndex + 1);
+  const allPlayedCards = [...state.seasonSetups.slice(0, currentSeasonIndex).flatMap((setup) => setup.cardDeck), ...playedSeasonCards];
+  const cardToPlace = isEndOfSeason ? undefined : cardDeck[currentCardIndex];
+
   return {
     ...board,
+    season,
+    seasonGoals,
+    isStartOfSeason,
+    isEndOfSeason,
+    playedSeasonCards,
+    allPlayedCards,
+    cardToPlace,
     scores: getScoresFromBoard(state.goals, board.boardState),
   };
 }
@@ -141,7 +141,7 @@ function getBoardStateFromMoveHistory(
         seasonIndex++;
         board = {
           ...board,
-          seasonScores: [...board.seasonScores, getSeasonScoreFromCurrentBoard({ ...board, scores }, currentSeason)],
+          seasonScores: [...board.seasonScores, getSeasonScoreFromCurrentBoard(board, scores, currentSeason)],
         };
       } else {
         board = { ...board, boardState: applyMonsterEffect(board.boardState, move) };
@@ -236,7 +236,7 @@ export function getTempPlayerStateWithShape(
   const coinsFromShape = shape.baseShape.hasCoin ? 1 : 0;
   const newCoinsToAdd = hasConflict ? 0 : newCoins + coinsFromShape;
 
-  const newPlayerState: CurrentPlayerBoard = {
+  const newPlayerState: CurrentPlayerGameState = {
     ...previousPlayerState,
     boardState: updatedBoard,
     coins: previousPlayerState.coins + newCoinsToAdd,
@@ -258,7 +258,9 @@ export function endSeason(state: GameState, currentState: CurrentGameState, play
 
       const currentPlayerState = currentState.playerStates[index];
 
-      const playedMonsterCards = [...currentState.allPlayedCards.filter((card) => card.landscapeTypes.includes(LandscapeType.MONSTER))];
+      const playedMonsterCards = [
+        ...currentPlayerState.allPlayedCards.filter((card) => card.landscapeTypes.includes(LandscapeType.MONSTER)),
+      ];
 
       const monsterMoves: SpecialMove[] = [];
       playedMonsterCards.forEach((card) => {
@@ -276,12 +278,12 @@ export function endSeason(state: GameState, currentState: CurrentGameState, play
   };
 }
 
-function getSeasonScoreFromCurrentBoard(playerState: CurrentPlayerGameState, season: Season): SeasonScore {
+function getSeasonScoreFromCurrentBoard(playerState: CurrentPlayerBoard, scores: number[], season: Season): SeasonScore {
   return {
     season,
-    goalScores: playerState.scores,
+    goalScores: scores,
     coins: playerState.coins,
-    totalScore: getSeasonScore(season, playerState.scores, playerState.coins),
+    totalScore: getSeasonScore(season, scores, playerState.coins),
   };
 }
 

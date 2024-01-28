@@ -5,7 +5,7 @@ import { NgForOf, NgIf } from '@angular/common';
 import { GoalAreaComponent } from '../../components/goal-area/goal-area.component';
 import { SeasonInfoComponent } from '../../components/season-info/season-info.component';
 import { SeasonGoalsComponent } from '../../components/season-goals/season-goals.component';
-import { CurrentGameState, GameState, Player } from '../../../models/game-state';
+import { CurrentGameState, CurrentPlayerGameState, GameState, Player } from '../../../models/game-state';
 import {
   addMoveToGame,
   addPlayer,
@@ -69,6 +69,10 @@ export default class GameIdPage implements OnInit {
     return this.gameState()?.playerStates.map((playerState) => playerState.player) ?? [];
   }
 
+  get playerState(): CurrentPlayerGameState | undefined {
+    return this.currentGameState?.playerStates.find((playerState) => playerState.player.id === this.playerToShowId);
+  }
+
   constructor(
     private _api: ApiService,
     private _cdr: ChangeDetectorRef,
@@ -85,11 +89,11 @@ export default class GameIdPage implements OnInit {
 
   submitMove(move: AnyMove): void {
     const gameState = this.gameState();
-    if (!gameState || !this.currentGameState?.cardToPlace || this.playerToShowId !== this.currentPlayerId) return;
+    if (!gameState || !this.playerState?.cardToPlace || this.playerToShowId !== this.currentPlayerId) return;
 
     let newGameState = addMoveToGame(gameState, move, this.playerToShowId);
 
-    const currentMonster = this.currentGameState.cardToPlace.monster;
+    const currentMonster = this.playerState.cardToPlace.monster;
     if (currentMonster && isRegularMove(move)) {
       const newCurrentGameState = stateToCurrentState(newGameState, this.currentPlayerId);
       const playerState = newCurrentGameState.playerStates.find((playerState) => playerState.player.id === this.playerToShowId);

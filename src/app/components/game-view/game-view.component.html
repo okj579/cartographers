@@ -1,9 +1,9 @@
 @if (currentGameState && visiblePlayerState && playerState) {
   <div class="sticky-header">
     <app-season-info
-      [currentSeason]="currentGameState.season"
-      [playedCards]="isStartOfSeason ? [] : currentGameState.playedSeasonCards"
-      [isEndOfSeason]="currentGameState.isEndOfSeason"
+      [currentSeason]="playerState.season"
+      [playedCards]="isStartOfSeason ? [] : playerState.playedSeasonCards"
+      [isEndOfSeason]="playerState.isEndOfSeason"
     />
 
     <app-goal-area
@@ -12,7 +12,7 @@
       [temporaryCoins]="visiblePlayerState.coins"
       [previousScores]="playerState.scores"
       [temporaryScores]="visiblePlayerState.scores"
-      [currentSeason]="currentGameState.season"
+      [currentSeason]="playerState.season"
     ></app-goal-area>
   </div>
 
@@ -31,8 +31,8 @@
       </div>
 
       <app-next-shape
-        *ngIf="isCurrentPlayer && currentGameState.cardToPlace && !isStartOfSeason && !currentGameState.isEndOfSeason && currentMove"
-        [landscapeCard]="currentGameState.cardToPlace"
+        *ngIf="isCurrentPlayer && playerState.cardToPlace && !isStartOfSeason && !playerState.isEndOfSeason && currentMove"
+        [landscapeCard]="playerState.cardToPlace"
         [hasConflict]="visiblePlayerState.hasConflict"
         [untouchedBoardState]="playerState.boardState"
         [move]="currentMove"
@@ -41,26 +41,26 @@
       ></app-next-shape>
 
       <app-season-goals
-        *ngIf="isCurrentPlayer && !isStartOfGame && currentGameState.season"
-        [currentSeason]="currentGameState.season"
+        *ngIf="isCurrentPlayer && !isStartOfGame && playerState.season"
+        [currentSeason]="playerState.season"
         [goals]="gameState.goals"
         [coins]="playerState.coins"
         [scores]="playerState.scores"
         [isStartOfSeason]="isStartOfSeason"
-        [isEndOfSeason]="currentGameState.isEndOfSeason"
+        [isEndOfSeason]="playerState.isEndOfSeason"
         (startSeason)="startSeason()"
         (endSeason)="endSeason.emit()"
       ></app-season-goals>
 
       <app-game-setup-info
-        *ngIf="currentGameState.season"
+        *ngIf="playerState.season"
         [isStartOfGame]="isStartOfGame"
         [goals]="gameState.goals"
         [seasonScores]="playerState.seasonScores"
         (startGame)="isStartOfGame = false"
       />
 
-      <ng-container *ngIf="!currentGameState.season">
+      <ng-container *ngIf="!playerState.season">
         <div class="end-score">
           <div>🎖️</div>
           <div>{{ totalEndScore }}</div>

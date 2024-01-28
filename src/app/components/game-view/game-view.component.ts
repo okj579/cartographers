@@ -1,14 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { GameBoardComponent } from '../game-board/game-board.component';
 import { PlacedLandscapeShape } from '../../../models/landscape-shape';
 import { NextShapeComponent } from '../next-shape/next-shape.component';
@@ -68,9 +58,9 @@ export class GameViewComponent implements OnChanges {
   currentMove: Move | undefined;
 
   get currentShapeToPlace(): PlacedLandscapeShape | undefined {
-    if (!this.currentMove || !this.currentGameState?.cardToPlace) return undefined;
+    if (!this.currentMove || !this.playerState?.cardToPlace || !this.isCurrentPlayer) return undefined;
 
-    return getPlacedShapeFromMove(this.currentMove, this.currentGameState.cardToPlace);
+    return getPlacedShapeFromMove(this.currentMove, this.playerState.cardToPlace);
   }
 
   get isCurrentPlayer(): boolean {
@@ -101,13 +91,11 @@ export class GameViewComponent implements OnChanges {
     return this.playerState?.seasonScores.reduce((sum, score) => sum + score.totalScore, 0) ?? 0;
   }
 
-  constructor(private _cdr: ChangeDetectorRef) {}
-
   ngOnChanges(changes: SimpleChanges) {
     if (changes['gameState']) {
       this.currentGameState = stateToCurrentState(this.gameState, this.currentPlayerId);
       this.isStartOfGame = this.playerState?.moveHistory.length === 0;
-      this.isStartOfSeason = this.currentGameState.isStartOfSeason;
+      this.isStartOfSeason = this.playerState?.isStartOfSeason ?? true;
       this.currentMove = { ...initialMove };
     }
 
