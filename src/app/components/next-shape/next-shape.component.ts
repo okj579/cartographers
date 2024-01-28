@@ -15,7 +15,7 @@ import {
 } from '../../../game-logic/transformation-functions';
 import { MONSTER_EFFECTS, MonsterEffect } from '../../../game-logic/monster-effects';
 import { Move, normalizeRotations } from '../../../models/move';
-import { applyMoveToLandscapeShape } from '../../../game-logic/game-state-functions';
+import { getLandscapeFromMove } from '../../../game-logic/game-state-functions';
 import { ShapeName, SHAPES } from '../../../models/base-shape';
 
 @Component({
@@ -236,38 +236,31 @@ export class NextShapeComponent implements OnChanges {
       this.moveChange.emit({
         ...this.move,
         position,
-        selectedShapeIndex: isHero ? 0 : -1,
+        selectedShapeIndex: isHero ? 0 : this.landscapeCard.baseShapes.length,
         selectedLandscapeIndex: 0,
       });
     }
   }
 
-  private _getVariantLists(card: LandscapeCard, move?: Move): LandscapeShape[][] {
+  private _getVariantLists(card: LandscapeCard, move: Move): LandscapeShape[][] {
     const landscapeShapeLists: LandscapeShape[][] = [];
 
-    for (let baseShape of card.baseShapes) {
+    for (let shapeIndex = 0; shapeIndex < card.baseShapes.length; shapeIndex++) {
       const landscapeShapes: LandscapeShape[] = [];
 
-      for (let landscapeType of card.landscapeTypes) {
-        let landscapeShape: LandscapeShape = {
-          type: landscapeType,
-          baseShape,
-          heroPosition: card.heroPosition,
-          monsterType: card.monster?.type,
-        };
-
-        if (move) {
-          landscapeShape = applyMoveToLandscapeShape(landscapeShape, move);
-        }
-
+      for (let landscapeIndex = 0; landscapeIndex < card.landscapeTypes.length; landscapeIndex++) {
+        const landscapeShape = getLandscapeFromMove(
+          { ...move, selectedShapeIndex: shapeIndex, selectedLandscapeIndex: landscapeIndex },
+          card,
+        );
         landscapeShapes.push(landscapeShape);
       }
 
       landscapeShapeLists.push(landscapeShapes);
     }
 
-    if (move?.selectedShapeIndex === -1) {
-      landscapeShapeLists.push(...this._getVariantLists(getPortalCard(card.landscapeTypes[0])));
+    if (move?.selectedShapeIndex === card.baseShapes.length) {
+      landscapeShapeLists.push(...this._getVariantLists(getPortalCard(card.landscapeTypes[0]), { ...move, selectedShapeIndex: 0 }));
     }
 
     return landscapeShapeLists;

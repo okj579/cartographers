@@ -9,7 +9,7 @@ import {
 } from '../models/game-state';
 import { findGoalByName, getMonsterScore, getShuffledGoals, Goal } from '../models/goals';
 import { getInitialBoardTiles } from './constants';
-import { HERO_CARDS, LANDSCAPE_CARDS, LandscapeCard, MONSTER_CARDS } from '../models/landscape-card';
+import { getPortalCard, HERO_CARDS, LANDSCAPE_CARDS, LandscapeCard, MONSTER_CARDS } from '../models/landscape-card';
 import { getCurrentTimeProgress, getSeasonScore, getShuffledCards, tryPlaceShapeOnBoard } from './functions';
 import { Season, SEASONS, SeasonScore } from '../models/season';
 import { LandscapeType } from '../models/landscape-type';
@@ -168,20 +168,34 @@ export function applyMoveToBoard(board: CurrentPlayerBoard, card: LandscapeCard,
 }
 
 export function getPlacedShapeFromMove(move: Move, card: LandscapeCard): PlacedLandscapeShape {
-  let landscapeShape: LandscapeShape = {
-    baseShape: card.baseShapes[move.selectedShapeIndex],
-    type: card.landscapeTypes[move.selectedLandscapeIndex],
-    heroPosition: card.heroPosition,
-    monsterType: card.monster?.type,
-  };
-
   return {
-    ...applyMoveToLandscapeShape(landscapeShape, move),
+    ...getLandscapeFromMove(move, card),
     position: move.position,
   };
 }
 
-export function applyMoveToLandscapeShape(landscapeShape: LandscapeShape, move: Move): LandscapeShape {
+export function getLandscapeFromMove(move: Move, card: LandscapeCard): LandscapeShape {
+  let landscapeShape: LandscapeShape;
+
+  if (move.selectedShapeIndex >= card.baseShapes.length) {
+    const jokerCard = getPortalCard(card.landscapeTypes[0]);
+    landscapeShape = {
+      baseShape: jokerCard.baseShapes[move.selectedShapeIndex - card.baseShapes.length],
+      type: jokerCard.landscapeTypes[move.selectedLandscapeIndex],
+    };
+  } else {
+    landscapeShape = {
+      baseShape: card.baseShapes[move.selectedShapeIndex],
+      type: card.landscapeTypes[move.selectedLandscapeIndex],
+      heroPosition: card.heroPosition,
+      monsterType: card.monster?.type,
+    };
+  }
+
+  return applyMoveTransformationsToLandscapeShape(landscapeShape, move);
+}
+
+export function applyMoveTransformationsToLandscapeShape(landscapeShape: LandscapeShape, move: Move): LandscapeShape {
   let updatedLandscapeShape = { ...landscapeShape };
 
   for (let i = 0; i < move.numberOfClockwiseRotations; i++) {
