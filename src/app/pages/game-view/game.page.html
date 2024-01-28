@@ -5,7 +5,21 @@
     (submitMove)="submitMove($event)"
     (endSeason)="endSeason()"
     (backToMyGame)="selectPlayerToShow(currentPlayerId)"
-  />
+  >
+    <div *ngIf="allPlayers.length > 1" class="all-players">
+      <div class="server-actions">
+        <button
+          *ngFor="let player of allPlayers"
+          [disabled]="playerToShowId === player.id"
+          class="secondary small"
+          (click)="selectPlayerToShow(player.id)"
+        >
+          <i class="fa-solid fa-user"></i>
+          <span>{{ player.name }} {{ player.id === currentPlayerId ? '[Me]' : '' }} {{ getTotalScoreString(player.id) }}</span>
+        </button>
+      </div>
+    </div>
+  </app-game-view>
 </ng-container>
 
 <ng-template #loading>
@@ -14,18 +28,6 @@
     <span> Loading game...</span>
   </div>
 </ng-template>
-
-<div *ngIf="allPlayers.length > 1" class="server-actions">
-  <div>All players</div>
-  <button
-    *ngFor="let player of allPlayers"
-    [disabled]="playerToShowId === player.id"
-    class="secondary"
-    (click)="selectPlayerToShow(player.id)"
-  >
-    {{ player.name }} {{ player.id === currentPlayerId ? '[Me]' : '' }}
-  </button>
-</div>
 
 <div class="server-actions">
   <span *ngIf="isOnlineGame">synced</span>
