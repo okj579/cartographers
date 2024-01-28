@@ -2,6 +2,7 @@ import { BoardTile } from './board-tile';
 import { Season, SeasonScore } from './season';
 import { LandscapeCard } from './landscape-card';
 import { Goal } from './goals';
+import { AnyMove } from './move';
 
 export interface GameState {
   readonly goals: Goal[];
@@ -12,16 +13,12 @@ export interface GameState {
 export interface SeasonSetup {
   readonly season: Season;
   readonly cardDeck: LandscapeCard[];
+  readonly remainingSpecialCards: LandscapeCard[];
 }
 
 export interface PlayerGameState {
   readonly player: Player;
-  readonly boardState: BoardTile[][];
-  readonly coins: number;
-  readonly currentCardIndex: number;
-  readonly currentSeasonIndex: number;
-  readonly seasonScores: SeasonScore[];
-  readonly playedMonsterCards: LandscapeCard[];
+  readonly moveHistory: AnyMove[];
 }
 
 export interface Player {
@@ -35,12 +32,19 @@ export interface CurrentGameState {
   readonly isStartOfSeason: boolean;
   readonly isEndOfSeason: boolean;
   readonly cardDeck: LandscapeCard[];
-  readonly playedCards: LandscapeCard[];
+  readonly playedSeasonCards: LandscapeCard[];
+  readonly allPlayedCards: LandscapeCard[];
   readonly cardToPlace: LandscapeCard | undefined;
   readonly playerStates: CurrentPlayerGameState[];
 }
 
-export interface CurrentPlayerGameState extends PlayerGameState {
+export interface CurrentPlayerBoard extends PlayerGameState {
+  readonly boardState: BoardTile[][];
+  readonly coins: number;
+  readonly seasonScores: SeasonScore[];
+}
+
+export interface CurrentPlayerGameState extends CurrentPlayerBoard {
   readonly scores: number[];
 }
 

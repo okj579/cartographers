@@ -2,7 +2,8 @@
   <app-game-view
     [gameState]="currentGameState"
     [playerIdToShow]="playerToShowId"
-    (gameStateChange)="triggerGameStateSync($event)"
+    (submitMove)="submitMove($event)"
+    (endSeason)="endSeason()"
     (backToMyGame)="playerToShowId = currentPlayerId"
   />
 </ng-container>

@@ -19,7 +19,7 @@ export interface FindPositionResult {
   position: Coordinates | undefined;
   updatedShape: BaseShape;
   numberOfRotations: number;
-  isFlipped?: boolean;
+  isFlipped: boolean;
 }
 
 export interface LandscapeArea {
@@ -205,7 +205,7 @@ function findFirstPositionForShapeWithAllRotations(board: BoardTile[][], shape: 
     }
   }
 
-  return { position, updatedShape, numberOfRotations };
+  return { position, updatedShape, numberOfRotations, isFlipped: false };
 }
 
 function getFirstAvailablePosition(board: BoardTile[][], shape: BaseShape): Coordinates | undefined {

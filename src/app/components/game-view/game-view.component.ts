@@ -19,15 +19,14 @@ import { SeasonGoalsComponent } from '../season-goals/season-goals.component';
 import { Coordinates } from '../../../models/simple-types';
 import { CurrentGameState, CurrentPlayerGameState, GameState, TempPlayerGameState } from '../../../models/game-state';
 import {
-  endSeason,
   findPlayerIndex,
+  getPlacedShapeFromMove,
   getTempPlayerStateWithShape,
-  startSeason,
   stateToCurrentState,
-  updatePlayerState,
 } from '../../../game-logic/game-state-functions';
 import { GameSetupInfoComponent } from '../game-setup-info/game-setup-info.component';
 import { getCurrentUserId } from '../../data/util';
+import { AnyMove, initialMove, Move } from '../../../models/move';
 
 @Component({
   selector: 'app-game-view',
@@ -51,7 +50,8 @@ export class GameViewComponent implements OnChanges {
 
   readonly currentPlayerId: string = getCurrentUserId();
 
-  @Output() gameStateChange = new EventEmitter<GameState>();
+  @Output() endSeason = new EventEmitter<void>();
+  @Output() submitMove = new EventEmitter<AnyMove>();
   @Output() backToMyGame = new EventEmitter<void>();
 
   @Input() playerIdToShow: string = this.currentPlayerId;
@@ -59,27 +59,34 @@ export class GameViewComponent implements OnChanges {
   @Input({ required: true })
   gameState!: GameState;
 
-  currentGameState!: CurrentGameState;
-  tempPlayerState!: TempPlayerGameState;
+  currentGameState?: CurrentGameState;
+  tempPlayerState?: TempPlayerGameState;
 
   isStartOfGame: boolean = true;
+  isStartOfSeason: boolean = true;
 
-  currentShapeToPlace: PlacedLandscapeShape | undefined;
+  currentMove: Move | undefined;
+
+  get currentShapeToPlace(): PlacedLandscapeShape | undefined {
+    if (this.isStartOfSeason || !this.currentMove || !this.currentGameState?.cardToPlace) return undefined;
+
+    return getPlacedShapeFromMove(this.currentMove, this.currentGameState.cardToPlace);
+  }
 
   get isCurrentPlayer(): boolean {
     return this.playerIdToShow === this.currentPlayerId;
   }
 
   get playerIndex(): number {
-    return findPlayerIndex(this.currentGameState.playerStates, this.playerIdToShow);
+    return findPlayerIndex(this.currentGameState?.playerStates ?? [], this.playerIdToShow);
   }
 
-  get playerState(): CurrentPlayerGameState {
-    return this.currentGameState.playerStates[this.playerIndex];
+  get playerState(): CurrentPlayerGameState | undefined {
+    return this.currentGameState?.playerStates[this.playerIndex];
   }
 
   get totalEndScore(): number {
-    return this.playerState.seasonScores.reduce((sum, score) => sum + score.totalScore, 0);
+    return this.playerState?.seasonScores.reduce((sum, score) => sum + score.totalScore, 0) ?? 0;
   }
 
   constructor(private _cdr: ChangeDetectorRef) {}
@@ -91,49 +98,44 @@ export class GameViewComponent implements OnChanges {
   }
 
   startSeason(): void {
-    const newGameState = startSeason(this.gameState, this.currentPlayerId);
-    this.gameStateChange.emit(newGameState);
+    this.isStartOfSeason = false;
   }
 
-  endSeason(): void {
-    const newGameState = endSeason(this.gameState, this.currentGameState, this.currentPlayerId);
-    this.gameStateChange.emit(newGameState);
-  }
+  submitShape(): void {
+    if (!this.tempPlayerState || this.tempPlayerState.hasConflict || !this.currentMove) return;
 
-  submitShape(shape: PlacedLandscapeShape): void {
-    if (this.tempPlayerState.hasConflict) return;
-
-    this.updateShapeInBoard(shape);
-    const newGameState = updatePlayerState(this.gameState, {
-      ...this.tempPlayerState,
-      currentCardIndex: this.playerState.currentCardIndex + 1,
-    });
-
-    this.gameStateChange.emit(newGameState);
-    this.currentShapeToPlace = undefined;
+    this.submitMove.emit(this.currentMove);
+    this.currentMove = undefined;
   }
 
   onPositionChange(position: Coordinates): void {
-    if (!this.currentShapeToPlace) return;
+    if (!this.currentMove) return;
 
-    this.nextShapeComponent.updatePositionFromOutside(position);
+    this.currentMove = { ...this.currentMove, position };
+    this.updateShapeInBoard(this.currentShapeToPlace);
+  }
+
+  onMoveChange(move: Move): void {
+    this.currentMove = move;
+    this.updateShapeInBoard(this.currentShapeToPlace);
   }
 
   updateShapeInBoard(shape: PlacedLandscapeShape | undefined) {
-    if (shape) {
-      this.currentShapeToPlace = shape;
-      this.tempPlayerState = getTempPlayerStateWithShape(this.gameState, shape, this.currentPlayerId);
+    if (shape && this.playerState) {
+      this.tempPlayerState = getTempPlayerStateWithShape(this.gameState, this.playerState, shape);
     }
   }
 
   private _calculateCurrentGameState(): void {
     this.currentGameState = stateToCurrentState(this.gameState, this.playerIdToShow);
-    this.isStartOfGame = this.playerState.currentSeasonIndex === 0 && this.playerState.currentCardIndex === -1;
+    this.isStartOfGame = this.playerState?.moveHistory.length === 0;
+    this.isStartOfSeason = this.currentGameState.isStartOfSeason;
+    this.currentMove = { ...initialMove };
+
+    this.tempPlayerState = this.playerState ? { ...this.playerState, hasConflict: false, conflictedCellIndices: [] } : undefined;
 
     if (this.currentShapeToPlace && this.isCurrentPlayer) {
       this.updateShapeInBoard(this.currentShapeToPlace);
-    } else {
-      this.tempPlayerState = { ...this.playerState, hasConflict: false, conflictedCellIndices: [] };
     }
   }
 }

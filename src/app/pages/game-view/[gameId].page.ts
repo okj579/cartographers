@@ -5,8 +5,16 @@ import { NgForOf, NgIf } from '@angular/common';
 import { GoalAreaComponent } from '../../components/goal-area/goal-area.component';
 import { SeasonInfoComponent } from '../../components/season-info/season-info.component';
 import { SeasonGoalsComponent } from '../../components/season-goals/season-goals.component';
-import { GameState, Player } from '../../../models/game-state';
-import { addPlayer, createNewGame, findPlayerIndex, updatePlayerState } from '../../../game-logic/game-state-functions';
+import { CurrentGameState, GameState, Player } from '../../../models/game-state';
+import {
+  addMoveToGame,
+  addPlayer,
+  createNewGame,
+  endSeason,
+  findPlayerIndex,
+  stateToCurrentState,
+  updatePlayerState,
+} from '../../../game-logic/game-state-functions';
 import { GameSetupInfoComponent } from '../../components/game-setup-info/game-setup-info.component';
 import { addGameToMyGames, getCurrentUserId, getUserName } from '../../data/util';
 import { ApiService } from '../../api.service';
@@ -14,6 +22,7 @@ import { generateId } from '../../../utils/general-util';
 import { Router } from '@angular/router';
 import { GameViewComponent } from '../../components/game-view/game-view.component';
 import { Route } from '../../data/routes';
+import { AnyMove } from '../../../models/move';
 
 @Component({
   selector: 'app-game-page',
@@ -45,6 +54,13 @@ export default class GameIdPage implements OnInit {
     return this.gameId !== 'new';
   }
 
+  get currentGameState(): CurrentGameState | undefined {
+    const gameState = this.gameState();
+    if (!gameState) return;
+
+    return stateToCurrentState(gameState, this.currentPlayerId);
+  }
+
   isSyncing: WritableSignal<boolean> = signal(false);
   isAutoSync: WritableSignal<boolean> = signal(false);
 
@@ -66,6 +82,20 @@ export default class GameIdPage implements OnInit {
     } else {
       this.gameState.set(createNewGame());
     }
+  }
+
+  submitMove(move: AnyMove): void {
+    const gameState = this.gameState();
+    if (!gameState) return;
+
+    void this.triggerGameStateSync(addMoveToGame(gameState, move, this.currentPlayerId));
+  }
+
+  endSeason(): void {
+    const gameState = this.gameState();
+    if (!gameState || !this.currentGameState) return;
+
+    void this.triggerGameStateSync(endSeason(gameState, this.currentGameState, this.currentPlayerId));
   }
 
   async triggerGameStateSync(newGameState: GameState): Promise<void> {

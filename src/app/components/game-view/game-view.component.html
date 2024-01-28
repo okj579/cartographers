@@ -1,77 +1,84 @@
-<div class="sticky-header">
-  <app-season-info
-    [currentSeason]="currentGameState.season"
-    [playedCards]="currentGameState.playedCards"
-    [isEndOfSeason]="currentGameState.isEndOfSeason"
-  />
-
-  <app-goal-area
-    [goals]="gameState.goals"
-    [coins]="playerState.coins"
-    [temporaryCoins]="tempPlayerState.coins"
-    [previousScores]="playerState.scores"
-    [temporaryScores]="tempPlayerState.scores"
-    [currentSeason]="currentGameState.season"
-  ></app-goal-area>
-</div>
-
-<div class="content">
-  <app-game-board
-    [currentBoardState]="playerState.boardState"
-    [currentShapeToPlace]="isCurrentPlayer ? currentShapeToPlace : undefined"
-    [conflictedCellIndices]="tempPlayerState.conflictedCellIndices"
-    (positionChange)="onPositionChange($event)"
-  />
-
-  <div class="controls-and-info" [class.is-start]="isStartOfGame">
-    <div *ngIf="!isCurrentPlayer" class="other-player-info">
-      <h2><i class="fa-solid fa-info-circle"></i> {{ playerState.player.name }}'s game board</h2>
-      <button (click)="backToMyGame.emit()">Back to mine</button>
-    </div>
-
-    <app-next-shape
-      *ngIf="isCurrentPlayer && currentGameState.cardToPlace && !currentGameState.isStartOfSeason && !currentGameState.isEndOfSeason"
-      [landscapeCard]="currentGameState.cardToPlace"
-      [hasConflict]="tempPlayerState.hasConflict"
-      [untouchedBoardState]="playerState.boardState"
-      (landscapeShapeChange)="updateShapeInBoard($event)"
-      (submit)="submitShape($event)"
-    ></app-next-shape>
-
-    <app-season-goals
-      *ngIf="isCurrentPlayer && !isStartOfGame && currentGameState.season"
+@if (currentGameState && tempPlayerState && playerState) {
+  <div class="sticky-header">
+    <app-season-info
       [currentSeason]="currentGameState.season"
-      [goals]="gameState.goals"
-      [coins]="playerState.coins"
-      [scores]="playerState.scores"
-      [isStartOfSeason]="currentGameState.isStartOfSeason"
+      [playedCards]="isStartOfSeason ? [] : currentGameState.playedSeasonCards"
       [isEndOfSeason]="currentGameState.isEndOfSeason"
-      (startSeason)="startSeason()"
-      (endSeason)="endSeason()"
-    ></app-season-goals>
-
-    <app-game-setup-info
-      *ngIf="currentGameState.season"
-      [isStartOfGame]="isStartOfGame"
-      [goals]="gameState.goals"
-      [seasonScores]="playerState.seasonScores"
-      (startGame)="isStartOfGame = false"
     />
 
-    <ng-container *ngIf="!currentGameState.season">
-      <div class="end-score">
-        <div>🎖️</div>
-        <div>{{ totalEndScore }}</div>
+    <app-goal-area
+      [goals]="gameState.goals"
+      [coins]="playerState.coins"
+      [temporaryCoins]="tempPlayerState.coins"
+      [previousScores]="playerState.scores"
+      [temporaryScores]="tempPlayerState.scores"
+      [currentSeason]="currentGameState.season"
+    ></app-goal-area>
+  </div>
+
+  <div class="content">
+    <app-game-board
+      [currentBoardState]="playerState.boardState"
+      [currentShapeToPlace]="isCurrentPlayer ? currentShapeToPlace : undefined"
+      [conflictedCellIndices]="tempPlayerState.conflictedCellIndices"
+      (positionChange)="onPositionChange($event)"
+    />
+
+    <div class="controls-and-info" [class.is-start]="isStartOfGame">
+      <div *ngIf="!isCurrentPlayer" class="other-player-info">
+        <h2><i class="fa-solid fa-info-circle"></i> {{ playerState.player.name }}'s game board</h2>
+        <button (click)="backToMyGame.emit()">Back to mine</button>
       </div>
 
+      <app-next-shape
+        *ngIf="isCurrentPlayer && currentGameState.cardToPlace && !isStartOfSeason && !currentGameState.isEndOfSeason && currentMove"
+        [landscapeCard]="currentGameState.cardToPlace"
+        [hasConflict]="tempPlayerState.hasConflict"
+        [untouchedBoardState]="playerState.boardState"
+        [move]="currentMove"
+        (moveChange)="onMoveChange($event)"
+        (submit)="submitShape()"
+      ></app-next-shape>
+
       <app-season-goals
-        *ngFor="let seasonScore of playerState.seasonScores"
-        [currentSeason]="seasonScore.season"
+        *ngIf="isCurrentPlayer && !isStartOfGame && currentGameState.season"
+        [currentSeason]="currentGameState.season"
         [goals]="gameState.goals"
-        [coins]="seasonScore.coins"
-        [scores]="seasonScore.goalScores"
-        [isEndOfGame]="true"
+        [coins]="playerState.coins"
+        [scores]="playerState.scores"
+        [isStartOfSeason]="isStartOfSeason"
+        [isEndOfSeason]="currentGameState.isEndOfSeason"
+        (startSeason)="startSeason()"
+        (endSeason)="endSeason.emit()"
       ></app-season-goals>
-    </ng-container>
+
+      <app-game-setup-info
+        *ngIf="currentGameState.season"
+        [isStartOfGame]="isStartOfGame"
+        [goals]="gameState.goals"
+        [seasonScores]="playerState.seasonScores"
+        (startGame)="isStartOfGame = false"
+      />
+
+      <ng-container *ngIf="!currentGameState.season">
+        <div class="end-score">
+          <div>🎖️</div>
+          <div>{{ totalEndScore }}</div>
+        </div>
+
+        <app-season-goals
+          *ngFor="let seasonScore of playerState.seasonScores"
+          [currentSeason]="seasonScore.season"
+          [goals]="gameState.goals"
+          [coins]="seasonScore.coins"
+          [scores]="seasonScore.goalScores"
+          [isEndOfGame]="true"
+        ></app-season-goals>
+      </ng-container>
+    </div>
   </div>
-</div>
+} @else {
+  <div class="loading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+  </div>
+}
