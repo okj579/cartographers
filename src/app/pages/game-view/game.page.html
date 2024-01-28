@@ -1,12 +1,19 @@
-<ng-container *ngIf="gameState() as currentGameState">
+<ng-container *ngIf="gameState() as currentGameState; else loading">
   <app-game-view
     [gameState]="currentGameState"
     [playerIdToShow]="playerToShowId"
     (submitMove)="submitMove($event)"
     (endSeason)="endSeason()"
-    (backToMyGame)="playerToShowId = currentPlayerId"
+    (backToMyGame)="selectPlayerToShow(currentPlayerId)"
   />
 </ng-container>
+
+<ng-template #loading>
+  <div class="loading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <span> Loading game...</span>
+  </div>
+</ng-template>
 
 <div *ngIf="allPlayers.length > 1" class="server-actions">
   <div>All players</div>
@@ -14,7 +21,7 @@
     *ngFor="let player of allPlayers"
     [disabled]="playerToShowId === player.id"
     class="secondary"
-    (click)="playerToShowId = player.id"
+    (click)="selectPlayerToShow(player.id)"
   >
     {{ player.name }} {{ player.id === currentPlayerId ? '[Me]' : '' }}
   </button>

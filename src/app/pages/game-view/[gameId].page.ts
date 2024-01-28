@@ -75,8 +75,6 @@ export default class GameIdPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.debug('GameIdPage.ngOnInit', this.gameId);
-
     if (this.isOnlineGame) {
       this.loadGame();
     } else {
@@ -137,6 +135,11 @@ export default class GameIdPage implements OnInit {
 
   goHome(): void {
     void this._router.navigate(['']);
+  }
+
+  selectPlayerToShow(playerId: string): void {
+    this.playerToShowId = playerId;
+    this._cdr.detectChanges(); // todo - why is this needed?
   }
 
   loadGame(): void {

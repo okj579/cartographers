@@ -1,4 +1,4 @@
-@if (currentGameState && tempPlayerState && playerState) {
+@if (currentGameState && visiblePlayerState && playerState) {
   <div class="sticky-header">
     <app-season-info
       [currentSeason]="currentGameState.season"
@@ -9,9 +9,9 @@
     <app-goal-area
       [goals]="gameState.goals"
       [coins]="playerState.coins"
-      [temporaryCoins]="tempPlayerState.coins"
+      [temporaryCoins]="visiblePlayerState.coins"
       [previousScores]="playerState.scores"
-      [temporaryScores]="tempPlayerState.scores"
+      [temporaryScores]="visiblePlayerState.scores"
       [currentSeason]="currentGameState.season"
     ></app-goal-area>
   </div>
@@ -19,8 +19,8 @@
   <div class="content">
     <app-game-board
       [currentBoardState]="playerState.boardState"
-      [currentShapeToPlace]="isCurrentPlayer ? currentShapeToPlace : undefined"
-      [conflictedCellIndices]="tempPlayerState.conflictedCellIndices"
+      [currentShapeToPlace]="showCurrentShape ? currentShapeToPlace : undefined"
+      [conflictedCellIndices]="visiblePlayerState.conflictedCellIndices"
       (positionChange)="onPositionChange($event)"
     />
 
@@ -33,7 +33,7 @@
       <app-next-shape
         *ngIf="isCurrentPlayer && currentGameState.cardToPlace && !isStartOfSeason && !currentGameState.isEndOfSeason && currentMove"
         [landscapeCard]="currentGameState.cardToPlace"
-        [hasConflict]="tempPlayerState.hasConflict"
+        [hasConflict]="visiblePlayerState.hasConflict"
         [untouchedBoardState]="playerState.boardState"
         [move]="currentMove"
         (moveChange)="onMoveChange($event)"

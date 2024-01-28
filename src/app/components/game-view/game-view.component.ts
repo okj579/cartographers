@@ -68,13 +68,17 @@ export class GameViewComponent implements OnChanges {
   currentMove: Move | undefined;
 
   get currentShapeToPlace(): PlacedLandscapeShape | undefined {
-    if (this.isStartOfSeason || !this.currentMove || !this.currentGameState?.cardToPlace) return undefined;
+    if (!this.currentMove || !this.currentGameState?.cardToPlace) return undefined;
 
     return getPlacedShapeFromMove(this.currentMove, this.currentGameState.cardToPlace);
   }
 
   get isCurrentPlayer(): boolean {
     return this.playerIdToShow === this.currentPlayerId;
+  }
+
+  get showCurrentShape(): boolean {
+    return this.isCurrentPlayer && !!this.currentShapeToPlace && !this.isStartOfSeason;
   }
 
   get playerIndex(): number {
@@ -85,6 +89,14 @@ export class GameViewComponent implements OnChanges {
     return this.currentGameState?.playerStates[this.playerIndex];
   }
 
+  get visiblePlayerState(): TempPlayerGameState | undefined {
+    if (!this.playerState) return undefined;
+
+    return this.isStartOfSeason || !this.tempPlayerState
+      ? { ...this.playerState, conflictedCellIndices: [], hasConflict: false }
+      : this.tempPlayerState;
+  }
+
   get totalEndScore(): number {
     return this.playerState?.seasonScores.reduce((sum, score) => sum + score.totalScore, 0) ?? 0;
   }
@@ -92,8 +104,15 @@ export class GameViewComponent implements OnChanges {
   constructor(private _cdr: ChangeDetectorRef) {}
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['playerIdToShow'] || changes['gameState']) {
-      this._calculateCurrentGameState();
+    if (changes['gameState']) {
+      this.currentGameState = stateToCurrentState(this.gameState, this.playerIdToShow);
+      this.isStartOfGame = this.playerState?.moveHistory.length === 0;
+      this.isStartOfSeason = this.currentGameState.isStartOfSeason;
+      this.currentMove = { ...initialMove };
+    }
+
+    if (this.currentShapeToPlace && this.isCurrentPlayer) {
+      this.updateShapeInBoard(this.currentShapeToPlace);
     }
   }
 
@@ -123,19 +142,6 @@ export class GameViewComponent implements OnChanges {
   updateShapeInBoard(shape: PlacedLandscapeShape | undefined) {
     if (shape && this.playerState) {
       this.tempPlayerState = getTempPlayerStateWithShape(this.gameState, this.playerState, shape);
-    }
-  }
-
-  private _calculateCurrentGameState(): void {
-    this.currentGameState = stateToCurrentState(this.gameState, this.playerIdToShow);
-    this.isStartOfGame = this.playerState?.moveHistory.length === 0;
-    this.isStartOfSeason = this.currentGameState.isStartOfSeason;
-    this.currentMove = { ...initialMove };
-
-    this.tempPlayerState = this.playerState ? { ...this.playerState, hasConflict: false, conflictedCellIndices: [] } : undefined;
-
-    if (this.currentShapeToPlace && this.isCurrentPlayer) {
-      this.updateShapeInBoard(this.currentShapeToPlace);
     }
   }
 }
