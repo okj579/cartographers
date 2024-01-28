@@ -22,7 +22,8 @@ import { generateId } from '../../../utils/general-util';
 import { Router } from '@angular/router';
 import { GameViewComponent } from '../../components/game-view/game-view.component';
 import { Route } from '../../data/routes';
-import { AnyMove } from '../../../models/move';
+import { AnyMove, isRegularMove } from '../../../models/move';
+import { getPlacingMonsterEffect } from '../../../game-logic/monster-effects';
 
 @Component({
   selector: 'app-game-page',
@@ -84,9 +85,23 @@ export default class GameIdPage implements OnInit {
 
   submitMove(move: AnyMove): void {
     const gameState = this.gameState();
-    if (!gameState) return;
+    if (!gameState || !this.currentGameState?.cardToPlace || this.playerToShowId !== this.currentPlayerId) return;
 
-    void this.triggerGameStateSync(addMoveToGame(gameState, move, this.currentPlayerId));
+    let newGameState = addMoveToGame(gameState, move, this.playerToShowId);
+
+    const currentMonster = this.currentGameState.cardToPlace.monster;
+    if (currentMonster && isRegularMove(move)) {
+      const newCurrentGameState = stateToCurrentState(newGameState, this.currentPlayerId);
+      const playerState = newCurrentGameState.playerStates.find((playerState) => playerState.player.id === this.playerToShowId);
+      if (playerState) {
+        const monsterMove = getPlacingMonsterEffect(playerState.boardState, currentMonster.type);
+        if (monsterMove) {
+          newGameState = addMoveToGame(newGameState, monsterMove, this.playerToShowId);
+        }
+      }
+    }
+
+    void this.triggerGameStateSync(newGameState);
   }
 
   endSeason(): void {

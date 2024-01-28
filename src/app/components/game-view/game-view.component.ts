@@ -105,7 +105,7 @@ export class GameViewComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['gameState']) {
-      this.currentGameState = stateToCurrentState(this.gameState, this.playerIdToShow);
+      this.currentGameState = stateToCurrentState(this.gameState, this.currentPlayerId);
       this.isStartOfGame = this.playerState?.moveHistory.length === 0;
       this.isStartOfSeason = this.currentGameState.isStartOfSeason;
       this.currentMove = { ...initialMove };

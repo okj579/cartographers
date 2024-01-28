@@ -69,7 +69,7 @@ export const MONSTER_EFFECTS: Record<MonsterType, MonsterEffect> = {
     },
     applySpecialEffect: (board: BoardTile[][], move: SpecialMove) => {
       if (move.monsterType === MonsterType.TROLL) {
-        const tileToDestroy = board[move.affectedTiles![0].y][move.affectedTiles![0].x];
+        const tileToDestroy = board[move.affectedTiles![0].x][move.affectedTiles![0].y];
         tileToDestroy.destroyed = true;
       }
 
@@ -154,7 +154,7 @@ export const MONSTER_EFFECTS: Record<MonsterType, MonsterEffect> = {
     },
     applySpecialEffect: (board: BoardTile[][], move: SpecialMove) => {
       if (move.monsterType === MonsterType.GORGON) {
-        const tileToDestroy = board[move.affectedTiles![0].y][move.affectedTiles![0].x];
+        const tileToDestroy = board[move.affectedTiles![0].x][move.affectedTiles![0].y];
         tileToDestroy.destroyed = true;
 
         return copyBoard(board);

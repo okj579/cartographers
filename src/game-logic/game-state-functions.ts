@@ -70,12 +70,12 @@ export function stateToCurrentState(state: GameState, playerId: string): Current
   };
 }
 
-function getMovesOfCurrentSeason(moves: AnyMove[]): AnyMove[] {
+function getMovesOfCurrentSeason(moves: AnyMove[]): Move[] {
   const seasonChangeMoves = moves.filter(isSeasonChange);
   const lastSeasonChangeMove = seasonChangeMoves[seasonChangeMoves.length - 1];
   const lastSeasonChangeMoveIndex = moves.indexOf(lastSeasonChangeMove);
 
-  return moves.slice(lastSeasonChangeMoveIndex + 1);
+  return moves.slice(lastSeasonChangeMoveIndex + 1).filter(isRegularMove);
 }
 
 function playerStateToCurrentPlayerState(
@@ -159,7 +159,7 @@ export function addMoveToGame(state: GameState, move: AnyMove, playerId: string)
   return updatePlayerState(state, { ...playerState, moveHistory: [...playerState.moveHistory, move] });
 }
 
-function applyMoveToBoard(board: CurrentPlayerBoard, card: LandscapeCard, move: Move): CurrentPlayerBoard {
+export function applyMoveToBoard(board: CurrentPlayerBoard, card: LandscapeCard, move: Move): CurrentPlayerBoard {
   const placedLandscapeShape = getPlacedShapeFromMove(move, card);
 
   const { updatedBoard, newCoins } = tryPlaceShapeOnBoard(board.boardState, placedLandscapeShape);
