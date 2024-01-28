@@ -106,6 +106,10 @@ button.submit-btn {
   }
 }
 
+.loading {
+  padding: var(--gap-32);
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

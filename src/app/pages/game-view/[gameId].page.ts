@@ -81,13 +81,19 @@ export default class GameIdPage implements OnInit {
     return this.currentGameState?.playerStates.find((playerState) => playerState.player.id === playerId);
   }
 
-  getTotalScoreString(playerId: string): string {
-    if (!!this.currentPlayerState?.season) return '';
-
+  getPlayerInfoString(playerId: string): string {
     const playerState = this.getPlayerState(playerId);
-    const totalScore = playerState?.seasonScores.reduce((sum, score) => sum + score.totalScore, 0) ?? 0;
-    const inProgressString = !playerState?.season ? '' : '+?';
-    return `🎖️${totalScore}${inProgressString}`;
+    if (!playerState || (this.currentPlayerState?.season && this.currentPlayerState.moveHistory.length <= playerState.moveHistory.length))
+      return '';
+
+    if (!playerState?.season) {
+      const totalScore = playerState?.seasonScores.reduce((sum, score) => sum + score.totalScore, 0) ?? 0;
+      return ` 🎖️${totalScore}`;
+    }
+
+    return ` ${playerState.season.emoji} ${playerState.playedSeasonCards.reduce((sum, card) => sum + card.timeValue, 0)}/${
+      playerState.season.duration
+    }`;
   }
 
   constructor(

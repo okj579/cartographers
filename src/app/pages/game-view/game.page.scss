@@ -28,6 +28,13 @@
   padding: var(--gap-8) var(--gap-16);
   box-sizing: border-box;
 
+  &:not(.is-final) {
+    .user-info {
+      filter: grayscale(1);
+      opacity: 0.5;
+    }
+  }
+
   .server-actions {
     padding: 0;
     flex-wrap: nowrap;
