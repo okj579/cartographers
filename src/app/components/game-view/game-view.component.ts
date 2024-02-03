@@ -82,7 +82,7 @@ export class GameViewComponent implements OnChanges {
   get visiblePlayerState(): TempPlayerGameState | undefined {
     if (!this.playerState) return undefined;
 
-    return this.isStartOfSeason || !this.tempPlayerState
+    return this.isStartOfSeason || !this.tempPlayerState || !this.playerState.season
       ? { ...this.playerState, conflictedCellIndices: [], hasConflict: false }
       : this.tempPlayerState;
   }

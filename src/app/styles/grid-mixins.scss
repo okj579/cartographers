@@ -1,4 +1,4 @@
-$squareCount: 11;
+$squareCount: 12; // +1 to show points
 $gap: 2px;
 $gapRem: 0.125rem;
 $totalGap: ($squareCount - 1) * $gapRem;
@@ -10,7 +10,7 @@ $font-size: calc(0.6 * $squareSize);
 @mixin board-tile-grid {
   display: grid;
   grid-template-columns: repeat(var(--columns, $squareCount), $squareSize);
-  grid-template-rows: repeat(var(--rows, $squareCount), $squareSize);
+  grid-template-rows: repeat(var(--rows, $squareCount + 1), $squareSize);
   gap: $gap;
   font-size: $font-size;
 }

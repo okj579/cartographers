@@ -7,7 +7,7 @@ import {
   SeasonSetup,
   TempPlayerGameState,
 } from '../models/game-state';
-import { findGoalByName, getMonsterScore, getShuffledGoals, Goal } from '../models/goals';
+import { findGoalByName, getFallbackScoreInfo, getMonsterScore, getShuffledGoals, Goal, GoalCategory, ScoreInfo } from '../models/goals';
 import { getInitialBoardTiles } from './constants';
 import { getPortalCard, HERO_CARDS, LANDSCAPE_CARDS, LandscapeCard, MONSTER_CARDS } from '../models/landscape-card';
 import { getCurrentTimeProgress, getSeasonScore, getShuffledCards, tryPlaceShapeOnBoard } from './functions';
@@ -38,7 +38,7 @@ export function addPlayer(state: GameState): GameState {
 export function stateToCurrentState(state: GameState, playerId: string): CurrentGameState {
   const playerIndex = findPlayerIndex(state.playerStates, playerId);
   const activePlayerState = state.playerStates[playerIndex];
-  const lengthOfMoveHistory = activePlayerState.moveHistory.length;
+  const lengthOfMoveHistory = activePlayerState?.moveHistory.length ?? 0;
   const playerStates: CurrentPlayerGameState[] = state.playerStates.map((playerState) => ({
     ...playerStateToCurrentPlayerState(playerState, state, lengthOfMoveHistory),
   }));
@@ -77,6 +77,8 @@ function playerStateToCurrentPlayerState(
   const playedSeasonCards = isEndOfSeason ? previouslyPlayedCards : cardDeck.slice(0, currentCardIndex + 1);
   const allPlayedCards = [...state.seasonSetups.slice(0, currentSeasonIndex).flatMap((setup) => setup.cardDeck), ...playedSeasonCards];
   const cardToPlace = isEndOfSeason ? undefined : cardDeck[currentCardIndex];
+  const scoreInfos = getScoresFromBoard(state.goals, board.boardState);
+  const scores = scoreInfos.map((scoreInfo) => scoreInfo.score);
 
   return {
     ...board,
@@ -87,7 +89,8 @@ function playerStateToCurrentPlayerState(
     playedSeasonCards,
     allPlayedCards,
     cardToPlace,
-    scores: getScoresFromBoard(state.goals, board.boardState),
+    scoreInfos,
+    scores,
   };
 }
 
@@ -95,12 +98,12 @@ function getAllPlayedCards(state: GameState): LandscapeCard[] {
   return state.seasonSetups.flatMap((setup) => setup.cardDeck);
 }
 
-function getScoresFromBoard(goals: Goal[], board: BoardTile[][]): number[] {
+function getScoresFromBoard(goals: Goal[], board: BoardTile[][]): ScoreInfo[] {
   return [
     ...goals.map((goal) => {
       const localGoal = findGoalByName(goal.name);
 
-      if (!localGoal) return 0;
+      if (!localGoal) return getFallbackScoreInfo(GoalCategory.GLOBAL);
 
       return localGoal.scoreAlgorithm(board);
     }),
@@ -136,7 +139,7 @@ function getBoardStateFromMoveHistory(
       board = applyMoveToBoard(board, card, move);
     } else {
       if (isSeasonChange(move)) {
-        const scores = getScoresFromBoard(goals, board.boardState);
+        const scores = getScoresFromBoard(goals, board.boardState).map((scoreInfo) => scoreInfo.score);
         const currentSeason = SEASONS[seasonIndex];
         seasonIndex++;
         board = {
@@ -242,9 +245,13 @@ export function getTempPlayerStateWithShape(
     coins: previousPlayerState.coins + newCoinsToAdd,
   };
 
+  const scoreInfos: ScoreInfo[] = hasConflict ? previousPlayerState.scoreInfos : getScoresFromBoard(state.goals, updatedBoard);
+  const scores: number[] = scoreInfos.map((scoreInfo) => scoreInfo.score);
+
   return {
     ...(hasConflict ? previousPlayerState : newPlayerState),
-    scores: hasConflict ? previousPlayerState.scores : getScoresFromBoard(state.goals, updatedBoard),
+    scoreInfos,
+    scores,
     hasConflict,
     conflictedCellIndices: conflictedCellIndices,
   };

@@ -1,7 +1,7 @@
 import { BoardTile } from './board-tile';
 import { Season, SeasonScore } from './season';
 import { LandscapeCard } from './landscape-card';
-import { Goal } from './goals';
+import { Goal, ScoreInfo } from './goals';
 import { AnyMove } from './move';
 
 export interface GameState {
@@ -37,6 +37,7 @@ export interface CurrentPlayerBoard extends PlayerGameState {
 }
 
 export interface CurrentPlayerGameState extends CurrentPlayerBoard {
+  readonly scoreInfos: ScoreInfo[];
   readonly scores: number[];
   readonly season: Season | undefined;
   readonly seasonGoals: Goal[];

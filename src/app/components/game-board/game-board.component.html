@@ -11,7 +11,7 @@
       (click)="onTileClick(x, y)"
     ></app-board-tile>
   </ng-container>
-  <div class="num-entry col" [style.grid-column]="x + 1" [style.grid-row]="-1">{{ x + 1 }}</div>
+  <div class="num-entry col" [style.grid-column]="x + 1" [style.grid-row]="BOARD_SIZE + 1">{{ x + 1 }}</div>
 </ng-container>
 
 <app-temporary-placed-landscape-shape
@@ -19,3 +19,50 @@
   [placedShape]="currentShapeToPlace"
   [conflictedCellIndices]="conflictedCellIndices"
 />
+
+<ng-container *ngFor="let scoreInfo of allTileScoreInfos">
+  <app-score-tile
+    *ngFor="let scoredTile of scoreInfo.scoredTiles"
+    [score]="scoreInfo.scorePerEntity"
+    [goalCategory]="scoreInfo.goalCategory"
+    [style.grid-column]="scoredTile.position.x + 1"
+    [style.grid-row]="scoredTile.position.y + 1"
+    [class.relevant]="isScoreRelevant(scoreInfo)"
+  />
+</ng-container>
+
+<ng-container *ngFor="let scoreInfo of allAreaScoreInfos">
+  <ng-container *ngFor="let area of scoreInfo.scoredAreas">
+    <app-score-tile
+      [score]="scoreInfo.scorePerEntity"
+      [goalCategory]="scoreInfo.goalCategory"
+      [style.grid-column]="area.tiles[0].position.x + 1"
+      [style.grid-row]="area.tiles[0].position.y + 1"
+      [class.relevant]="isScoreRelevant(scoreInfo)"
+    />
+  </ng-container>
+</ng-container>
+
+<ng-container *ngFor="let scoreInfo of allColumnScoreInfos">
+  <app-score-tile
+    *ngFor="let column of scoreInfo.scoredColumns"
+    class="col"
+    [score]="scoreInfo.scorePerEntity"
+    [goalCategory]="scoreInfo.goalCategory"
+    [style.grid-column]="column + 1"
+    [style.grid-row]="BOARD_SIZE + 2"
+    [class.relevant]="isScoreRelevant(scoreInfo)"
+  />
+</ng-container>
+
+<ng-container *ngFor="let scoreInfo of allRowScoreInfos">
+  <app-score-tile
+    *ngFor="let row of scoreInfo.scoredRows"
+    class="row"
+    [score]="scoreInfo.scorePerEntity"
+    [goalCategory]="scoreInfo.goalCategory"
+    [style.grid-column]="BOARD_SIZE + 1"
+    [style.grid-row]="row + 1"
+    [class.relevant]="isScoreRelevant(scoreInfo)"
+  />
+</ng-container>

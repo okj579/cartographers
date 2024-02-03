@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { NgForOf, NgIf } from '@angular/common';
 import { BoardTileComponent } from './board-tile.component';
 import { TemporaryPlacedLandscapeShapeComponent } from './temporary-placed-landscape-shape.component';
@@ -7,11 +7,13 @@ import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape } from '../../
 import { Coordinates, Direction, getNeighborCoordinates, includesCoordinates } from '../../../models/simple-types';
 import { BOARD_SIZE } from '../../../game-logic/constants';
 import { IndexToCharPipe } from '../goal-area/index-to-char.pipe';
+import { Goal, ScoreInfo } from '../../../models/goals';
+import { ScoreTileComponent } from './score-tile/score-tile.component';
 
 @Component({
   selector: 'app-game-board',
   standalone: true,
-  imports: [NgForOf, BoardTileComponent, TemporaryPlacedLandscapeShapeComponent, NgIf, IndexToCharPipe],
+  imports: [NgForOf, BoardTileComponent, TemporaryPlacedLandscapeShapeComponent, NgIf, IndexToCharPipe, ScoreTileComponent],
   templateUrl: './game-board.component.html',
   styleUrl: './game-board.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,11 +22,45 @@ export class GameBoardComponent {
   @Input() currentBoardState: BoardTile[][] = [];
   @Input() currentShapeToPlace: PlacedLandscapeShape | undefined;
   @Input() conflictedCellIndices: number[] = [];
+  @Input() scoreInfos: ScoreInfo[] = [];
+  @Input() seasonGoals: Goal[] = [];
+
+  @HostBinding('class.is-end-of-season')
+  @Input()
+  isEndOfSeason: boolean = false;
 
   @Output() positionChange: EventEmitter<Coordinates> = new EventEmitter<Coordinates>();
 
+  protected readonly BOARD_SIZE = BOARD_SIZE;
+
   get allowPlacing(): boolean {
     return this.currentShapeToPlace !== undefined;
+  }
+
+  get allTileScoreInfos(): ScoreInfo[] {
+    return this.scoreInfos.filter((scoreInfo) => scoreInfo.scoreType === 'tile' && scoreInfo.scoredTiles.length > 0);
+  }
+
+  get allAreaScoreInfos(): ScoreInfo[] {
+    return this.scoreInfos.filter((scoreInfo) => scoreInfo.scoreType === 'area' && scoreInfo.scoredAreas.length > 0);
+  }
+
+  get allColumnScoreInfos(): ScoreInfo[] {
+    return this.scoreInfos.filter(
+      (scoreInfo) => ['column', 'row+column'].includes(scoreInfo.scoreType) && scoreInfo.scoredColumns.length > 0,
+    );
+  }
+
+  get allRowScoreInfos(): ScoreInfo[] {
+    return this.scoreInfos.filter((scoreInfo) => ['row', 'row+column'].includes(scoreInfo.scoreType) && scoreInfo.scoredRows.length > 0);
+  }
+
+  isScoreRelevant(scoreInfo: ScoreInfo): boolean {
+    return (
+      scoreInfo.goalCategory === 'monster' ||
+      !this.seasonGoals.length ||
+      this.seasonGoals.some((goal) => goal.category === scoreInfo.goalCategory)
+    );
   }
 
   trackByIndex(index: number): number {

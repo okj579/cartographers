@@ -23,6 +23,9 @@
       [currentBoardState]="playerState.boardState"
       [currentShapeToPlace]="showCurrentShape ? currentShapeToPlace : undefined"
       [conflictedCellIndices]="visiblePlayerState.conflictedCellIndices"
+      [scoreInfos]="visiblePlayerState.scoreInfos"
+      [seasonGoals]="playerState.seasonGoals"
+      [isEndOfSeason]="playerState.isEndOfSeason && !!playerState.season"
       (positionChange)="onPositionChange($event)"
     />
 

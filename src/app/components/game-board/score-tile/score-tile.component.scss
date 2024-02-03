@@ -1,0 +1,46 @@
+:host {
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+
+  $alpha: 0.2;
+  $margin: 50%;
+
+  &[data-category='monster'] {
+    background-color: rgba(#a0a, $alpha);
+    margin-left: $margin;
+    margin-top: $margin;
+  }
+
+  &[data-category='global'] {
+    background-color: rgba(#666, $alpha);
+  }
+
+  &[data-category='village'] {
+    background-color: rgba(#823, $alpha);
+    margin-left: $margin;
+  }
+
+  &[data-category='forest'] {
+    background-color: rgba(#060, $alpha);
+    margin-top: $margin;
+
+    &.col {
+      margin-top: 0;
+    }
+  }
+
+  &[data-category='field-water'] {
+    background-image: linear-gradient(125deg, rgba(#fa0, $alpha), rgba(#00a, $alpha));
+    margin-left: $margin;
+    margin-top: $margin;
+
+    &.col {
+      margin-top: 0;
+    }
+  }
+
+  &.col {
+    margin-top: -$margin;
+  }
+}
