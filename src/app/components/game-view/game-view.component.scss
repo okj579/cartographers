@@ -1,16 +1,14 @@
 :host {
   display: grid;
   grid-template-rows: auto 1fr;
-  height: 100%;
   width: 100%;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .sticky-header {
   position: sticky;
   top: 0;
-  z-index: 5;
+  z-index: 15;
   background: var(--bg-color);
   padding: var(--gap-24) var(--gap-24) var(--gap-16);
   box-sizing: border-box;
