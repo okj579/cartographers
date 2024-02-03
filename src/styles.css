@@ -59,6 +59,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
+  white-space: nowrap;
   background-color: #1a1a1a;
   transition:
     border-color 0.2s ease-in-out,
@@ -76,6 +77,11 @@ button {
     &:hover:not([disabled]) {
       border-color: #646cff;
     }
+  }
+
+  &.small {
+    font-size: 0.8em;
+    padding: 0.4em 0.8em;
   }
 
   &:not(.icon-btn) i:first-child {
@@ -98,6 +104,10 @@ button.submit-btn {
     background: darkgreen;
     color: #fafafa;
   }
+}
+
+.loading {
+  padding: var(--gap-32);
 }
 
 @media (prefers-color-scheme: light) {

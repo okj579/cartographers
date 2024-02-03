@@ -14,7 +14,7 @@ function rotateShapeCounterClockwise(shape: BaseShape): BaseShape {
   return { ...shape, width: shape.height, height: shape.width, filledCells };
 }
 
-export function mirrorShape(shape: BaseShape): BaseShape {
+export function flipShape(shape: BaseShape): BaseShape {
   const filledCells: Coordinates[] = shape.filledCells.map((cell) => ({ x: shape.width - cell.x - 1, y: cell.y }));
 
   return { ...shape, filledCells };
@@ -44,8 +44,8 @@ export function rotateLandscapeShapeCounterClockwise(shape: LandscapeShape): Lan
   return { ...shape, baseShape, heroPosition };
 }
 
-export function mirrorLandscapeShape(shape: LandscapeShape): LandscapeShape {
-  const baseShape = mirrorShape(shape.baseShape);
+export function flipLandscapeShape(shape: LandscapeShape): LandscapeShape {
+  const baseShape = flipShape(shape.baseShape);
   const heroPosition = shape.heroPosition
     ? {
         x: baseShape.width - shape.heroPosition.x - 1,

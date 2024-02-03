@@ -1,4 +1,4 @@
-import { BoardTile } from '../models/board-tile';
+import { BoardTile, copyBoard } from '../models/board-tile';
 import { LandscapeShape, PlacedLandscapeShape } from '../models/landscape-shape';
 import { LandscapeType } from '../models/landscape-type';
 import { areShapesEqual, BaseShape, copyShape } from '../models/base-shape';
@@ -6,7 +6,7 @@ import { Coordinates } from '../models/simple-types';
 import { copyLandscapeCard, LandscapeCard } from '../models/landscape-card';
 import { Season } from '../models/season';
 import { BOARD_SIZE, MONSTER_SCORE_INDEX } from './constants';
-import { mirrorShape, rotateShapeClockwise } from './transformation-functions';
+import { flipShape, rotateShapeClockwise } from './transformation-functions';
 import { DRAGON_COINS, MonsterType } from '../models/monster';
 
 interface PlaceShapeResult {
@@ -19,7 +19,7 @@ export interface FindPositionResult {
   position: Coordinates | undefined;
   updatedShape: BaseShape;
   numberOfRotations: number;
-  isMirrored?: boolean;
+  isFlipped: boolean;
 }
 
 export interface LandscapeArea {
@@ -53,11 +53,16 @@ export function getSeasonScore(season: Season, scores: number[], coins: number):
 }
 
 export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape): PlaceShapeResult {
-  const updatedBoard: BoardTile[][] = board.map((column) => column.map((tile) => ({ ...tile })));
+  const updatedBoard: BoardTile[][] = copyBoard(board);
   const conflictedCellIndices: number[] = [];
   let newCoins = 0;
 
   if (!shape) return { updatedBoard, conflictedCellIndices, newCoins };
+
+  const boardHasDragon = board
+    .flat()
+    .some((tile) => isTileOfLandscape(tile, LandscapeType.MONSTER) && tile.monsterType === MonsterType.DRAGON);
+  const wasDragonDefeated = boardHasDragon && isDragonDefeated(board);
 
   for (let i = 0; i < shape.baseShape.filledCells.length; i++) {
     let cell = shape.baseShape.filledCells[i];
@@ -66,11 +71,10 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
     const { isHeroStar } = getHeroInformation(shape, cell);
 
     if (tile) {
-      tile.monsterType = shape.monsterType;
+      tile.monsterType = isHeroStar ? tile.monsterType : shape.monsterType;
       applyShapeToTile(tile, shape, isHeroStar);
       if (!tile.conflicted) {
         newCoins += checkForMountainCoin(updatedBoard, tile.position);
-        newCoins += checkForDragonCoins(updatedBoard, tile.position);
       }
     } else if (!isHeroStar) {
       conflictedCellIndices.push(i);
@@ -78,6 +82,12 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
 
     if (tile?.conflicted) {
       conflictedCellIndices.push(i);
+    }
+  }
+
+  if (!wasDragonDefeated && !conflictedCellIndices.length && (boardHasDragon || shape.monsterType === MonsterType.DRAGON)) {
+    if (isDragonDefeated(updatedBoard)) {
+      newCoins += DRAGON_COINS;
     }
   }
 
@@ -104,28 +114,23 @@ function checkForMountainCoin(board: BoardTile[][], cell: Coordinates): number {
   return coins;
 }
 
-function checkForDragonCoins(board: BoardTile[][], cell: Coordinates): number {
-  const adjacentTiles = getAdjacentTiles(board, cell);
-  const dragonTiles = adjacentTiles.filter(
-    (tile) => isTileOfLandscape(tile, LandscapeType.MONSTER) && tile.monsterType === MonsterType.DRAGON,
-  );
-
-  if (dragonTiles.length === 0) return 0;
-
-  const allDragonTiles = board
+function isDragonDefeated(board: BoardTile[][]): boolean {
+  const dragonTiles = board
     .flat()
     .filter((tile) => isTileOfLandscape(tile, LandscapeType.MONSTER) && tile.monsterType === MonsterType.DRAGON);
 
-  for (let dragonTile of allDragonTiles) {
+  if (dragonTiles.length === 0) return false;
+
+  for (let dragonTile of dragonTiles) {
     const adjacentDragonTiles = getAdjacentTiles(board, dragonTile.position);
     for (let adjacentDragonTile of adjacentDragonTiles) {
       if (isTileOfLandscape(adjacentDragonTile, undefined)) {
-        return 0;
+        return false;
       }
     }
   }
 
-  return DRAGON_COINS;
+  return true;
 }
 
 export function getAdjacentTiles(board: BoardTile[][], cell: Coordinates): BoardTile[] {
@@ -170,11 +175,11 @@ export function getHeroInformation(shape: LandscapeShape, cell: Coordinates) {
 
 export function findFirstPositionForShape(board: BoardTile[][], shape: BaseShape): FindPositionResult {
   let { position, updatedShape, numberOfRotations } = findFirstPositionForShapeWithAllRotations(board, shape);
-  let isMirrored = false;
+  let isFlipped = false;
 
   if (!position) {
-    updatedShape = mirrorShape(shape);
-    isMirrored = true;
+    updatedShape = flipShape(shape);
+    isFlipped = true;
 
     if (!areShapesEqual(shape, updatedShape)) {
       let subResult = findFirstPositionForShapeWithAllRotations(board, updatedShape);
@@ -184,7 +189,7 @@ export function findFirstPositionForShape(board: BoardTile[][], shape: BaseShape
     }
   }
 
-  return { position, updatedShape, numberOfRotations, isMirrored };
+  return { position, updatedShape, numberOfRotations, isFlipped };
 }
 
 function findFirstPositionForShapeWithAllRotations(board: BoardTile[][], shape: BaseShape): FindPositionResult {
@@ -205,7 +210,7 @@ function findFirstPositionForShapeWithAllRotations(board: BoardTile[][], shape: 
     }
   }
 
-  return { position, updatedShape, numberOfRotations };
+  return { position, updatedShape, numberOfRotations, isFlipped: false };
 }
 
 function getFirstAvailablePosition(board: BoardTile[][], shape: BaseShape): Coordinates | undefined {

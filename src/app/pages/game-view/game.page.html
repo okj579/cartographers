@@ -1,23 +1,36 @@
-<ng-container *ngIf="gameState() as currentGameState">
+<ng-container *ngIf="gameState() as currentGameState; else loading">
   <app-game-view
     [gameState]="currentGameState"
     [playerIdToShow]="playerToShowId"
-    (gameStateChange)="triggerGameStateSync($event)"
-    (backToMyGame)="playerToShowId = currentPlayerId"
-  />
+    (submitMove)="submitMove($event)"
+    (endSeason)="endSeason()"
+    (backToMyGame)="selectPlayerToShow(currentPlayerId)"
+  >
+    <div *ngIf="allPlayers.length > 1" class="all-players" [class.is-final]="!currentPlayerState?.season">
+      <div class="server-actions">
+        <button
+          *ngFor="let player of allPlayers"
+          [disabled]="playerToShowId === player.id"
+          class="secondary small"
+          (click)="selectPlayerToShow(player.id)"
+        >
+          <i class="fa-solid fa-user"></i>
+          <span
+            >{{ player.name }} {{ player.id === currentPlayerId ? '[Me]' : '' }}
+            <span class="user-info">{{ getPlayerInfoString(player.id) }}</span></span
+          >
+        </button>
+      </div>
+    </div>
+  </app-game-view>
 </ng-container>
 
-<div *ngIf="allPlayers.length > 1" class="server-actions">
-  <div>All players</div>
-  <button
-    *ngFor="let player of allPlayers"
-    [disabled]="playerToShowId === player.id"
-    class="secondary"
-    (click)="playerToShowId = player.id"
-  >
-    {{ player.name }} {{ player.id === currentPlayerId ? '[Me]' : '' }}
-  </button>
-</div>
+<ng-template #loading>
+  <div class="loading">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <span> Loading game...</span>
+  </div>
+</ng-template>
 
 <div class="server-actions">
   <span *ngIf="isOnlineGame">synced</span>

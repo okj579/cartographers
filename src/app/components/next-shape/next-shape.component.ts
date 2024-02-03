@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape, ShapeDimensions } from '../../../models/landscape-shape';
 import { findFirstPositionForShape, FindPositionResult, getHeroInformation } from '../../../game-logic/functions';
 import { BoardTileComponent } from '../game-board/board-tile.component';
@@ -9,11 +9,14 @@ import { getPortalCard, LandscapeCard } from '../../../models/landscape-card';
 import { Coordinates } from '../../../models/simple-types';
 import { LandscapeType } from '../../../models/landscape-type';
 import {
-  mirrorLandscapeShape,
+  flipLandscapeShape,
   rotateLandscapeShapeClockwise,
   rotateLandscapeShapeCounterClockwise,
 } from '../../../game-logic/transformation-functions';
 import { MONSTER_EFFECTS, MonsterEffect } from '../../../game-logic/monster-effects';
+import { Move, normalizeRotations } from '../../../models/move';
+import { getLandscapeFromMove } from '../../../game-logic/game-state-functions';
+import { ShapeName, SHAPES } from '../../../models/base-shape';
 
 @Component({
   selector: 'app-next-shape',
@@ -23,38 +26,36 @@ import { MONSTER_EFFECTS, MonsterEffect } from '../../../game-logic/monster-effe
   styleUrl: './next-shape.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NextShapeComponent {
-  @Input({ required: true }) set landscapeCard(card: LandscapeCard) {
-    if (this._landscapeCard?.name === card.name) return;
-    console.debug('NextShapeComponent.landscapeCard', card);
-
-    this._resetValues();
-    this.allVariants = this._getAllVariants(card);
-    this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
-    this._hasDifferentShapes = card.baseShapes.length > 1;
-    this._landscapeCard = card;
-
-    setTimeout(() => this.selectVariant(0));
-  }
+export class NextShapeComponent implements OnChanges {
+  @Input({ required: true }) landscapeCard!: LandscapeCard;
+  @Input({ required: true }) move!: Move;
 
   @Input() untouchedBoardState: BoardTile[][] = [];
   @Input() hasConflict: boolean = false;
 
-  @Output() landscapeShapeChange: EventEmitter<PlacedLandscapeShape> = new EventEmitter<PlacedLandscapeShape>();
-  @Output() submit: EventEmitter<PlacedLandscapeShape> = new EventEmitter<PlacedLandscapeShape>();
+  @Output() moveChange: EventEmitter<Move> = new EventEmitter<Move>();
+  @Output() submit: EventEmitter<void> = new EventEmitter<void>();
 
-  protected allVariants: LandscapeShape[] = [];
+  protected variantLists: LandscapeShape[][] = [];
   protected boardTilesPerVariant: BoardTile[][] = [];
 
-  protected selectedVariant: number = -1;
-  protected currentPosition: Coordinates = { x: 0, y: 0 };
+  get allVariants(): LandscapeShape[] {
+    const allVariants: LandscapeShape[] = [];
 
-  private _hasDifferentShapes: boolean = false;
+    for (let variantList of this.variantLists) {
+      allVariants.push(...variantList);
+    }
 
-  private _landscapeCard: LandscapeCard | undefined;
+    return allVariants;
+  }
 
-  constructor() {
-    this._resetValues();
+  constructor() {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['landscapeCard'] || changes['move']) {
+      this.variantLists = this._getVariantLists(this.landscapeCard, this.move);
+      this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
+    }
   }
 
   get currentMonsterEffect(): MonsterEffect | undefined {
@@ -64,11 +65,11 @@ export class NextShapeComponent {
   }
 
   get currentVariant(): PlacedLandscapeShape | undefined {
-    const currentShape = this.allVariants[this.selectedVariant];
+    const currentShape = this.variantLists[this.move.selectedShapeIndex][this.move.selectedLandscapeIndex];
 
     if (!currentShape) return undefined;
 
-    return { ...currentShape, position: this.currentPosition };
+    return { ...currentShape, position: this.move.position };
   }
 
   get shapeDimensions(): ShapeDimensions | undefined {
@@ -91,6 +92,17 @@ export class NextShapeComponent {
     return !this.shapeDimensions || this.shapeDimensions.y + this.shapeDimensions.height >= BOARD_SIZE;
   }
 
+  getIndicesFromIndex(index: number): { selectedLandscapeIndex: number; selectedShapeIndex: number } {
+    const selectedShapeIndex = Math.floor(index / this.landscapeCard.landscapeTypes.length);
+    const selectedLandscapeIndex = index % this.landscapeCard.landscapeTypes.length;
+
+    return { selectedLandscapeIndex, selectedShapeIndex };
+  }
+
+  getVariantIndex(selectedShapeIndex: number, selectedLandscapeIndex: number): number {
+    return selectedShapeIndex * this.landscapeCard.landscapeTypes.length + selectedLandscapeIndex;
+  }
+
   @HostListener('window:keydown', ['$event'])
   selectVariantListener(event: KeyboardEvent) {
     try {
@@ -98,15 +110,16 @@ export class NextShapeComponent {
 
       if (isNaN(key) || key > this.allVariants.length) return;
 
-      this.selectVariant(key - 1);
+      const { selectedLandscapeIndex, selectedShapeIndex } = this.getIndicesFromIndex(key - 1);
+
+      this.selectVariant(selectedShapeIndex, selectedLandscapeIndex);
     } catch (e) {
       return;
     }
   }
 
-  selectVariant(index: number) {
-    this.selectedVariant = index;
-    this._emitCurrentVariant();
+  selectVariant(selectedShapeIndex: number, selectedLandscapeIndex: number) {
+    this.moveChange.emit({ ...this.move, selectedLandscapeIndex, selectedShapeIndex });
   }
 
   @HostListener('window:keydown.Enter', ['$event'])
@@ -116,46 +129,41 @@ export class NextShapeComponent {
 
     if (this.hasConflict || !this.currentVariant) return;
 
-    this.submit.emit(this.currentVariant);
+    this.submit.emit();
   }
 
   @HostListener('window:keydown.r', ['$event'])
   @HostListener('window:keydown.e', ['$event'])
-  rotateClockwise(shouldEmit: boolean = true) {
+  rotateClockwise() {
     const previousHeroPosition = this.currentVariant?.heroPosition;
-    this.allVariants = this.allVariants.map((variant) => ({
-      ...rotateLandscapeShapeClockwise(variant),
-    }));
-    this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
-    this._updateCoordinatesAfterHeroTransformation(previousHeroPosition);
+    const rotatedHero = previousHeroPosition ? rotateLandscapeShapeClockwise(this.allVariants[0]) : undefined;
+    const position = this._getCoordinatesAfterHeroTransformation(previousHeroPosition, rotatedHero?.heroPosition);
 
-    if (shouldEmit) this._emitCurrentVariant();
+    this.moveChange.emit(
+      normalizeRotations({ ...this.move, numberOfClockwiseRotations: this.move.numberOfClockwiseRotations + 1, position }),
+    );
   }
 
   @HostListener('window:keydown.l', ['$event'])
   @HostListener('window:keydown.q', ['$event'])
   rotateCounterClockwise() {
     const previousHeroPosition = this.currentVariant?.heroPosition;
-    this.allVariants = this.allVariants.map((variant) => ({
-      ...rotateLandscapeShapeCounterClockwise(variant),
-    }));
-    this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
-    this._updateCoordinatesAfterHeroTransformation(previousHeroPosition);
+    const rotatedHero = previousHeroPosition ? rotateLandscapeShapeCounterClockwise(this.allVariants[0]) : undefined;
+    const position = this._getCoordinatesAfterHeroTransformation(previousHeroPosition, rotatedHero?.heroPosition);
 
-    this._emitCurrentVariant();
+    this.moveChange.emit(
+      normalizeRotations({ ...this.move, numberOfCounterClockwiseRotations: this.move.numberOfCounterClockwiseRotations + 1, position }),
+    );
   }
 
   @HostListener('window:keydown.m', ['$event'])
   @HostListener('window:keydown.x', ['$event'])
-  mirror(shouldEmit: boolean = true) {
+  flip() {
     const previousHeroPosition = this.currentVariant?.heroPosition;
-    this.allVariants = this.allVariants.map((variant) => ({
-      ...mirrorLandscapeShape(variant),
-    }));
-    this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
-    this._updateCoordinatesAfterHeroTransformation(previousHeroPosition);
+    const flippedHero = previousHeroPosition ? flipLandscapeShape(this.allVariants[0]) : undefined;
+    const position = this._getCoordinatesAfterHeroTransformation(previousHeroPosition, flippedHero?.heroPosition);
 
-    if (shouldEmit) this._emitCurrentVariant();
+    this.moveChange.emit({ ...this.move, isFlipped: !this.move.isFlipped, position });
   }
 
   @HostListener('window:keydown.ArrowUp', ['$event'])
@@ -163,8 +171,7 @@ export class NextShapeComponent {
   moveUp() {
     if (this.disableUp) return;
 
-    this.currentPosition = { ...this.currentPosition, y: this.currentPosition.y - 1 };
-    this._emitCurrentVariant();
+    this.moveChange.emit({ ...this.move, position: { ...this.move.position, y: this.move.position.y - 1 } });
   }
 
   @HostListener('window:keydown.ArrowDown', ['$event'])
@@ -172,8 +179,7 @@ export class NextShapeComponent {
   moveDown() {
     if (this.disableDown) return;
 
-    this.currentPosition = { ...this.currentPosition, y: this.currentPosition.y + 1 };
-    this._emitCurrentVariant();
+    this.moveChange.emit({ ...this.move, position: { ...this.move.position, y: this.move.position.y + 1 } });
   }
 
   @HostListener('window:keydown.ArrowLeft', ['$event'])
@@ -181,8 +187,7 @@ export class NextShapeComponent {
   moveLeft() {
     if (this.disableLeft) return;
 
-    this.currentPosition = { ...this.currentPosition, x: this.currentPosition.x - 1 };
-    this._emitCurrentVariant();
+    this.moveChange.emit({ ...this.move, position: { ...this.move.position, x: this.move.position.x - 1 } });
   }
 
   @HostListener('window:keydown.ArrowRight', ['$event'])
@@ -190,77 +195,75 @@ export class NextShapeComponent {
   moveRight() {
     if (this.disableRight) return;
 
-    this.currentPosition = { ...this.currentPosition, x: this.currentPosition.x + 1 };
-    this._emitCurrentVariant();
+    this.moveChange.emit({ ...this.move, position: { ...this.move.position, x: this.move.position.x + 1 } });
   }
 
   findAvailablePosition(): void {
     if (!this.currentVariant) return;
 
-    let findPositionResult: FindPositionResult = findFirstPositionForShape(this.untouchedBoardState, this.currentVariant.baseShape);
+    let selectedShapeIndex = this.move.selectedShapeIndex;
+    let findPositionResult: FindPositionResult = findFirstPositionForShape(
+      this.untouchedBoardState,
+      this.landscapeCard.baseShapes[selectedShapeIndex],
+    );
 
-    if (!findPositionResult.position && this._hasDifferentShapes) {
-      const nextVariant = (this.selectedVariant + 1) % 2;
-      this.selectVariant(nextVariant);
-      findPositionResult = findFirstPositionForShape(this.untouchedBoardState, this.currentVariant.baseShape);
+    if (!findPositionResult.position && this.landscapeCard.baseShapes.length > 1) {
+      selectedShapeIndex = (selectedShapeIndex + 1) % this.landscapeCard.baseShapes.length;
+      findPositionResult = findFirstPositionForShape(this.untouchedBoardState, this.landscapeCard.baseShapes[selectedShapeIndex]);
     }
 
-    this._updateAfterFindingPosition(findPositionResult);
-  }
+    const { position, isFlipped, numberOfRotations } = findPositionResult;
 
-  updatePositionFromOutside(position: Coordinates): void {
-    this.currentPosition = { ...position };
-    this._emitCurrentVariant();
-  }
-
-  private _updateAfterFindingPosition(result: FindPositionResult) {
-    if (result.position) {
-      this.currentPosition = { ...result.position };
-
-      if (result.isMirrored) {
-        this.mirror(false);
-      }
-
-      for (let i = 0; i < result.numberOfRotations; i++) {
-        this.rotateClockwise(false);
-      }
-
-      this._emitCurrentVariant();
-    } else if (this.currentVariant?.type !== LandscapeType.HERO) {
-      this._addPortalCard();
+    if (position) {
+      this.moveChange.emit(
+        normalizeRotations(
+          normalizeRotations({
+            ...this.move,
+            position,
+            selectedShapeIndex,
+            isFlipped: this.move.isFlipped !== isFlipped,
+            numberOfClockwiseRotations: this.move.numberOfClockwiseRotations + numberOfRotations,
+          }),
+        ),
+      );
+    } else {
+      findPositionResult = findFirstPositionForShape(this.untouchedBoardState, SHAPES[ShapeName.DOT]);
+      const isHero = this.currentVariant?.type === LandscapeType.HERO;
+      let position = findPositionResult.position ?? { x: 0, y: 0 };
+      position = isHero
+        ? this._getCoordinatesAfterHeroTransformation(this.currentVariant?.heroPosition, findPositionResult.position, position)
+        : position;
+      this.moveChange.emit({
+        ...this.move,
+        position,
+        selectedShapeIndex: isHero ? 0 : this.landscapeCard.baseShapes.length,
+        selectedLandscapeIndex: 0,
+      });
     }
   }
 
-  private _addPortalCard(): void {
-    this._resetValues();
-    const previousLength = this.allVariants.length;
-    this.allVariants = [...this.allVariants, ...this._getAllVariants(getPortalCard(this.currentVariant?.type))];
-    this.boardTilesPerVariant = this.allVariants.map((variant) => this._getBoardTiles(variant));
-    this._hasDifferentShapes = false;
-    this.selectVariant(previousLength);
-  }
+  private _getVariantLists(card: LandscapeCard, move: Move): LandscapeShape[][] {
+    const landscapeShapeLists: LandscapeShape[][] = [];
 
-  private _emitCurrentVariant(): void {
-    if (!this.currentVariant) return;
+    for (let shapeIndex = 0; shapeIndex < card.baseShapes.length; shapeIndex++) {
+      const landscapeShapes: LandscapeShape[] = [];
 
-    this.landscapeShapeChange.emit(this.currentVariant);
-  }
-
-  private _resetValues(): void {
-    this.selectedVariant = -1;
-    this.currentPosition = { x: Math.floor(BOARD_SIZE / 2) - 1, y: Math.floor(BOARD_SIZE / 2) - 1 };
-  }
-
-  private _getAllVariants(card: LandscapeCard): LandscapeShape[] {
-    const landscapeShapes: LandscapeShape[] = [];
-
-    for (let landscapeType of card.landscapeTypes) {
-      for (let baseShape of card.baseShapes) {
-        landscapeShapes.push({ type: landscapeType, baseShape, heroPosition: card.heroPosition, monsterType: card.monster?.type });
+      for (let landscapeIndex = 0; landscapeIndex < card.landscapeTypes.length; landscapeIndex++) {
+        const landscapeShape = getLandscapeFromMove(
+          { ...move, selectedShapeIndex: shapeIndex, selectedLandscapeIndex: landscapeIndex },
+          card,
+        );
+        landscapeShapes.push(landscapeShape);
       }
+
+      landscapeShapeLists.push(landscapeShapes);
     }
 
-    return landscapeShapes;
+    if (move?.selectedShapeIndex === card.baseShapes.length) {
+      landscapeShapeLists.push(...this._getVariantLists(getPortalCard(card.landscapeTypes[0]), { ...move, selectedShapeIndex: 0 }));
+    }
+
+    return landscapeShapeLists;
   }
 
   private _getBoardTiles(variant: LandscapeShape): BoardTile[] {
@@ -276,16 +279,20 @@ export class NextShapeComponent {
     });
   }
 
-  private _updateCoordinatesAfterHeroTransformation(previousHeroPosition?: Coordinates): void {
+  private _getCoordinatesAfterHeroTransformation(
+    previousHeroPosition: Coordinates | undefined,
+    newHeroPosition: Coordinates | undefined,
+    currentMovePosition: Coordinates = this.move.position,
+  ): Coordinates {
     if (previousHeroPosition) {
-      const newHeroPosition = this.currentVariant?.heroPosition;
-
       if (newHeroPosition) {
-        this.currentPosition = {
-          x: this.currentPosition.x + (previousHeroPosition.x - newHeroPosition.x),
-          y: this.currentPosition.y + (previousHeroPosition.y - newHeroPosition.y),
+        return {
+          x: currentMovePosition.x + (previousHeroPosition.x - newHeroPosition.x),
+          y: currentMovePosition.y + (previousHeroPosition.y - newHeroPosition.y),
         };
       }
     }
+
+    return this.move.position;
   }
 }

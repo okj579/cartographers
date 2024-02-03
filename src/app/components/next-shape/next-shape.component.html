@@ -5,7 +5,7 @@
   <button class="icon-btn" [disabled]="disableLeft" (click)="moveLeft()"><i class="fa-solid fa-arrow-left fa-fw"></i></button>
   <button class="icon-btn" [disabled]="disableDown" (click)="moveDown()"><i class="fa-solid fa-arrow-down fa-fw"></i></button>
   <button class="icon-btn" [disabled]="disableRight" (click)="moveRight()"><i class="fa-solid fa-arrow-right fa-fw"></i></button>
-  <button class="secondary" (click)="mirror()"><i class="fa-solid fa-arrow-right-arrow-left"></i>Mirror</button>
+  <button class="secondary" (click)="flip()"><i class="fa-solid fa-arrow-right-arrow-left"></i>Flip</button>
   <button class="submit-btn" [disabled]="hasConflict || !currentVariant" (click)="submitShape()">
     <i class="fa-solid fa-location-pin-lock"></i>Confirm
   </button>
@@ -14,18 +14,23 @@
 </div>
 
 <div class="shape-selection">
-  <div
-    class="shape-box"
-    *ngFor="let variant of allVariants; let index = index"
-    [class.selected]="index === selectedVariant"
-    [style.--columns]="variant.baseShape.width"
-    [style.--rows]="variant.baseShape.height"
-    (click)="selectVariant(index)"
-  >
-    <app-board-tile *ngFor="let tile of boardTilesPerVariant[index]" [tile]="tile"></app-board-tile>
-    <div class="variant-info">{{ index + 1 }}</div>
-    <div *ngIf="variant.baseShape.hasCoin" class="coin">💎</div>
-  </div>
+  <ng-container *ngFor="let typeList of variantLists; let shapeIndex = index">
+    <div
+      class="shape-box"
+      *ngFor="let variant of typeList; let landscapeTypeIndex = index"
+      [class.selected]="shapeIndex === move.selectedShapeIndex && landscapeTypeIndex === move.selectedLandscapeIndex"
+      [style.--columns]="variant.baseShape.width"
+      [style.--rows]="variant.baseShape.height"
+      (click)="selectVariant(shapeIndex, landscapeTypeIndex)"
+    >
+      <app-board-tile
+        *ngFor="let tile of boardTilesPerVariant[getVariantIndex(shapeIndex, landscapeTypeIndex)]"
+        [tile]="tile"
+      ></app-board-tile>
+      <div class="variant-info">{{ getVariantIndex(shapeIndex, landscapeTypeIndex) + 1 }}</div>
+      <div *ngIf="variant.baseShape.hasCoin" class="coin">💎</div>
+    </div>
+  </ng-container>
 
   <div *ngIf="currentMonsterEffect" class="monster-effect">
     <div class="monster-name">{{ currentMonsterEffect.name }}</div>

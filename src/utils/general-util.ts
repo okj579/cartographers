@@ -5,3 +5,7 @@ export function generateId() {
 export function getGameId(id: string): string {
   return `game.${id}`;
 }
+
+export function getPlayerMovesId(gameId: string, playerId: string): string {
+  return `game.${gameId}.player.${playerId}.moves`;
+}
