@@ -34,7 +34,6 @@ app-board-tile {
 
 app-score-tile {
   z-index: 10;
-  font-size: 0.45em;
   height: calc(var(--square-size) * 0.5);
   width: calc(var(--square-size) * 0.5);
 
@@ -70,7 +69,7 @@ app-score-tile {
   }
 
   50% {
-    transform: scale(1.5);
+    transform: scale(1.7);
   }
 
   100% {

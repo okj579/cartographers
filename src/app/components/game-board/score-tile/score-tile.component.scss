@@ -1,28 +1,49 @@
 :host {
   display: grid;
   place-items: center;
-  pointer-events: none;
+  background: var(--score-tile-bg);
+  font-weight: bold;
+  font-size: 0.45em;
 
-  $alpha: 0.2;
+  &.is-big {
+    font-size: 0.35em;
+  }
+
+  &.is-on-board {
+    pointer-events: none;
+    background: rgba(#fff, 0.7);
+
+    span {
+      background: var(--score-tile-fg);
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  $alpha: 0.5;
   $margin: 50%;
 
   &[data-category='monster'] {
-    background-color: rgba(#a0a, $alpha);
+    --score-tile-bg: #{rgba(#a0a, $alpha)};
+    --score-tile-fg: #a0a;
     margin-left: $margin;
     margin-top: $margin;
   }
 
   &[data-category='global'] {
-    background-color: rgba(#666, $alpha);
+    --score-tile-bg: #{rgba(#666, $alpha)};
+    --score-tile-fg: #666;
   }
 
   &[data-category='village'] {
-    background-color: rgba(#823, $alpha);
+    --score-tile-bg: #{rgba(#823, $alpha)};
+    --score-tile-fg: #823;
     margin-left: $margin;
   }
 
   &[data-category='forest'] {
-    background-color: rgba(#060, $alpha);
+    --score-tile-bg: #{rgba(#060, $alpha)};
+    --score-tile-fg: #060;
     margin-top: $margin;
 
     &.col {
@@ -31,7 +52,8 @@
   }
 
   &[data-category='field-water'] {
-    background-image: linear-gradient(125deg, rgba(#fa0, $alpha), rgba(#00a, $alpha));
+    --score-tile-bg: #{linear-gradient(125deg, rgba(#fa0, $alpha), rgba(#00a, $alpha))};
+    --score-tile-fg: linear-gradient(125deg, #fa0, #00a);
     margin-left: $margin;
     margin-top: $margin;
 

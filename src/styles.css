@@ -9,13 +9,16 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--color-text);
+  background-color: var(--bg-color);
   --bg-color: #242424;
+  --bg-color-rgb: 36, 36, 36;
   --bg-color-2: #1a1a1a;
   --bg-color-4: #404040;
   --bg-color-4-alpha-a: #404040aa;
   --success-color: lime;
+  --color-text: rgba(255, 255, 255, 0.87);
+  --color-text-rgb: 255, 255, 255;
   --color-text-secondary: #808080;
   --border-secondary: #303030;
 
@@ -112,13 +115,14 @@ button.submit-btn {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
     --bg-color: #ffffff;
+    --bg-color-rgb: 255, 255, 255;
     --bg-color-2: #f0f0f0;
     --bg-color-4: #eaeaea;
     --bg-color-4-alpha-a: #eaeaeaaa;
     --success-color: #00b300;
+    --color-text: #213547;
+    --color-text-rgb: 33, 53, 71;
     --color-text-secondary: #707070;
     --border-secondary: #eaeaea;
   }
