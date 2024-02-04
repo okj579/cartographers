@@ -13,6 +13,7 @@
       [goals]="goals"
       [coins]="seasonScores[index]?.coins"
       [scores]="seasonScores[index]?.goalScores"
+      (goalHover)="goalHover.emit($event)"
     />
   </div>
 </div>

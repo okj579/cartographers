@@ -1,6 +1,12 @@
 <div class="goal-scores" [class.is-end]="isFinalScore">
   <ng-container *ngFor="let goalIndex of currentSeason.goalIndices">
-    <app-goal-id class="goal-id" [goal]="goals[goalIndex]" [index]="goalIndex" />
+    <app-goal-id
+      class="goal-id"
+      [goal]="goals[goalIndex]"
+      [index]="goalIndex"
+      [appGoalHighlighter]="goalIndex"
+      (goalHover)="goalHover.emit($event)"
+    />
     <div>{{ scores?.[goalIndex] ?? "?" }}</div>
   </ng-container>
 

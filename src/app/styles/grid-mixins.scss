@@ -2,7 +2,7 @@ $squareCount: 12; // +1 to show points
 $gap: 2px;
 $gapRem: 0.125rem;
 $totalGap: ($squareCount - 1) * $gapRem;
-$buffer: 4rem;
+$buffer: 2rem;
 $maxWidth: 40rem + $buffer + $totalGap;
 $squareSize: calc(calc(min(100vw, 100vh, $maxWidth) - $buffer - $totalGap) / $squareCount);
 $font-size: calc(0.6 * $squareSize);

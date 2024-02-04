@@ -22,7 +22,7 @@
 
   <div class="content">
     @if (isStartOfGame) {
-      <app-example-board [goals]="gameState.goals" />
+      <app-example-board [goals]="gameState.goals" [specialHighlightGoal]="specialHighlightGoal" />
     } @else {
       <app-game-board
         [currentBoardState]="playerState.boardState"

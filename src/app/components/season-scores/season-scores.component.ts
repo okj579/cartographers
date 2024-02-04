@@ -1,15 +1,16 @@
-import { booleanAttribute, ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { MONSTER_SCORE_INDEX } from '../../../game-logic/constants';
 import { GoalIdComponent } from '../goal-area/goal-id/goal-id.component';
 import { NgForOf } from '@angular/common';
 import { Season } from '../../../models/season';
 import { Goal } from '../../../models/goals';
 import { getSeasonScore } from '../../../game-logic/functions';
+import { GoalHighlighterDirective } from '../../directives/goal-highlighter.directive';
 
 @Component({
   selector: 'app-season-scores',
   standalone: true,
-  imports: [GoalIdComponent, NgForOf],
+  imports: [GoalIdComponent, NgForOf, GoalHighlighterDirective],
   templateUrl: './season-scores.component.html',
   styleUrl: './season-scores.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,6 +27,8 @@ export class SeasonScoresComponent {
 
   @Input() coins: number | undefined = 0;
   @Input() scores: number[] | undefined = [];
+
+  @Output() goalHover = new EventEmitter<number>();
 
   protected readonly monsterScoreIndex = MONSTER_SCORE_INDEX;
 

@@ -3,6 +3,8 @@
 :host {
   @include grid-mixins.board-tile-grid;
   @include grid-mixins.board-tile-grid-variables;
+
+  margin-right: calc(-1 * var(--gap-32)); // todo - how to improve
 }
 
 app-board-tile {

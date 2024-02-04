@@ -9,7 +9,14 @@
     <span>Season Score</span>
     <span *ngIf="!isFinalScore"> - preliminary</span>
   </h4>
-  <app-season-scores [currentSeason]="currentSeason" [coins]="coins" [goals]="goals" [scores]="scores" [isFinalScore]="isFinalScore" />
+  <app-season-scores
+    [currentSeason]="currentSeason"
+    [coins]="coins"
+    [goals]="goals"
+    [scores]="scores"
+    [isFinalScore]="isFinalScore"
+    (goalHover)="goalHover.emit($event)"
+  />
 </ng-container>
 
 <div *ngIf="isStartOfSeason">Duration: {{ currentSeason.duration }} <i class="fa-solid fa-clock"></i></div>

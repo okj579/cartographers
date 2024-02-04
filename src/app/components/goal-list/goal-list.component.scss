@@ -1,6 +1,28 @@
 :host {
   display: grid;
-  gap: var(--gap-8);
   max-width: 480px;
   grid-template-columns: repeat(2, auto) 1fr;
+}
+
+.row {
+  display: contents;
+  > * {
+    padding: var(--gap-8);
+  }
+}
+
+:host(.has-highlighted-goal) {
+  .row:not(.is-highlighted) {
+    > * {
+      filter: grayscale(1);
+      opacity: 0.8;
+    }
+  }
+
+  .is-highlighted {
+    > * {
+      cursor: pointer;
+      background: var(--bg-color-4-alpha-a);
+    }
+  }
 }

@@ -1,17 +1,32 @@
 <ng-container *ngFor="let goal of goals; let index = index">
-  <ng-container *ngIf="showGoal(index)">
-    <app-goal-id class="goal-id" [goal]="goal" [index]="index" (goalHover)="goalHover.emit($event)" />
+  <div
+    class="row"
+    *ngIf="showGoal(index)"
+    [class.is-highlighted]="highlightedGoalIndex === index"
+    [appGoalHighlighter]="index"
+    (goalHover)="highlightGoal($event)"
+  >
+    <div><app-goal-id class="goal-id" [goal]="goal" [index]="index" /></div>
     <div>{{ goal.emojiDescription }}</div>
     <div>{{ goal.description }}</div>
-  </ng-container>
+  </div>
 </ng-container>
 
 <ng-container *ngIf="showDefaultGoals">
-  <div class="goal-id">💎</div>
-  <div>{{ coinEmojiDescription }}</div>
-  <div>{{ coinDescription }}</div>
+  <div class="row">
+    <div class="goal-id">💎</div>
+    <div>{{ coinEmojiDescription }}</div>
+    <div>{{ coinDescription }}</div>
+  </div>
 
-  <div class="goal-id" (mouseover)="goalHover.emit(MONSTER_SCORE_INDEX)" (mouseout)="goalHover.emit(-1)">😈</div>
-  <div>{{ monsterEmojiDescription }}</div>
-  <div>{{ monsterScoreDescription }}</div>
+  <div
+    class="row"
+    [class.is-highlighted]="highlightedGoalIndex === MONSTER_SCORE_INDEX"
+    [appGoalHighlighter]="MONSTER_SCORE_INDEX"
+    (goalHover)="highlightGoal($event)"
+  >
+    <div class="goal-id interactive">😈</div>
+    <div>{{ monsterEmojiDescription }}</div>
+    <div>{{ monsterScoreDescription }}</div>
+  </div>
 </ng-container>
