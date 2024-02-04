@@ -10,7 +10,7 @@
       <div class="server-actions">
         <button
           *ngFor="let player of allPlayers"
-          [disabled]="playerToShowId === player.id"
+          [class.is-active]="playerToShowId === player.id"
           class="secondary small"
           (click)="selectPlayerToShow(player.id)"
         >

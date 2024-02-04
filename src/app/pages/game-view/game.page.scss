@@ -38,6 +38,14 @@
     }
   }
 
+  .is-active {
+    border-color: var(--color-text-secondary);
+  }
+
+  button:not(.is-active) {
+    opacity: 0.75;
+  }
+
   .server-actions {
     padding: 0;
     flex-wrap: nowrap;
