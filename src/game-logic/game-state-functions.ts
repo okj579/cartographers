@@ -98,7 +98,7 @@ function getAllPlayedCards(state: GameState): LandscapeCard[] {
   return state.seasonSetups.flatMap((setup) => setup.cardDeck);
 }
 
-function getScoresFromBoard(goals: Goal[], board: BoardTile[][]): ScoreInfo[] {
+export function getScoresFromBoard(goals: Goal[], board: BoardTile[][]): ScoreInfo[] {
   return [
     ...goals.map((goal) => {
       const localGoal = findGoalByName(goal.name);

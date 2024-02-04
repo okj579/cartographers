@@ -1,0 +1,19 @@
+:host {
+  position: relative;
+}
+
+app-game-board {
+  filter: grayscale(0.4);
+}
+
+div {
+  font-style: italic;
+  font-weight: bold;
+  position: absolute;
+  top: 38%;
+  left: 48%;
+  transform: translate(-50%, -50%) rotate(-16deg);
+  background-color: var(--bg-color-4-alpha-a);
+  padding: var(--gap-16);
+  border-radius: 16px;
+}

@@ -17,6 +17,7 @@ import {
 import { GameSetupInfoComponent } from '../game-setup-info/game-setup-info.component';
 import { getCurrentUserId } from '../../data/util';
 import { AnyMove, initialMove, Move } from '../../../models/move';
+import { ExampleBoardComponent } from '../example-board/example-board.component';
 
 @Component({
   selector: 'app-game-view',
@@ -32,6 +33,7 @@ import { AnyMove, initialMove, Move } from '../../../models/move';
     SeasonGoalsComponent,
     NgForOf,
     GameSetupInfoComponent,
+    ExampleBoardComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

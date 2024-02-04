@@ -19,15 +19,19 @@
   <ng-content></ng-content>
 
   <div class="content">
-    <app-game-board
-      [currentBoardState]="playerState.boardState"
-      [currentShapeToPlace]="showCurrentShape ? currentShapeToPlace : undefined"
-      [conflictedCellIndices]="visiblePlayerState.conflictedCellIndices"
-      [scoreInfos]="visiblePlayerState.scoreInfos"
-      [seasonGoals]="playerState.seasonGoals"
-      [isEndOfSeason]="playerState.isEndOfSeason && !!playerState.season"
-      (positionChange)="onPositionChange($event)"
-    />
+    @if (isStartOfGame) {
+      <app-example-board [goals]="gameState.goals" />
+    } @else {
+      <app-game-board
+        [currentBoardState]="playerState.boardState"
+        [currentShapeToPlace]="showCurrentShape ? currentShapeToPlace : undefined"
+        [conflictedCellIndices]="visiblePlayerState.conflictedCellIndices"
+        [scoreInfos]="visiblePlayerState.scoreInfos"
+        [seasonGoals]="playerState.seasonGoals"
+        [isEndOfSeason]="playerState.isEndOfSeason && !!playerState.season"
+        (positionChange)="onPositionChange($event)"
+      />
+    }
 
     <div class="controls-and-info" [class.is-start]="isStartOfGame">
       <div *ngIf="!isCurrentPlayer" class="other-player-info">
