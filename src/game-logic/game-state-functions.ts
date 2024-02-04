@@ -86,6 +86,7 @@ function playerStateToCurrentPlayerState(
     seasonGoals,
     isStartOfSeason,
     isEndOfSeason,
+    isEndOfGame: currentSeasonIndex >= SEASONS.length,
     playedSeasonCards,
     allPlayedCards,
     cardToPlace,

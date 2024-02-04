@@ -13,6 +13,7 @@
       [previousScores]="playerState.scores"
       [temporaryScores]="visiblePlayerState.scores"
       [currentSeason]="playerState.season"
+      [isEndOfSeason]="playerState.isEndOfSeason && !playerState.isEndOfGame"
     ></app-goal-area>
   </div>
 
@@ -28,7 +29,7 @@
         [conflictedCellIndices]="visiblePlayerState.conflictedCellIndices"
         [scoreInfos]="visiblePlayerState.scoreInfos"
         [seasonGoals]="playerState.seasonGoals"
-        [isEndOfSeason]="playerState.isEndOfSeason && !!playerState.season"
+        [isEndOfSeason]="playerState.isEndOfSeason && !playerState.isEndOfGame"
         [newMinedMonsterTiles]="visiblePlayerState.newMinedMountainTiles"
         (positionChange)="onPositionChange($event)"
       />
@@ -63,14 +64,14 @@
       ></app-season-goals>
 
       <app-game-setup-info
-        *ngIf="playerState.season"
+        *ngIf="!playerState.isEndOfGame"
         [isStartOfGame]="isStartOfGame"
         [goals]="gameState.goals"
         [seasonScores]="playerState.seasonScores"
         (startGame)="isStartOfGame = false"
       />
 
-      <ng-container *ngIf="!playerState.season">
+      <ng-container *ngIf="playerState.isEndOfGame">
         <div class="end-score">
           <div>🎖️</div>
           <div>{{ totalEndScore }}</div>

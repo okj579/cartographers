@@ -18,7 +18,7 @@
   </div>
 </div>
 
-<div class="goal" [attr.title]="coinDescription" (click)="showCoinsDescription()">
+<div class="goal" [attr.title]="coinDescription" [class.highlight]="isEndOfSeason" (click)="showCoinsDescription()">
   <div class="goal-id">💎</div>
   <div class="score">
     {{ coins }}

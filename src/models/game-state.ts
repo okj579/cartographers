@@ -43,6 +43,7 @@ export interface CurrentPlayerGameState extends CurrentPlayerBoard {
   readonly seasonGoals: Goal[];
   readonly isStartOfSeason: boolean;
   readonly isEndOfSeason: boolean;
+  readonly isEndOfGame: boolean;
   readonly allPlayedCards: LandscapeCard[];
   readonly cardToPlace: LandscapeCard | undefined;
   readonly playedSeasonCards: LandscapeCard[];

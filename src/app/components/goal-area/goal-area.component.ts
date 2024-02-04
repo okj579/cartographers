@@ -25,6 +25,9 @@ export class GoalAreaComponent {
   @Input() temporaryScores: number[] = [];
   @Input() previousScores: number[] = [];
 
+  @Input()
+  isEndOfSeason: boolean = false;
+
   protected monsterScoreIndex: number = MONSTER_SCORE_INDEX;
 
   coinDescription: string = 'Collect 💎 by surrounding mountains on the 4 edges, and from some of the landscape shapes.';

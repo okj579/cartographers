@@ -12,6 +12,10 @@
   align-items: center;
   min-width: 56px;
 
+  &.highlight {
+    animation: scale-pulse 2s infinite;
+  }
+
   .title {
     display: none;
   }
@@ -53,5 +57,19 @@
     .negative {
       color: red;
     }
+  }
+}
+
+@keyframes scale-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.5);
+  }
+
+  100% {
+    transform: scale(1);
   }
 }
