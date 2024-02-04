@@ -86,7 +86,7 @@ export const FOREST_GOALS: Goal[] = [
 
           for (const boardTile of adjacentTiles) {
             if (isTileOfLandscape(boardTile, LandscapeType.VILLAGE)) {
-              relatedTiles.push(boardTile);
+              // relatedTiles.push(boardTile); // todo - what would be helpful?
 
               return false;
             }

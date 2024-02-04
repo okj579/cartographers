@@ -21,6 +21,10 @@ export class ScoreTileComponent {
   @HostBinding('class.is-on-board')
   isOnBoard: boolean = false;
 
+  @Input()
+  @HostBinding('class.highlight')
+  highlight: boolean = false;
+
   @HostBinding('class.is-big')
   get isBig(): boolean {
     return this.score > 9;

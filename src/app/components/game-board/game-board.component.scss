@@ -10,6 +10,10 @@ app-board-tile {
     cursor: pointer;
   }
 
+  &.highlight-border {
+    border: 2px solid var(--color-text);
+  }
+
   @include grid-mixins.neighbors;
 }
 
@@ -43,6 +47,10 @@ app-score-tile {
   }
 }
 
+:host(.is-end-of-game) app-score-tile {
+  display: none;
+}
+
 :host(.is-end-of-season) {
   app-score-tile.relevant {
     animation: scale-pulse 2s infinite;
@@ -50,7 +58,8 @@ app-score-tile {
 
   app-board-tile {
     &:not(.scored):not(.score-related) {
-      filter: grayscale(0.8);
+      filter: grayscale(1);
+      opacity: 0.8;
 
       &.base {
         opacity: 0.4;

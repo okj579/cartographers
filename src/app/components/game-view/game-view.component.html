@@ -30,6 +30,7 @@
         [scoreInfos]="visiblePlayerState.scoreInfos"
         [seasonGoals]="playerState.seasonGoals"
         [isEndOfSeason]="playerState.isEndOfSeason && !playerState.isEndOfGame"
+        [isEndOfGame]="playerState.isEndOfGame"
         [newMinedMonsterTiles]="visiblePlayerState.newMinedMountainTiles"
         (positionChange)="onPositionChange($event)"
       />
