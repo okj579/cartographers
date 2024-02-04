@@ -6,6 +6,7 @@
   place-items: center;
   color: white;
   font-weight: 600;
+  cursor: pointer;
 
   &[data-category='global'] {
     background: #666;

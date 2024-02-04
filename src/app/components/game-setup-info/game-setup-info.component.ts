@@ -19,6 +19,7 @@ export class GameSetupInfoComponent {
   @Input() isStartOfGame: boolean = false;
 
   @Output() startGame = new EventEmitter<void>();
+  @Output() goalHover = new EventEmitter<number>();
 
   readonly seasons = SEASONS;
 }

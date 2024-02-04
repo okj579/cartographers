@@ -10,10 +10,6 @@ app-board-tile {
     cursor: pointer;
   }
 
-  &.highlight-border {
-    border: 2px solid var(--color-text);
-  }
-
   @include grid-mixins.neighbors;
 }
 
@@ -47,11 +43,11 @@ app-score-tile {
   }
 }
 
-:host(.is-end-of-game) app-score-tile {
+:host(.is-end-of-game):not(.has-highlighted-goal) app-score-tile {
   display: none;
 }
 
-:host(.is-end-of-season) {
+:host(.is-end-of-season, .has-highlighted-goal) {
   app-score-tile.relevant {
     animation: scale-pulse 2s infinite;
   }
@@ -69,6 +65,16 @@ app-score-tile {
     &:not(.scored) {
       filter: grayscale(0.3);
     }
+
+    &.highlight-border {
+      border: 2px solid var(--color-text);
+    }
+  }
+}
+
+:host(.has-highlighted-goal) {
+  app-temporary-placed-landscape-shape {
+    display: none;
   }
 }
 

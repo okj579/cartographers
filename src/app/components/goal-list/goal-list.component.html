@@ -1,6 +1,6 @@
 <ng-container *ngFor="let goal of goals; let index = index">
   <ng-container *ngIf="showGoal(index)">
-    <app-goal-id class="goal-id" [goal]="goal" [index]="index" />
+    <app-goal-id class="goal-id" [goal]="goal" [index]="index" (goalHover)="goalHover.emit($event)" />
     <div>{{ goal.emojiDescription }}</div>
     <div>{{ goal.description }}</div>
   </ng-container>
@@ -11,7 +11,7 @@
   <div>{{ coinEmojiDescription }}</div>
   <div>{{ coinDescription }}</div>
 
-  <div class="goal-id">😈</div>
+  <div class="goal-id" (mouseover)="goalHover.emit(MONSTER_SCORE_INDEX)" (mouseout)="goalHover.emit(-1)">😈</div>
   <div>{{ monsterEmojiDescription }}</div>
   <div>{{ monsterScoreDescription }}</div>
 </ng-container>

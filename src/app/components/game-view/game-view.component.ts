@@ -18,6 +18,8 @@ import { GameSetupInfoComponent } from '../game-setup-info/game-setup-info.compo
 import { getCurrentUserId } from '../../data/util';
 import { AnyMove, initialMove, Move } from '../../../models/move';
 import { ExampleBoardComponent } from '../example-board/example-board.component';
+import { AnyGoal } from '../../../models/goals';
+import { MONSTER_SCORE_INDEX } from '../../../game-logic/constants';
 
 @Component({
   selector: 'app-game-view',
@@ -59,6 +61,8 @@ export class GameViewComponent implements OnChanges {
 
   currentMove: Move | undefined;
 
+  specialHighlightGoalIndex: number = -1;
+
   get currentShapeToPlace(): PlacedLandscapeShape | undefined {
     if (!this.currentMove || !this.playerState?.cardToPlace || !this.isCurrentPlayer) return undefined;
 
@@ -93,6 +97,14 @@ export class GameViewComponent implements OnChanges {
     return this.playerState?.seasonScores.reduce((sum, score) => sum + score.totalScore, 0) ?? 0;
   }
 
+  get specialHighlightGoal(): AnyGoal | undefined {
+    if (this.specialHighlightGoalIndex === MONSTER_SCORE_INDEX) {
+      return { category: 'monster' };
+    }
+
+    return this.specialHighlightGoalIndex >= 0 ? this.gameState.goals[this.specialHighlightGoalIndex] : undefined;
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['gameState']) {
       this.currentGameState = stateToCurrentState(this.gameState, this.currentPlayerId);
@@ -115,6 +127,10 @@ export class GameViewComponent implements OnChanges {
 
     this.submitMove.emit(this.currentMove);
     this.currentMove = undefined;
+  }
+
+  setSpecialHighlightGoalIndex(index: number): void {
+    this.specialHighlightGoalIndex = index;
   }
 
   onPositionChange(position: Coordinates): void {

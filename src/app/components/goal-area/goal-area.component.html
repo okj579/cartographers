@@ -4,9 +4,8 @@
   [attr.data-category]="goal.category"
   [attr.title]="goal.description"
   [class.inactive]="currentSeason?.goalIndices?.indexOf(index) === -1"
-  (click)="showDescription(index)"
 >
-  <app-goal-id class="goal-id" [goal]="goal" [index]="index" />
+  <app-goal-id class="goal-id" [goal]="goal" [index]="index" (goalHover)="goalHover.emit($event)" />
   <div class="title">
     {{ goal.name }}
   </div>
@@ -26,8 +25,8 @@
   </div>
 </div>
 
-<div class="goal" [attr.title]="monsterScoreDescription" (click)="showMonsterScoreDescription()">
-  <div class="goal-id">😈</div>
+<div class="goal" [attr.title]="monsterScoreDescription">
+  <div class="goal-id" (mouseover)="goalHover.emit(monsterScoreIndex)" (mouseout)="goalHover.emit(-1)">😈</div>
   <div class="score">
     {{ previousScores[monsterScoreIndex] ?? 0 }}
     <span *ngIf="getScoreDiff(monsterScoreIndex) as scoreDiff" [class.positive]="scoreDiff > 0" [class.negative]="scoreDiff < 0">{{

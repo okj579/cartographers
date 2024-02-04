@@ -1,7 +1,7 @@
 <h3>Game parameters</h3>
 
 <h4>All goals</h4>
-<app-goal-list [goals]="goals" />
+<app-goal-list [goals]="goals" (goalHover)="goalHover.emit($event)" />
 
 <div class="season-container">
   <h4>All seasons</h4>

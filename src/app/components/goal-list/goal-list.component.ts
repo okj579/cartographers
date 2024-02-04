@@ -1,7 +1,8 @@
-import { booleanAttribute, ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { GoalIdComponent } from '../goal-area/goal-id/goal-id.component';
 import { NgForOf, NgIf } from '@angular/common';
 import { Goal } from '../../../models/goals';
+import { MONSTER_SCORE_INDEX } from '../../../game-logic/constants';
 
 @Component({
   selector: 'app-goal-list',
@@ -16,6 +17,8 @@ export class GoalListComponent {
   @Input() goalIndices: number[] = [];
   @Input({ transform: booleanAttribute }) showDefaultGoals: boolean = false;
 
+  @Output() goalHover = new EventEmitter<number>();
+
   protected readonly coinDescription: string = 'Collect 💎 by surrounding mountains on the 4 edges, and from some of the landscape shapes.';
   protected readonly monsterScoreDescription: string = 'One minus point for each empty tile that is adjacent to at least one monster tile';
   protected readonly coinEmojiDescription: string = '1🎖️ / 💎';
@@ -24,4 +27,6 @@ export class GoalListComponent {
   showGoal(index: number): boolean {
     return !this.goalIndices.length || this.goalIndices.includes(index);
   }
+
+  protected readonly MONSTER_SCORE_INDEX = MONSTER_SCORE_INDEX;
 }

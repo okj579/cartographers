@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Goal } from '../../../models/goals';
 import { NgForOf, NgIf } from '@angular/common';
 import { IndexToCharPipe } from './index-to-char.pipe';
@@ -27,6 +27,8 @@ export class GoalAreaComponent {
 
   @Input()
   isEndOfSeason: boolean = false;
+
+  @Output() goalHover = new EventEmitter<number>();
 
   protected monsterScoreIndex: number = MONSTER_SCORE_INDEX;
 
@@ -61,15 +63,7 @@ export class GoalAreaComponent {
     return this.temporaryScores[index] - this.previousScores[index];
   }
 
-  showDescription(index: number): void {
-    window.alert(this.goals[index].name + ': ' + this.goals[index].description);
-  }
-
   showCoinsDescription(): void {
     window.alert(this.coinDescription);
-  }
-
-  showMonsterScoreDescription(): void {
-    window.alert(this.monsterScoreDescription);
   }
 }

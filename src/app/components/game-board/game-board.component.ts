@@ -7,7 +7,7 @@ import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape } from '../../
 import { Coordinates, Direction, getNeighborCoordinates, includesCoordinates } from '../../../models/simple-types';
 import { BOARD_SIZE } from '../../../game-logic/constants';
 import { IndexToCharPipe } from '../goal-area/index-to-char.pipe';
-import { Goal, GoalCategory, ScoreInfo } from '../../../models/goals';
+import { AnyGoal, Goal, GoalCategory, ScoreInfo } from '../../../models/goals';
 import { ScoreTileComponent } from './score-tile/score-tile.component';
 import { LandscapeType } from '../../../models/landscape-type';
 
@@ -26,6 +26,7 @@ export class GameBoardComponent {
   @Input() scoreInfos: ScoreInfo[] = [];
   @Input() seasonGoals: Goal[] = [];
   @Input() newMinedMonsterTiles: BoardTile[] = [];
+  @Input() specialHighlightGoal: AnyGoal | undefined;
 
   @HostBinding('class.is-end-of-season')
   @Input()
@@ -38,6 +39,11 @@ export class GameBoardComponent {
   @Output() positionChange: EventEmitter<Coordinates> = new EventEmitter<Coordinates>();
 
   protected readonly BOARD_SIZE = BOARD_SIZE;
+
+  @HostBinding('class.has-highlighted-goal')
+  get hasSpecialHighlightGoal(): boolean {
+    return !!this.specialHighlightGoal;
+  }
 
   get allowPlacing(): boolean {
     return this.currentShapeToPlace !== undefined;
@@ -60,6 +66,10 @@ export class GameBoardComponent {
   }
 
   isScoreRelevant(scoreInfo: ScoreInfo): boolean {
+    if (!!this.specialHighlightGoal) {
+      return scoreInfo.goalCategory === this.specialHighlightGoal.category;
+    }
+
     return (
       scoreInfo.goalCategory === 'monster' ||
       !this.seasonGoals.length ||
@@ -80,7 +90,7 @@ export class GameBoardComponent {
   }
 
   shouldAddHighlightBorder(tile: BoardTile): boolean {
-    return this.isEndOfSeason && this.isScoredTile(tile) && this._isEmptyTileRelevantForAreaScore(tile);
+    return this.isScoredTile(tile) && this._isEmptyTileRelevantForAreaScore(tile);
   }
 
   trackByIndex(index: number): number {
@@ -149,11 +159,13 @@ export class GameBoardComponent {
   private _isEmptyTileRelevantForAreaScore(tile: BoardTile): boolean {
     return (
       tile.landscape === undefined &&
-      this.scoreInfos.some(
-        (scoreInfo) =>
-          scoreInfo.goalCategory === GoalCategory.GLOBAL &&
-          includesCoordinates(tile.position, tilesToCoordinates(scoreInfo.scoredTiles ?? [])),
-      )
+      this.scoreInfos
+        .filter((scoreInfo) => this.isScoreRelevant(scoreInfo))
+        .some(
+          (scoreInfo) =>
+            scoreInfo.goalCategory === GoalCategory.GLOBAL &&
+            includesCoordinates(tile.position, tilesToCoordinates(scoreInfo.scoredTiles ?? [])),
+        )
     );
   }
 }

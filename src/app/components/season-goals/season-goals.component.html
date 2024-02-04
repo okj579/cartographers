@@ -16,7 +16,7 @@
 
 <ng-container *ngIf="!isEndOfGame">
   <h4>Season goals</h4>
-  <app-goal-list [goals]="goals" [goalIndices]="currentSeason.goalIndices" showDefaultGoals />
+  <app-goal-list [goals]="goals" [goalIndices]="currentSeason.goalIndices" showDefaultGoals (goalHover)="goalHover.emit($event)" />
 </ng-container>
 
 <button *ngIf="isStartOfSeason" class="submit-btn" (click)="startSeason.emit()">Start season</button>

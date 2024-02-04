@@ -11,6 +11,10 @@ export enum GoalCategory {
   GLOBAL = 'global',
 }
 
+export interface AnyGoal {
+  category: GoalCategory | 'monster';
+}
+
 export interface Goal {
   name: string;
   description: string;

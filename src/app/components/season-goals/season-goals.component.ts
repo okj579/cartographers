@@ -29,6 +29,7 @@ export class SeasonGoalsComponent {
 
   @Output() startSeason = new EventEmitter<void>();
   @Output() endSeason = new EventEmitter<void>();
+  @Output() goalHover = new EventEmitter<number>();
 
   get isFinalScore(): boolean {
     return this.isEndOfGame || this.isEndOfSeason;

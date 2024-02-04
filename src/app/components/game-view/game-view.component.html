@@ -14,6 +14,7 @@
       [temporaryScores]="visiblePlayerState.scores"
       [currentSeason]="playerState.season"
       [isEndOfSeason]="playerState.isEndOfSeason && !playerState.isEndOfGame"
+      (goalHover)="setSpecialHighlightGoalIndex($event)"
     ></app-goal-area>
   </div>
 
@@ -32,6 +33,7 @@
         [isEndOfSeason]="playerState.isEndOfSeason && !playerState.isEndOfGame"
         [isEndOfGame]="playerState.isEndOfGame"
         [newMinedMonsterTiles]="visiblePlayerState.newMinedMountainTiles"
+        [specialHighlightGoal]="specialHighlightGoal"
         (positionChange)="onPositionChange($event)"
       />
     }
@@ -62,6 +64,7 @@
         [isEndOfSeason]="playerState.isEndOfSeason"
         (startSeason)="startSeason()"
         (endSeason)="endSeason.emit()"
+        (goalHover)="setSpecialHighlightGoalIndex($event)"
       ></app-season-goals>
 
       <app-game-setup-info
@@ -70,6 +73,7 @@
         [goals]="gameState.goals"
         [seasonScores]="playerState.seasonScores"
         (startGame)="isStartOfGame = false"
+        (goalHover)="setSpecialHighlightGoalIndex($event)"
       />
 
       <ng-container *ngIf="playerState.isEndOfGame">
@@ -85,6 +89,7 @@
           [coins]="seasonScore.coins"
           [scores]="seasonScore.goalScores"
           [isEndOfGame]="true"
+          (goalHover)="setSpecialHighlightGoalIndex($event)"
         ></app-season-goals>
       </ng-container>
     </div>
