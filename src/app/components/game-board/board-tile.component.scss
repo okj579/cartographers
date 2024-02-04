@@ -13,7 +13,7 @@
     &::after {
       @extend %absolute-item;
       content: '⭐';
-      background: #ffffff11;
+      // background: #ffffff11;
       font-size: 0.4em;
     }
   }

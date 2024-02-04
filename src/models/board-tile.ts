@@ -19,3 +19,7 @@ export function tilesToCoordinates(tiles: BoardTile[]): Coordinates[] {
 export function copyBoard(board: BoardTile[][]): BoardTile[][] {
   return board.map((row) => row.map((tile) => ({ ...tile })));
 }
+
+export function getRowTiles(board: BoardTile[][], y: number): BoardTile[] {
+  return board.map((column) => column[y]);
+}

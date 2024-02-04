@@ -1,8 +1,8 @@
-import { BoardTile, tilesToCoordinates } from './board-tile';
+import { BoardTile, getRowTiles, tilesToCoordinates } from './board-tile';
 import { LandscapeType } from './landscape-type';
 import { BOARD_SIZE } from '../game-logic/constants';
 import { getAdjacentTiles, getIndividualAreas, isTileFilled, isTileOfLandscape, LandscapeArea } from '../game-logic/functions';
-import { includesCoordinates } from './simple-types';
+import { Coordinates, includesCoordinates } from './simple-types';
 
 export enum GoalCategory {
   FOREST = 'forest',
@@ -29,9 +29,7 @@ export interface ScoreInfo {
   score: number;
   scoredTiles: BoardTile[];
   relatedTiles?: BoardTile[];
-  scoredRows: number[];
-  scoredColumns: number[];
-  scoredAreas: LandscapeArea[];
+  scoreIndicatorPositions: Partial<Coordinates>[];
 }
 
 export const FOREST_GOALS: Goal[] = [
@@ -41,21 +39,19 @@ export const FOREST_GOALS: Goal[] = [
     emojiDescription: '4🎖️ / ↔️: 3+🌳',
     category: GoalCategory.FOREST,
     singlePlayerValue: 24,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
-      const scoredRows: number[] = [];
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const scoredTiles: BoardTile[] = [];
+      const relatedTiles: BoardTile[] = [];
+      const scoreIndicatorPositions: Partial<Coordinates>[] = [];
 
       for (let y = 0; y < BOARD_SIZE; y++) {
-        const forestTiles: BoardTile[] = [];
-        for (let x = 0; x < BOARD_SIZE; x++) {
-          const tile = boardState[x][y];
-          if (isTileOfLandscape(tile, LandscapeType.FOREST)) {
-            forestTiles.push(tile);
-          }
-        }
+        const row = getRowTiles(boardState, y);
+        const forestTiles: BoardTile[] = row.filter((tile) => isTileOfLandscape(tile, LandscapeType.FOREST));
+
         if (forestTiles.length >= 3) {
-          scoredRows.push(y);
-          scoredTiles.push(...forestTiles);
+          scoreIndicatorPositions.push({ y });
+          scoredTiles.push(...forestTiles.slice(0, 3));
+          relatedTiles.push(...forestTiles);
         }
       }
 
@@ -63,11 +59,10 @@ export const FOREST_GOALS: Goal[] = [
         goalCategory: GoalCategory.FOREST,
         scoreType: 'row',
         scorePerEntity: 4,
-        score: 4 * scoredRows.length,
+        score: 4 * scoreIndicatorPositions.length,
         scoredTiles,
-        scoredRows,
-        scoredColumns: [],
-        scoredAreas: [],
+        relatedTiles,
+        scoreIndicatorPositions,
       };
     },
   },
@@ -77,8 +72,9 @@ export const FOREST_GOALS: Goal[] = [
     emojiDescription: '6🎖️ / 5+🌳 ⛔🏠',
     category: GoalCategory.FOREST,
     singlePlayerValue: 18,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const forestAreas = getIndividualAreas(boardState, LandscapeType.FOREST);
+      const relatedTiles: BoardTile[] = [];
 
       const filteredForestAreas = forestAreas.filter((area: LandscapeArea): boolean => {
         if (area.tiles.length < 5) {
@@ -90,6 +86,8 @@ export const FOREST_GOALS: Goal[] = [
 
           for (const boardTile of adjacentTiles) {
             if (isTileOfLandscape(boardTile, LandscapeType.VILLAGE)) {
+              relatedTiles.push(boardTile);
+
               return false;
             }
           }
@@ -103,10 +101,9 @@ export const FOREST_GOALS: Goal[] = [
         scoreType: 'area',
         scorePerEntity: 6,
         score: 6 * filteredForestAreas.length,
-        scoredTiles: filteredForestAreas.flatMap((area) => area.tiles),
-        scoredRows: [],
-        scoredColumns: [],
-        scoredAreas: filteredForestAreas,
+        scoredTiles: filteredForestAreas.flatMap((area) => area.tiles.slice(0, 5)), // todo - as expected?
+        relatedTiles: [...relatedTiles, ...filteredForestAreas.flatMap((area) => area.tiles)],
+        scoreIndicatorPositions: filteredForestAreas.map((area) => area.tiles[0].position),
       };
     },
   },
@@ -116,9 +113,8 @@ export const FOREST_GOALS: Goal[] = [
     emojiDescription: '2🎖️ / max↕️: 🌳',
     category: GoalCategory.FOREST,
     singlePlayerValue: 16,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       let scoredTiles: BoardTile[] = [];
-      let scoredColumns: number[] = [];
 
       for (let x = 0; x < BOARD_SIZE; x++) {
         let columnsMaxForestTiles: BoardTile[] = [];
@@ -138,7 +134,6 @@ export const FOREST_GOALS: Goal[] = [
         }
         if (columnsMaxForestTiles.length > scoredTiles.length) {
           scoredTiles = columnsMaxForestTiles;
-          scoredColumns = [x];
         }
       }
 
@@ -148,9 +143,7 @@ export const FOREST_GOALS: Goal[] = [
         scorePerEntity: 2,
         score: 2 * scoredTiles.length,
         scoredTiles,
-        scoredRows: [],
-        scoredColumns,
-        scoredAreas: [],
+        scoreIndicatorPositions: scoredTiles.map((tile) => tile.position),
       };
     },
   },
@@ -160,8 +153,9 @@ export const FOREST_GOALS: Goal[] = [
     emojiDescription: '2🎖️ / 🌳, ⏭️🌳💯',
     category: GoalCategory.FOREST,
     singlePlayerValue: 22,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const scoredTiles: BoardTile[] = [];
+      const relatedTiles: BoardTile[] = [];
 
       for (let x = 0; x < BOARD_SIZE; x++) {
         for (let y = 0; y < BOARD_SIZE; y++) {
@@ -171,6 +165,7 @@ export const FOREST_GOALS: Goal[] = [
 
             if (adjacentTiles.every((boardTile) => isTileOfLandscape(boardTile, LandscapeType.FOREST))) {
               scoredTiles.push(tile);
+              relatedTiles.push(...adjacentTiles);
             }
           }
         }
@@ -182,9 +177,8 @@ export const FOREST_GOALS: Goal[] = [
         scorePerEntity: 2,
         score: 2 * scoredTiles.length,
         scoredTiles,
-        scoredRows: [],
-        scoredColumns: [],
-        scoredAreas: [],
+        relatedTiles,
+        scoreIndicatorPositions: scoredTiles.map((tile) => tile.position),
       };
     },
   },
@@ -197,16 +191,16 @@ export const VILLAGE_GOALS: Goal[] = [
     emojiDescription: '1🎖️ / ↔️+↕️: 1🏠+',
     category: GoalCategory.VILLAGE,
     singlePlayerValue: 16,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const villageAreas = getIndividualAreas(boardState, LandscapeType.VILLAGE);
 
-      const scorePerVillageArea: ScoreInfo[] = villageAreas.map((area) => {
+      const scorePerVillageArea: ScoreInfo[] = villageAreas.map((area): ScoreInfo => {
         const xValues: number[] = area.tiles.map((tile) => tile.position.x);
         const yValues: number[] = area.tiles.map((tile) => tile.position.y);
         const areaWidth = Math.max(...xValues) - Math.min(...xValues) + 1;
         const areaHeight = Math.max(...yValues) - Math.min(...yValues) + 1;
-        const uniqueXValues = new Set(xValues);
-        const uniqueYValues = new Set(yValues);
+        const uniqueXValues = Array.from(new Set(xValues));
+        const uniqueYValues = Array.from(new Set(yValues));
 
         return {
           goalCategory: GoalCategory.VILLAGE,
@@ -214,9 +208,7 @@ export const VILLAGE_GOALS: Goal[] = [
           scorePerEntity: 1,
           score: areaWidth + areaHeight,
           scoredTiles: area.tiles,
-          scoredRows: Array.from(uniqueYValues),
-          scoredColumns: Array.from(uniqueXValues),
-          scoredAreas: [area],
+          scoreIndicatorPositions: [...uniqueXValues.map((x) => ({ x })), ...uniqueYValues.map((y) => ({ y }))],
         };
       });
 
@@ -229,9 +221,10 @@ export const VILLAGE_GOALS: Goal[] = [
     emojiDescription: '7🎖️ / 1x4🏠',
     category: GoalCategory.VILLAGE,
     singlePlayerValue: 14,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const villageAreas = getIndividualAreas(boardState, LandscapeType.VILLAGE);
       const scoredTiles: BoardTile[] = [];
+      const scoreIndicatorPositions: Partial<Coordinates>[] = [];
 
       const filteredVillageAreas = villageAreas.filter((area: LandscapeArea): boolean => {
         if (area.tiles.length < 4) {
@@ -243,6 +236,7 @@ export const VILLAGE_GOALS: Goal[] = [
           const columnTiles: BoardTile[] = [boardState[x][y], boardState[x][y + 1], boardState[x][y + 2], boardState[x][y + 3]];
 
           if (columnTiles.every((tile) => tile && isTileOfLandscape(tile, LandscapeType.VILLAGE))) {
+            scoreIndicatorPositions.push(tile.position);
             scoredTiles.push(...columnTiles);
             return true;
           }
@@ -250,6 +244,7 @@ export const VILLAGE_GOALS: Goal[] = [
           const rowTiles: BoardTile[] = [boardState[x][y], boardState[x + 1]?.[y], boardState[x + 2]?.[y], boardState[x + 3]?.[y]];
 
           if (rowTiles.every((tile) => tile && isTileOfLandscape(tile, LandscapeType.VILLAGE))) {
+            scoreIndicatorPositions.push(tile.position);
             scoredTiles.push(...rowTiles);
             return true;
           }
@@ -262,11 +257,10 @@ export const VILLAGE_GOALS: Goal[] = [
         goalCategory: GoalCategory.VILLAGE,
         scoreType: 'area',
         scorePerEntity: 7,
-        score: 7 * filteredVillageAreas.length,
+        score: 7 * scoreIndicatorPositions.length,
         scoredTiles,
-        scoredRows: [],
-        scoredColumns: [],
-        scoredAreas: filteredVillageAreas,
+        scoreIndicatorPositions,
+        relatedTiles: filteredVillageAreas.flatMap((area) => area.tiles),
       };
     },
   },
@@ -276,9 +270,10 @@ export const VILLAGE_GOALS: Goal[] = [
     emojiDescription: '6🎖️ / 2x2🏠',
     category: GoalCategory.VILLAGE,
     singlePlayerValue: 12,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const villageAreas = getIndividualAreas(boardState, LandscapeType.VILLAGE);
       const scoredTiles: BoardTile[] = [];
+      const scoreIndicatorPositions: Partial<Coordinates>[] = [];
 
       const filteredVillageAreas = villageAreas.filter((area: LandscapeArea): boolean => {
         for (const tile of area.tiles) {
@@ -287,6 +282,8 @@ export const VILLAGE_GOALS: Goal[] = [
 
           if (squareTiles.every((tile) => tile && isTileOfLandscape(tile, LandscapeType.VILLAGE))) {
             scoredTiles.push(...squareTiles);
+            scoreIndicatorPositions.push(tile.position);
+
             return true;
           }
         }
@@ -298,11 +295,10 @@ export const VILLAGE_GOALS: Goal[] = [
         goalCategory: GoalCategory.VILLAGE,
         scoreType: 'area',
         scorePerEntity: 6,
-        score: 6 * filteredVillageAreas.length,
+        score: 6 * scoreIndicatorPositions.length,
         scoredTiles,
-        scoredRows: [],
-        scoredColumns: [],
-        scoredAreas: filteredVillageAreas,
+        scoreIndicatorPositions,
+        relatedTiles: filteredVillageAreas.flatMap((area) => area.tiles),
       };
     },
   },
@@ -312,10 +308,10 @@ export const VILLAGE_GOALS: Goal[] = [
     emojiDescription: '1🎖️ / 🔲⏭️1🏠+',
     category: GoalCategory.VILLAGE,
     singlePlayerValue: 12,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const villageAreas = getIndividualAreas(boardState, LandscapeType.VILLAGE);
 
-      const scorePerVillageArea: ScoreInfo[] = villageAreas.map((area) => {
+      const scorePerVillageArea: ScoreInfo[] = villageAreas.map((area): ScoreInfo => {
         const emptyAdjacentTiles: BoardTile[] = area.tiles.reduce((acc: BoardTile[], tile: BoardTile) => {
           const adjacentTiles: BoardTile[] = getAdjacentTiles(boardState, tile.position);
 
@@ -333,9 +329,8 @@ export const VILLAGE_GOALS: Goal[] = [
           scorePerEntity: 1,
           score: emptyAdjacentTiles.length,
           scoredTiles: emptyAdjacentTiles,
-          scoredRows: [],
-          scoredColumns: [],
-          scoredAreas: [area],
+          scoreIndicatorPositions: emptyAdjacentTiles.map((tile) => tile.position),
+          relatedTiles: area.tiles,
         };
       });
 
@@ -351,7 +346,7 @@ export const FIELD_WATER_GOALS: Goal[] = [
     emojiDescription: '4🎖️ /  ↕️: Σ🌾=Σ🐟',
     category: GoalCategory.FIELD_WATER,
     singlePlayerValue: 18,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const scoredColumns: number[] = [];
       const scoredTiles: BoardTile[] = [];
 
@@ -372,9 +367,7 @@ export const FIELD_WATER_GOALS: Goal[] = [
         scorePerEntity: 4,
         score: 4 * scoredColumns.length,
         scoredTiles,
-        scoredRows: [],
-        scoredColumns,
-        scoredAreas: [],
+        scoreIndicatorPositions: scoredColumns.map((x) => ({ x })),
       };
     },
   },
@@ -384,8 +377,9 @@ export const FIELD_WATER_GOALS: Goal[] = [
     emojiDescription: '4🎖️ / 🐟⏭️ 2+🌾',
     category: GoalCategory.FIELD_WATER,
     singlePlayerValue: 14,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const scoredTiles: BoardTile[] = [];
+      const relatedTiles: BoardTile[] = [];
 
       for (let x = 0; x < BOARD_SIZE; x++) {
         for (let y = 0; y < BOARD_SIZE; y++) {
@@ -396,6 +390,7 @@ export const FIELD_WATER_GOALS: Goal[] = [
 
             if (adjacentFieldTiles.length >= 2) {
               scoredTiles.push(tile);
+              relatedTiles.push(...adjacentFieldTiles);
             }
           }
         }
@@ -407,9 +402,8 @@ export const FIELD_WATER_GOALS: Goal[] = [
         scorePerEntity: 4,
         score: 4 * scoredTiles.length,
         scoredTiles,
-        scoredRows: [],
-        scoredColumns: [],
-        scoredAreas: [],
+        scoreIndicatorPositions: scoredTiles.map((tile) => tile.position),
+        relatedTiles,
       };
     },
   },
@@ -419,8 +413,9 @@ export const FIELD_WATER_GOALS: Goal[] = [
     emojiDescription: '7🎖️ / 🌾+ ⏭️ 3+🐟',
     category: GoalCategory.FIELD_WATER,
     singlePlayerValue: 12,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const fieldAreas = getIndividualAreas(boardState, LandscapeType.FIELD);
+      const relatedTiles: BoardTile[] = [];
 
       const filteredFieldAreas = fieldAreas.filter((area: LandscapeArea): boolean => {
         const adjacentWaterTiles: BoardTile[] = area.tiles.reduce((acc: BoardTile[], tile: BoardTile) => {
@@ -434,7 +429,12 @@ export const FIELD_WATER_GOALS: Goal[] = [
           ];
         }, []);
 
-        return adjacentWaterTiles.length >= 3;
+        if (adjacentWaterTiles.length >= 3) {
+          relatedTiles.push(...adjacentWaterTiles);
+          return true;
+        }
+
+        return false;
       });
 
       return {
@@ -443,9 +443,8 @@ export const FIELD_WATER_GOALS: Goal[] = [
         scorePerEntity: 7,
         score: 7 * filteredFieldAreas.length,
         scoredTiles: filteredFieldAreas.flatMap((area) => area.tiles),
-        scoredRows: [],
-        scoredColumns: [],
-        scoredAreas: filteredFieldAreas,
+        scoreIndicatorPositions: filteredFieldAreas.map((area) => area.tiles[0].position),
+        relatedTiles,
       };
     },
   },
@@ -455,7 +454,7 @@ export const FIELD_WATER_GOALS: Goal[] = [
     emojiDescription: '5🎖️ / 🏔️⏭️🐟🌾',
     category: GoalCategory.FIELD_WATER,
     singlePlayerValue: 15,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const waterAreas = getIndividualAreas(boardState, LandscapeType.WATER);
       const relatedTiles: BoardTile[] = [];
 
@@ -504,9 +503,7 @@ export const FIELD_WATER_GOALS: Goal[] = [
         score: 5 * foundMountains.length,
         scoredTiles: foundMountains,
         relatedTiles,
-        scoredRows: [],
-        scoredColumns: [],
-        scoredAreas: [],
+        scoreIndicatorPositions: foundMountains.map((tile) => tile.position),
       };
     },
   },
@@ -525,9 +522,9 @@ export const GLOBAL_GOALS: Goal[] = [
     emojiDescription: '10🎖️ / odd↕️💯',
     category: GoalCategory.GLOBAL,
     singlePlayerValue: 30,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const scoredTiles: BoardTile[] = [];
-      const scoredColumns: number[] = [];
+      const scoreIndicatorPositions: Partial<Coordinates>[] = [];
 
       for (let x = 0; x < BOARD_SIZE; x++) {
         let columnHasEvenIndex = x % 2 === 0;
@@ -541,7 +538,7 @@ export const GLOBAL_GOALS: Goal[] = [
 
         if (filledColumnTiles.length === BOARD_SIZE) {
           scoredTiles.push(...filledColumnTiles);
-          scoredColumns.push(x);
+          scoreIndicatorPositions.push({ x });
         }
       }
 
@@ -549,11 +546,9 @@ export const GLOBAL_GOALS: Goal[] = [
         goalCategory: GoalCategory.GLOBAL,
         scoreType: 'column',
         scorePerEntity: 10,
-        score: 10 * scoredColumns.length,
+        score: 10 * scoreIndicatorPositions.length,
         scoredTiles,
-        scoredRows: [],
-        scoredColumns,
-        scoredAreas: [],
+        scoreIndicatorPositions,
       };
     },
   },
@@ -563,9 +558,10 @@ export const GLOBAL_GOALS: Goal[] = [
     emojiDescription: '4🎖️ / 1↔️:5🌈',
     category: GoalCategory.GLOBAL,
     singlePlayerValue: 28,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
-      const scoredRows: number[] = [];
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const scoredTiles: BoardTile[] = [];
+      const scoreIndicatorPositions: Partial<Coordinates>[] = [];
+      const relatedTiles: BoardTile[] = [];
 
       for (let y = 0; y < BOARD_SIZE; y++) {
         const landscapeTypes = new Set<LandscapeType>();
@@ -579,8 +575,9 @@ export const GLOBAL_GOALS: Goal[] = [
           }
         }
         if (landscapeTypes.size >= 5) {
-          scoredRows.push(y);
-          scoredTiles.push(...tiles);
+          scoreIndicatorPositions.push({ y });
+          scoredTiles.push(...tiles.slice(0, 5));
+          relatedTiles.push(...tiles);
         }
       }
 
@@ -588,11 +585,10 @@ export const GLOBAL_GOALS: Goal[] = [
         goalCategory: GoalCategory.GLOBAL,
         scoreType: 'row',
         scorePerEntity: 4,
-        score: 4 * scoredRows.length,
+        score: 4 * scoreIndicatorPositions.length,
         scoredTiles,
-        scoredRows,
-        scoredColumns: [],
-        scoredAreas: [],
+        scoreIndicatorPositions,
+        relatedTiles,
       };
     },
   },
@@ -602,7 +598,7 @@ export const GLOBAL_GOALS: Goal[] = [
     emojiDescription: '4🎖️ / 3🔲',
     category: GoalCategory.GLOBAL,
     singlePlayerValue: 30,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const emptyAreas: LandscapeArea[] = getIndividualAreas(boardState, undefined);
       const filteredEmptyAreas: LandscapeArea[] = emptyAreas.filter((area: LandscapeArea): boolean => area.tiles.length === 3);
 
@@ -612,9 +608,7 @@ export const GLOBAL_GOALS: Goal[] = [
         scorePerEntity: 4,
         score: 4 * filteredEmptyAreas.length,
         scoredTiles: filteredEmptyAreas.flatMap((area) => area.tiles),
-        scoredRows: [],
-        scoredColumns: [],
-        scoredAreas: filteredEmptyAreas,
+        scoreIndicatorPositions: filteredEmptyAreas.map((area) => area.tiles[0].position),
       };
     },
   },
@@ -624,39 +618,27 @@ export const GLOBAL_GOALS: Goal[] = [
     emojiDescription: '7🎖️ / ↔️+↕️:💯+🏔️',
     category: GoalCategory.GLOBAL,
     singlePlayerValue: 28,
-    scoreAlgorithm: (boardState: BoardTile[][]) => {
-      const scoredRows: number[] = [];
-      const scoredColumns: number[] = [];
+    scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
+      const scoreIndicatorPositions: Partial<Coordinates>[] = [];
+      const scoredTiles: BoardTile[] = [];
 
       for (let x = 0; x < BOARD_SIZE; x++) {
-        let rowHasEmptyTile = false;
-        let rowHasMountainTile = false;
-        for (let y = 0; y < BOARD_SIZE; y++) {
-          if (!isTileFilled(boardState[x][y])) {
-            rowHasEmptyTile = true;
-          }
-          if (isTileOfLandscape(boardState[x][y], LandscapeType.MOUNTAIN)) {
-            rowHasMountainTile = true;
-          }
-        }
-        if (!rowHasEmptyTile && rowHasMountainTile) {
-          scoredColumns.push(x);
+        const column = boardState[x];
+        const hasMountainTile = column.some((tile) => isTileOfLandscape(tile, LandscapeType.MOUNTAIN));
+
+        if (hasMountainTile && column.every((tile) => isTileFilled(tile))) {
+          scoreIndicatorPositions.push({ x });
+          scoredTiles.push(...column);
         }
       }
 
       for (let y = 0; y < BOARD_SIZE; y++) {
-        let columnHasEmptyTile = false;
-        let columnHasMountainTile = false;
-        for (let x = 0; x < BOARD_SIZE; x++) {
-          if (!isTileFilled(boardState[x][y])) {
-            columnHasEmptyTile = true;
-          }
-          if (isTileOfLandscape(boardState[x][y], LandscapeType.MOUNTAIN)) {
-            columnHasMountainTile = true;
-          }
-        }
-        if (!columnHasEmptyTile && columnHasMountainTile) {
-          scoredRows.push(y);
+        const row = getRowTiles(boardState, y);
+        const hasMountainTile = row.some((tile) => isTileOfLandscape(tile, LandscapeType.MOUNTAIN));
+
+        if (hasMountainTile && row.every((tile) => isTileFilled(tile))) {
+          scoreIndicatorPositions.push({ y });
+          scoredTiles.push(...row);
         }
       }
 
@@ -664,11 +646,9 @@ export const GLOBAL_GOALS: Goal[] = [
         goalCategory: GoalCategory.GLOBAL,
         scoreType: 'row+column',
         scorePerEntity: 7,
-        score: 7 * (scoredRows.length + scoredColumns.length),
-        scoredTiles: [],
-        scoredRows,
-        scoredColumns,
-        scoredAreas: [],
+        score: 7 * scoreIndicatorPositions.length,
+        scoredTiles,
+        scoreIndicatorPositions,
       };
     },
   },
@@ -709,15 +689,18 @@ export function getGoalsFromIndexes(indexes: number[]): Goal[] {
 export function getMonsterScore(boardState: BoardTile[][]): ScoreInfo {
   // one minus point for each empty tile that is adjacent to at least one monster tile
   const scoredTiles: BoardTile[] = [];
+  const relatedTiles: BoardTile[] = [];
 
   for (let x = 0; x < BOARD_SIZE; x++) {
     for (let y = 0; y < BOARD_SIZE; y++) {
       const tile = boardState[x][y];
       if (isTileOfLandscape(tile, undefined)) {
         const adjacentTiles: BoardTile[] = getAdjacentTiles(boardState, tile.position);
+        const adjacentMonsterTiles = adjacentTiles.filter((boardTile) => isTileOfLandscape(boardTile, LandscapeType.MONSTER));
 
-        if (adjacentTiles.some((boardTile) => isTileOfLandscape(boardTile, LandscapeType.MONSTER))) {
+        if (adjacentMonsterTiles.length > 0) {
           scoredTiles.push(tile);
+          relatedTiles.push(...adjacentMonsterTiles);
         }
       }
     }
@@ -729,9 +712,8 @@ export function getMonsterScore(boardState: BoardTile[][]): ScoreInfo {
     scorePerEntity: -1,
     score: scoredTiles.length ? -1 * scoredTiles.length : 0,
     scoredTiles,
-    scoredRows: [],
-    scoredColumns: [],
-    scoredAreas: [],
+    scoreIndicatorPositions: scoredTiles.map((tile) => tile.position),
+    relatedTiles,
   };
 }
 
@@ -750,8 +732,6 @@ export function getFallbackScoreInfo(goalCategory: GoalCategory): ScoreInfo {
     scorePerEntity: 0,
     score: 0,
     scoredTiles: [],
-    scoredRows: [],
-    scoredColumns: [],
-    scoredAreas: [],
+    scoreIndicatorPositions: [],
   };
 }

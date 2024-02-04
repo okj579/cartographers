@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, O
 import { NgForOf, NgIf } from '@angular/common';
 import { BoardTileComponent } from './board-tile.component';
 import { TemporaryPlacedLandscapeShapeComponent } from './temporary-placed-landscape-shape.component';
-import { BoardTile } from '../../../models/board-tile';
+import { BoardTile, tilesToCoordinates } from '../../../models/board-tile';
 import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape } from '../../../models/landscape-shape';
 import { Coordinates, Direction, getNeighborCoordinates, includesCoordinates } from '../../../models/simple-types';
 import { BOARD_SIZE } from '../../../game-logic/constants';
@@ -37,22 +37,16 @@ export class GameBoardComponent {
     return this.currentShapeToPlace !== undefined;
   }
 
-  get allTileScoreInfos(): ScoreInfo[] {
-    return this.scoreInfos.filter((scoreInfo) => scoreInfo.scoreType === 'tile' && scoreInfo.scoredTiles.length > 0);
+  get scoreInfosWithScore(): ScoreInfo[] {
+    return this.scoreInfos.filter((scoreInfo) => scoreInfo.scoreIndicatorPositions.length > 0);
   }
 
-  get allAreaScoreInfos(): ScoreInfo[] {
-    return this.scoreInfos.filter((scoreInfo) => scoreInfo.scoreType === 'area' && scoreInfo.scoredAreas.length > 0);
+  get scoredTiles(): BoardTile[] {
+    return this.scoreInfos.filter((scoreInfo) => this.isScoreRelevant(scoreInfo)).flatMap((scoreInfo) => scoreInfo.scoredTiles);
   }
 
-  get allColumnScoreInfos(): ScoreInfo[] {
-    return this.scoreInfos.filter(
-      (scoreInfo) => ['column', 'row+column'].includes(scoreInfo.scoreType) && scoreInfo.scoredColumns.length > 0,
-    );
-  }
-
-  get allRowScoreInfos(): ScoreInfo[] {
-    return this.scoreInfos.filter((scoreInfo) => ['row', 'row+column'].includes(scoreInfo.scoreType) && scoreInfo.scoredRows.length > 0);
+  get scoreRelatedTiles(): BoardTile[] {
+    return this.scoreInfos.filter((scoreInfo) => this.isScoreRelevant(scoreInfo)).flatMap((scoreInfo) => scoreInfo.relatedTiles ?? []);
   }
 
   isScoreRelevant(scoreInfo: ScoreInfo): boolean {
@@ -61,6 +55,14 @@ export class GameBoardComponent {
       !this.seasonGoals.length ||
       this.seasonGoals.some((goal) => goal.category === scoreInfo.goalCategory)
     );
+  }
+
+  isScoredTile(tile: BoardTile): boolean {
+    return includesCoordinates(tile.position, tilesToCoordinates(this.scoredTiles));
+  }
+
+  isScoreRelatedTile(tile: BoardTile): boolean {
+    return includesCoordinates(tile.position, tilesToCoordinates(this.scoreRelatedTiles));
   }
 
   trackByIndex(index: number): number {

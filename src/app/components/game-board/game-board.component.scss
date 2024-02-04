@@ -44,8 +44,24 @@ app-score-tile {
   }
 }
 
-:host(.is-end-of-season) app-score-tile.relevant {
-  animation: scale-pulse 2s infinite;
+:host(.is-end-of-season) {
+  app-score-tile.relevant {
+    animation: scale-pulse 2s infinite;
+  }
+
+  app-board-tile {
+    &:not(.scored):not(.score-related) {
+      filter: grayscale(0.8);
+
+      &.base {
+        opacity: 0.4;
+      }
+    }
+
+    &:not(.scored) {
+      filter: grayscale(0.3);
+    }
+  }
 }
 
 @keyframes scale-pulse {
