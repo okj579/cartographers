@@ -19,12 +19,15 @@ import { MONSTER_MAP } from '../../../models/monster';
     '[class.conflicted]': 'tile.conflicted',
     '[class.hero-star]': 'tile.heroStar',
     '[class.has-coin]': 'tile.hasCoin',
+    '[class.coin-will-be-removed]': 'coinWillBeRemoved',
     '[class.base]': '!tile.landscape',
     '[class.has-monster-type]': '!!tile.monsterType',
   },
 })
 export class BoardTileComponent {
   @Input({ required: true }) tile!: BoardTile;
+
+  @Input() coinWillBeRemoved: boolean = false;
 
   get monsterEmoji(): string | undefined {
     return this.tile.monsterType ? MONSTER_MAP[this.tile.monsterType].emoji : undefined;

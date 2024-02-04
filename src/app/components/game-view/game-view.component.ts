@@ -85,7 +85,7 @@ export class GameViewComponent implements OnChanges {
     if (!this.playerState) return undefined;
 
     return this.isStartOfSeason || !this.tempPlayerState || !this.playerState.season
-      ? { ...this.playerState, conflictedCellIndices: [], hasConflict: false }
+      ? { ...this.playerState, conflictedCellIndices: [], hasConflict: false, newMinedMountainTiles: [] }
       : this.tempPlayerState;
   }
 

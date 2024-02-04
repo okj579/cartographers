@@ -234,7 +234,10 @@ export function getTempPlayerStateWithShape(
   previousPlayerState: CurrentPlayerGameState,
   shape: PlacedLandscapeShape,
 ): TempPlayerGameState {
-  let { updatedBoard, newCoins, conflictedCellIndices } = tryPlaceShapeOnBoard(previousPlayerState.boardState, shape);
+  let { updatedBoard, newCoins, conflictedCellIndices, newMinedMountainTiles } = tryPlaceShapeOnBoard(
+    previousPlayerState.boardState,
+    shape,
+  );
   const hasConflict = conflictedCellIndices.length > 0;
   const coinsFromShape = shape.baseShape.hasCoin ? 1 : 0;
   const newCoinsToAdd = hasConflict ? 0 : newCoins + coinsFromShape;
@@ -254,6 +257,7 @@ export function getTempPlayerStateWithShape(
     scores,
     hasConflict,
     conflictedCellIndices: conflictedCellIndices,
+    newMinedMountainTiles: hasConflict ? [] : newMinedMountainTiles,
   };
 }
 

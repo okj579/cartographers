@@ -9,7 +9,7 @@
     background: var(--bg-color-4);
   }
 
-  &.hero-star {
+  &.hero-star:not(.has-coin) {
     &::after {
       @extend %absolute-item;
       content: '⭐';
@@ -30,7 +30,7 @@
     }
   }
 
-  &.has-coin {
+  &.has-coin:not(.conflicted):not(.sibling-is-outside) {
     &::after {
       content: '💎';
       font-size: 0.7em;
@@ -38,6 +38,12 @@
       top: 2px;
       right: 2px;
       line-height: 1;
+    }
+
+    &.coin-will-be-removed {
+      &::after {
+        animation: scale-pulse 1.5s infinite;
+      }
     }
   }
 
@@ -78,4 +84,18 @@
   top: 0;
   left: 0;
   box-sizing: border-box;
+}
+
+@keyframes scale-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.5);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }

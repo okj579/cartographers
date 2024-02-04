@@ -13,6 +13,7 @@ interface PlaceShapeResult {
   updatedBoard: BoardTile[][];
   conflictedCellIndices: number[];
   newCoins: number;
+  newMinedMountainTiles: BoardTile[];
 }
 
 export interface FindPositionResult {
@@ -55,9 +56,10 @@ export function getSeasonScore(season: Season, scores: number[], coins: number):
 export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape): PlaceShapeResult {
   const updatedBoard: BoardTile[][] = copyBoard(board);
   const conflictedCellIndices: number[] = [];
+  const newMinedMountainTiles: BoardTile[] = [];
   let newCoins = 0;
 
-  if (!shape) return { updatedBoard, conflictedCellIndices, newCoins };
+  if (!shape) return { updatedBoard, conflictedCellIndices, newCoins, newMinedMountainTiles };
 
   const boardHasDragon = board
     .flat()
@@ -74,7 +76,8 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
       tile.monsterType = isHeroStar ? tile.monsterType : shape.monsterType;
       applyShapeToTile(tile, shape, isHeroStar);
       if (!tile.conflicted) {
-        newCoins += checkForMountainCoin(updatedBoard, tile.position);
+        newMinedMountainTiles.push(...checkForMountainCoin(updatedBoard, tile.position));
+        newCoins = newMinedMountainTiles.length;
       }
     } else if (!isHeroStar) {
       conflictedCellIndices.push(i);
@@ -91,13 +94,13 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
     }
   }
 
-  return { updatedBoard, conflictedCellIndices, newCoins };
+  return { updatedBoard, conflictedCellIndices, newCoins, newMinedMountainTiles };
 }
 
-function checkForMountainCoin(board: BoardTile[][], cell: Coordinates): number {
+function checkForMountainCoin(board: BoardTile[][], cell: Coordinates): BoardTile[] {
   const adjacentTiles = getAdjacentTiles(board, cell);
   const mountainTiles = adjacentTiles.filter((tile) => isTileOfLandscape(tile, LandscapeType.MOUNTAIN));
-  let coins = 0;
+  const minedMountainTiles: BoardTile[] = [];
 
   for (let mountainTile of mountainTiles) {
     if (!mountainTile.hasCoin) continue;
@@ -107,11 +110,11 @@ function checkForMountainCoin(board: BoardTile[][], cell: Coordinates): number {
 
     if (isMountainSurrounded) {
       mountainTile.hasCoin = false;
-      coins++;
+      minedMountainTiles.push(mountainTile);
     }
   }
 
-  return coins;
+  return minedMountainTiles;
 }
 
 function isDragonDefeated(board: BoardTile[][]): boolean {

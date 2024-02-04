@@ -29,6 +29,7 @@
         [scoreInfos]="visiblePlayerState.scoreInfos"
         [seasonGoals]="playerState.seasonGoals"
         [isEndOfSeason]="playerState.isEndOfSeason && !!playerState.season"
+        [newMinedMonsterTiles]="visiblePlayerState.newMinedMountainTiles"
         (positionChange)="onPositionChange($event)"
       />
     }

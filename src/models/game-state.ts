@@ -51,4 +51,5 @@ export interface CurrentPlayerGameState extends CurrentPlayerBoard {
 export interface TempPlayerGameState extends CurrentPlayerGameState {
   readonly hasConflict: boolean;
   readonly conflictedCellIndices: number[];
+  readonly newMinedMountainTiles: BoardTile[];
 }

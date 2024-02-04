@@ -24,6 +24,7 @@ export class GameBoardComponent {
   @Input() conflictedCellIndices: number[] = [];
   @Input() scoreInfos: ScoreInfo[] = [];
   @Input() seasonGoals: Goal[] = [];
+  @Input() newMinedMonsterTiles: BoardTile[] = [];
 
   @HostBinding('class.is-end-of-season')
   @Input()
@@ -47,6 +48,10 @@ export class GameBoardComponent {
 
   get scoreRelatedTiles(): BoardTile[] {
     return this.scoreInfos.filter((scoreInfo) => this.isScoreRelevant(scoreInfo)).flatMap((scoreInfo) => scoreInfo.relatedTiles ?? []);
+  }
+
+  willCoinBeRemoved(tile: BoardTile): boolean {
+    return !!tile.hasCoin && includesCoordinates(tile.position, tilesToCoordinates(this.newMinedMonsterTiles));
   }
 
   isScoreRelevant(scoreInfo: ScoreInfo): boolean {

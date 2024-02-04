@@ -19,6 +19,7 @@ interface TemporaryBoardTile extends BoardTile {
   template: ` <app-board-tile
     *ngFor="let tile of boardTiles; trackBy: trackByIndexAndShapeSize"
     [tile]="tile"
+    [coinWillBeRemoved]="!!tile.hasCoin && conflictedCellIndices.length === 0"
     [class.base]="false"
     [class.sibling-is-outside]="hasOutOfBoardTiles"
     [class.is-outside]="tile.isOutOfBounds"
@@ -72,6 +73,7 @@ export class TemporaryPlacedLandscapeShapeComponent implements OnChanges {
         monsterType: shape.monsterType,
         conflicted: this.conflictedCellIndices.includes(i),
         isOutOfBounds,
+        hasCoin: i === 0 && shape.baseShape.hasCoin,
       });
     }
 
