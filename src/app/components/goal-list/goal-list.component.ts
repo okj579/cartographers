@@ -21,7 +21,7 @@ export class GoalListComponent {
   protected readonly coinEmojiDescription: string = '1🎖️ / 💎';
   protected readonly monsterEmojiDescription: string = '-1🎖️ / 🔲⏭️😈';
 
-  getGoalIndex(index: number): number {
-    return this.goalIndices[0] ?? index;
+  showGoal(index: number): boolean {
+    return !this.goalIndices.length || this.goalIndices.includes(index);
   }
 }
