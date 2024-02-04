@@ -6,6 +6,7 @@ import { LandscapeType } from '../../../models/landscape-type';
 import { PlacedLandscapeShape } from '../../../models/landscape-shape';
 import { Coordinates, Direction, getNeighborCoordinates, includesCoordinates } from '../../../models/simple-types';
 import { isOutOfBoard } from '../../../game-logic/functions';
+import { MonsterType } from '../../../models/monster';
 
 interface TemporaryBoardTile extends BoardTile {
   isOutOfBounds: boolean;
@@ -19,7 +20,6 @@ interface TemporaryBoardTile extends BoardTile {
   template: ` <app-board-tile
     *ngFor="let tile of boardTiles; trackBy: trackByIndexAndShapeSize"
     [tile]="tile"
-    [coinWillBeRemoved]="!!tile.hasCoin && conflictedCellIndices.length === 0"
     [class.base]="false"
     [class.sibling-is-outside]="hasOutOfBoardTiles"
     [class.is-outside]="tile.isOutOfBounds"
@@ -73,7 +73,7 @@ export class TemporaryPlacedLandscapeShapeComponent implements OnChanges {
         monsterType: shape.monsterType,
         conflicted: this.conflictedCellIndices.includes(i),
         isOutOfBounds,
-        hasCoin: i === 0 && shape.baseShape.hasCoin,
+        hasCoin: i === 0 && (shape.baseShape.hasCoin || shape.monsterType === MonsterType.DRAGON),
       });
     }
 

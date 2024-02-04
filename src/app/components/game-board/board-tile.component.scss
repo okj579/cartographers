@@ -9,7 +9,7 @@
     background: var(--bg-color-4);
   }
 
-  &.hero-star:not(.has-coin) {
+  &.hero-star {
     &::after {
       @extend %absolute-item;
       content: '⭐';
@@ -30,7 +30,7 @@
     }
   }
 
-  &.has-coin:not(.conflicted):not(.sibling-is-outside) {
+  div.coin {
     &::after {
       content: '💎';
       font-size: 0.7em;
@@ -40,9 +40,18 @@
       line-height: 1;
     }
 
-    &.coin-will-be-removed {
+    &.will-be-removed {
       &::after {
         animation: scale-pulse 1.5s infinite;
+      }
+    }
+
+    &.is-dragon {
+      &::after {
+        content: '💎💎💎';
+        font-size: 0.5em;
+        letter-spacing: -0.6em;
+        right: 0.6em;
       }
     }
   }
@@ -75,6 +84,18 @@
 
   @include landscape.bg-colors;
   @include landscape.emojis;
+
+  // surrounded monsters
+  &[data-landscape='monster'].defeated-monster {
+    .monster-emoji {
+      filter: grayscale(1);
+      opacity: 0.8;
+    }
+
+    .monster-type {
+      opacity: 0.5;
+    }
+  }
 }
 
 %absolute-item {

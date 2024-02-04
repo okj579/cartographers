@@ -533,6 +533,7 @@ export const exampleBoard: BoardTile[][] = [
       },
       monsterType: MonsterType.DRAGON,
       landscape: LandscapeType.MONSTER,
+      hasCoin: true,
     },
   ],
   [

@@ -9,6 +9,7 @@ import { BOARD_SIZE } from '../../../game-logic/constants';
 import { IndexToCharPipe } from '../goal-area/index-to-char.pipe';
 import { Goal, ScoreInfo } from '../../../models/goals';
 import { ScoreTileComponent } from './score-tile/score-tile.component';
+import { LandscapeType } from '../../../models/landscape-type';
 
 @Component({
   selector: 'app-game-board',
@@ -70,6 +71,10 @@ export class GameBoardComponent {
     return includesCoordinates(tile.position, tilesToCoordinates(this.scoreRelatedTiles));
   }
 
+  isDefeatedMonster(tile: BoardTile): boolean {
+    return tile.landscape === LandscapeType.MONSTER && !this._isMonsterRelevantForScore(tile);
+  }
+
   trackByIndex(index: number): number {
     return index;
   }
@@ -124,5 +129,12 @@ export class GameBoardComponent {
     const neighborCoordinates = getNeighborCoordinates(direction, position);
 
     return this.currentBoardState[neighborCoordinates.x]?.[neighborCoordinates.y];
+  }
+
+  private _isMonsterRelevantForScore(tile: BoardTile): boolean {
+    const monsterTiles = this.scoreInfos
+      .filter((scoreInfo) => scoreInfo.goalCategory === 'monster')
+      .flatMap((scoreInfo) => scoreInfo.relatedTiles ?? []);
+    return includesCoordinates(tile.position, tilesToCoordinates(monsterTiles));
   }
 }

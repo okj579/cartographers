@@ -10,6 +10,7 @@
       [class.has-neighbor-left]="isSameAreaAsNeighbor('left', tile)"
       [class.scored]="isScoredTile(tile)"
       [class.score-related]="isScoreRelatedTile(tile)"
+      [class.defeated-monster]="isDefeatedMonster(tile)"
       [coinWillBeRemoved]="willCoinBeRemoved(tile)"
       (click)="onTileClick(x, y)"
     ></app-board-tile>

@@ -9,7 +9,8 @@ import { MONSTER_MAP } from '../../../models/monster';
   imports: [NgIf],
   template: ` <div *ngIf="monsterEmoji" class="monster-emoji">{{ monsterEmoji }}</div>
     <div *ngIf="tile.destroyed" class="destroyed"></div>
-    <div *ngIf="tile.monsterType" class="monster-type">{{ tile.monsterType }}</div>`,
+    <div *ngIf="tile.monsterType" class="monster-type">{{ tile.monsterType }}</div>
+    <div *ngIf="tile.hasCoin" class="coin" [class.will-be-removed]="coinWillBeRemoved" [class.is-dragon]="tile.monsterType"></div>`,
   styleUrl: './board-tile.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -18,8 +19,6 @@ import { MONSTER_MAP } from '../../../models/monster';
     '[attr.data-landscape]': 'tile.landscape',
     '[class.conflicted]': 'tile.conflicted',
     '[class.hero-star]': 'tile.heroStar',
-    '[class.has-coin]': 'tile.hasCoin',
-    '[class.coin-will-be-removed]': 'coinWillBeRemoved',
     '[class.base]': '!tile.landscape',
     '[class.has-monster-type]': '!!tile.monsterType',
   },
