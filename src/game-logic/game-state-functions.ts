@@ -240,13 +240,11 @@ export function getTempPlayerStateWithShape(
     shape,
   );
   const hasConflict = conflictedCellIndices.length > 0;
-  const coinsFromShape = shape.baseShape.hasCoin ? 1 : 0;
-  const newCoinsToAdd = hasConflict ? 0 : newCoins + coinsFromShape;
 
   const newPlayerState: CurrentPlayerGameState = {
     ...previousPlayerState,
     boardState: updatedBoard,
-    coins: previousPlayerState.coins + newCoinsToAdd,
+    coins: previousPlayerState.coins + newCoins,
   };
 
   const scoreInfos: ScoreInfo[] = hasConflict ? previousPlayerState.scoreInfos : getScoresFromBoard(state.goals, updatedBoard);
@@ -258,7 +256,7 @@ export function getTempPlayerStateWithShape(
     scores,
     hasConflict,
     conflictedCellIndices: conflictedCellIndices,
-    newMinedMountainTiles: hasConflict ? [] : newMinedMountainTiles,
+    newMinedMountainTiles,
   };
 }
 

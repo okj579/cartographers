@@ -59,7 +59,7 @@ export function getSeasonScore(season: Season, scores: number[], coins: number):
   );
 }
 
-export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape): PlaceShapeResult {
+export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape | undefined): PlaceShapeResult {
   const updatedBoard: BoardTile[][] = copyBoard(board);
   const conflictedCellIndices: number[] = [];
   const newMinedMountainTiles: BoardTile[] = [];
@@ -119,7 +119,18 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
     }
   }
 
-  return { updatedBoard, conflictedCellIndices, newCoins, newMinedMountainTiles };
+  if (shape.baseShape.hasCoin) {
+    newCoins++;
+  }
+
+  const hasConflict = conflictedCellIndices.length > 0;
+
+  return {
+    updatedBoard,
+    conflictedCellIndices,
+    newCoins: hasConflict ? 0 : newCoins,
+    newMinedMountainTiles: hasConflict ? [] : newMinedMountainTiles,
+  };
 }
 
 function checkForMountainCoin(board: BoardTile[][], cell: Coordinates): BoardTile[] {
