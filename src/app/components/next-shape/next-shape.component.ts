@@ -134,7 +134,9 @@ export class NextShapeComponent implements OnChanges {
 
   @HostListener('window:keydown.r', ['$event'])
   @HostListener('window:keydown.e', ['$event'])
-  rotateClockwise() {
+  rotateClockwise(isRedirect?: boolean): void {
+    if (this.move.isFlipped && !isRedirect) return this.rotateCounterClockwise(true);
+
     const previousHeroPosition = this.currentVariant?.heroPosition;
     const rotatedHero = previousHeroPosition ? rotateLandscapeShapeClockwise(this.allVariants[0]) : undefined;
     const position = this._getCoordinatesAfterHeroTransformation(previousHeroPosition, rotatedHero?.heroPosition);
@@ -146,7 +148,9 @@ export class NextShapeComponent implements OnChanges {
 
   @HostListener('window:keydown.l', ['$event'])
   @HostListener('window:keydown.q', ['$event'])
-  rotateCounterClockwise() {
+  rotateCounterClockwise(isRedirect?: boolean): void {
+    if (this.move.isFlipped && !isRedirect) return this.rotateClockwise(true);
+
     const previousHeroPosition = this.currentVariant?.heroPosition;
     const rotatedHero = previousHeroPosition ? rotateLandscapeShapeCounterClockwise(this.allVariants[0]) : undefined;
     const position = this._getCoordinatesAfterHeroTransformation(previousHeroPosition, rotatedHero?.heroPosition);
