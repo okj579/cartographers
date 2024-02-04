@@ -33,7 +33,7 @@
     [score]="scoreInfo.scorePerEntity"
     [goalCategory]="scoreInfo.goalCategory"
     [isOnBoard]="scorePosition.x !== undefined && scorePosition.y !== undefined"
-    [highlight]="isEndOfSeason"
+    [highlight]="isEndOfSeason && isScoreRelevant(scoreInfo)"
     [style.grid-column]="(scorePosition.x ?? BOARD_SIZE) + 1"
     [style.grid-row]="(scorePosition.y ?? BOARD_SIZE + 1) + 1"
     [class.relevant]="isScoreRelevant(scoreInfo)"
