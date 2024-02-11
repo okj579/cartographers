@@ -70,7 +70,8 @@ app-score-tile {
     }
 
     &:not(.scored) {
-      filter: grayscale(0.3);
+      filter: grayscale(0.4);
+      opacity: 0.9;
     }
 
     &.highlight-border {

@@ -7,7 +7,7 @@ import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape } from '../../
 import { Coordinates, Direction, getNeighborCoordinates, includesCoordinates } from '../../../models/simple-types';
 import { BOARD_SIZE } from '../../../game-logic/constants';
 import { IndexToCharPipe } from '../goal-area/index-to-char.pipe';
-import { AnyGoal, Goal, GoalCategory, ScoreInfo } from '../../../models/goals';
+import { Goal, GoalCategory, ScoreInfo } from '../../../models/goals';
 import { ScoreTileComponent } from './score-tile/score-tile.component';
 import { LandscapeType } from '../../../models/landscape-type';
 
@@ -21,12 +21,12 @@ import { LandscapeType } from '../../../models/landscape-type';
 })
 export class GameBoardComponent {
   @Input() currentBoardState: BoardTile[][] = [];
+  @Input() nextBoardState: BoardTile[][] = [];
   @Input() currentShapeToPlace: PlacedLandscapeShape | undefined;
   @Input() conflictedCellIndices: number[] = [];
   @Input() scoreInfos: ScoreInfo[] = [];
   @Input() seasonGoals: Goal[] = [];
-  @Input() newMinedMonsterTiles: BoardTile[] = [];
-  @Input() specialHighlightGoal: AnyGoal | undefined;
+  @Input() specialHighlightGoal: Goal | undefined;
 
   @HostBinding('class.is-end-of-season')
   @Input()
@@ -43,6 +43,11 @@ export class GameBoardComponent {
   @HostBinding('class.has-highlighted-goal')
   get hasSpecialHighlightGoal(): boolean {
     return !!this.specialHighlightGoal;
+  }
+
+  @HostBinding('class.has-highlighted-coin-goal')
+  get hasHighlightedCoinGoal(): boolean {
+    return !!this.specialHighlightGoal ? this.specialHighlightGoal.category === GoalCategory.COIN : this.isEndOfSeason;
   }
 
   get allowPlacing(): boolean {
@@ -62,7 +67,7 @@ export class GameBoardComponent {
   }
 
   willCoinBeRemoved(tile: BoardTile): boolean {
-    return !!tile.hasCoin && includesCoordinates(tile.position, tilesToCoordinates(this.newMinedMonsterTiles));
+    return !!tile.hasCoin && (this.nextBoardState[tile.position.x]?.[tile.position.y]?.wasScoreCoin ?? false);
   }
 
   isScoreRelevant(scoreInfo: ScoreInfo): boolean {
@@ -70,11 +75,7 @@ export class GameBoardComponent {
       return scoreInfo.goalCategory === this.specialHighlightGoal.category;
     }
 
-    return (
-      scoreInfo.goalCategory === 'monster' ||
-      !this.seasonGoals.length ||
-      this.seasonGoals.some((goal) => goal.category === scoreInfo.goalCategory)
-    );
+    return !this.seasonGoals.length || this.seasonGoals.some((goal) => goal.category === scoreInfo.goalCategory);
   }
 
   isScoredTile(tile: BoardTile): boolean {
@@ -151,7 +152,7 @@ export class GameBoardComponent {
 
   private _isMonsterRelevantForScore(tile: BoardTile): boolean {
     const monsterTiles = this.scoreInfos
-      .filter((scoreInfo) => scoreInfo.goalCategory === 'monster')
+      .filter((scoreInfo) => scoreInfo.goalCategory === GoalCategory.MONSTER)
       .flatMap((scoreInfo) => scoreInfo.relatedTiles ?? []);
     return includesCoordinates(tile.position, tilesToCoordinates(monsterTiles));
   }

@@ -5,6 +5,7 @@
   color: var(--color-text-secondary);
   font-weight: bold;
   font-size: 0.45em;
+  white-space: nowrap;
 
   &.highlight {
     color: var(--color-text);
@@ -15,7 +16,7 @@
   }
 
   &.is-on-board {
-    color: var(--color-text);
+    color: rgba(var(--color-text-rgb), 0.7);
     pointer-events: none;
 
     &.highlight {
@@ -45,6 +46,15 @@
     --score-tile-fg: #b1b;
     margin-left: $margin;
     margin-top: $margin;
+  }
+
+  &[data-category='coin'] {
+    --score-tile-bg: #{rgba(#48d, $alpha)};
+    --score-tile-fg: #48d;
+
+    &:not(.highlight) {
+      display: none;
+    }
   }
 
   &[data-category='global'] {

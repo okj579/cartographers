@@ -3,22 +3,22 @@ import { LandscapeType } from './landscape-type';
 import { BOARD_SIZE } from '../game-logic/constants';
 import { getAdjacentTiles, getIndividualAreas, isTileFilled, isTileOfLandscape, LandscapeArea } from '../game-logic/functions';
 import { Coordinates, includesCoordinates } from './simple-types';
+import { MonsterType } from './monster';
 
 export enum GoalCategory {
   FOREST = 'forest',
   VILLAGE = 'village',
   FIELD_WATER = 'field-water',
   GLOBAL = 'global',
-}
-
-export interface AnyGoal {
-  category: GoalCategory | 'monster';
+  MONSTER = 'monster',
+  COIN = 'coin',
 }
 
 export interface Goal {
   name: string;
   description: string;
   emojiDescription: string;
+  goalEmoji?: string;
   category: GoalCategory;
   singlePlayerValue: number;
   scoreAlgorithm: (boardState: BoardTile[][]) => ScoreInfo;
@@ -26,14 +26,18 @@ export interface Goal {
 
 export type ScoreType = 'tile' | 'row' | 'column' | 'row+column' | 'area';
 
+export interface ScoreIndicator extends Partial<Coordinates> {
+  scorePerEntity?: number;
+}
+
 export interface ScoreInfo {
-  goalCategory: GoalCategory | 'monster';
+  goalCategory: GoalCategory;
   scoreType: ScoreType;
   scorePerEntity: number;
   score: number;
   scoredTiles: BoardTile[];
   relatedTiles?: BoardTile[];
-  scoreIndicatorPositions: Partial<Coordinates>[];
+  scoreIndicatorPositions: ScoreIndicator[];
 }
 
 export const FOREST_GOALS: Goal[] = [
@@ -658,7 +662,46 @@ export const GLOBAL_GOALS: Goal[] = [
   },
 ];
 
-export const ALL_GOALS: Goal[] = [...FOREST_GOALS, ...VILLAGE_GOALS, ...FIELD_WATER_GOALS, ...GLOBAL_GOALS];
+export const COIN_GOAL: Goal = {
+  name: 'Collect coins',
+  description: 'Collect 💎 by surrounding mountains on the 4 edges, and from some of the landscape shapes',
+  emojiDescription: '1🎖️ / 💎',
+  goalEmoji: '💎',
+  category: GoalCategory.COIN,
+  singlePlayerValue: 0,
+  scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
+    const relatedTiles: BoardTile[] = boardState.flatMap((column) => column.filter((tile) => tile.wasScoreCoin));
+    const scoreIndicatorPositions: ScoreIndicator[] = relatedTiles.map((tile) => ({
+      ...tile.position,
+      scorePerEntity: (tile.wasScoreCoin ? 1 : 0) * (tile.monsterType === MonsterType.DRAGON ? 3 : 1),
+    }));
+
+    // todo - max score of 14
+    const score = scoreIndicatorPositions.reduce((acc, scoreIndicator) => acc + (scoreIndicator.scorePerEntity ?? 0), 0);
+
+    return {
+      goalCategory: GoalCategory.COIN,
+      scoreType: 'tile',
+      scorePerEntity: 1,
+      score,
+      scoredTiles: [],
+      relatedTiles,
+      scoreIndicatorPositions,
+    };
+  },
+};
+
+export const MONSTER_GOAL: Goal = {
+  name: 'Defeat monsters',
+  description: 'One minus point for each empty tile that is adjacent to at least one monster tile',
+  emojiDescription: '-1🎖️ / 🔲⏭️😈',
+  goalEmoji: '😈',
+  category: GoalCategory.MONSTER,
+  singlePlayerValue: 0,
+  scoreAlgorithm: getMonsterScore,
+};
+
+const ALL_GOALS: Goal[] = [...FOREST_GOALS, ...VILLAGE_GOALS, ...FIELD_WATER_GOALS, ...GLOBAL_GOALS, MONSTER_GOAL, COIN_GOAL];
 
 export function findGoalByName(name: string): Goal | undefined {
   return ALL_GOALS.find((goal) => goal.name === name);
@@ -686,6 +729,10 @@ export function getShuffledGoals(): Goal[] {
   return shuffledGoals;
 }
 
+export function isDefaultGoal(goal: Goal): boolean {
+  return [GoalCategory.COIN, GoalCategory.MONSTER].includes(goal.category);
+}
+
 export function getGoalsFromIndexes(indexes: number[]): Goal[] {
   return indexes.map((index) => ALL_GOALS[index]);
 }
@@ -711,7 +758,7 @@ export function getMonsterScore(boardState: BoardTile[][]): ScoreInfo {
   }
 
   return {
-    goalCategory: 'monster',
+    goalCategory: GoalCategory.MONSTER,
     scoreType: 'tile',
     scorePerEntity: -1,
     score: scoredTiles.length ? -1 * scoredTiles.length : 0,

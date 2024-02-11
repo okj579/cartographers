@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { GameBoardComponent } from '../game-board/game-board.component';
 import { PlacedLandscapeShape } from '../../../models/landscape-shape';
 import { NextShapeComponent } from '../next-shape/next-shape.component';
@@ -18,8 +28,7 @@ import { GameSetupInfoComponent } from '../game-setup-info/game-setup-info.compo
 import { getCurrentUserId } from '../../data/util';
 import { AnyMove, initialMove, Move } from '../../../models/move';
 import { ExampleBoardComponent } from '../example-board/example-board.component';
-import { AnyGoal } from '../../../models/goals';
-import { MONSTER_SCORE_INDEX } from '../../../game-logic/constants';
+import { Goal } from '../../../models/goals';
 
 @Component({
   selector: 'app-game-view',
@@ -89,7 +98,7 @@ export class GameViewComponent implements OnChanges {
     if (!this.playerState) return undefined;
 
     return this.isStartOfSeason || !this.tempPlayerState || this.playerState.isEndOfGame || !this.isCurrentPlayer
-      ? { ...this.playerState, conflictedCellIndices: [], hasConflict: false, newMinedMountainTiles: [] }
+      ? { ...this.playerState, conflictedCellIndices: [], hasConflict: false }
       : this.tempPlayerState;
   }
 
@@ -97,13 +106,11 @@ export class GameViewComponent implements OnChanges {
     return this.playerState?.seasonScores.reduce((sum, score) => sum + score.totalScore, 0) ?? 0;
   }
 
-  get specialHighlightGoal(): AnyGoal | undefined {
-    if (this.specialHighlightGoalIndex === MONSTER_SCORE_INDEX) {
-      return { category: 'monster' };
-    }
-
+  get specialHighlightGoal(): Goal | undefined {
     return this.specialHighlightGoalIndex >= 0 ? this.gameState.goals[this.specialHighlightGoalIndex] : undefined;
   }
+
+  constructor(private readonly _cdr: ChangeDetectorRef) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['gameState']) {
@@ -131,6 +138,8 @@ export class GameViewComponent implements OnChanges {
 
   setSpecialHighlightGoalIndex(index: number): void {
     this.specialHighlightGoalIndex = index;
+
+    this._cdr.markForCheck();
   }
 
   onPositionChange(position: Coordinates): void {

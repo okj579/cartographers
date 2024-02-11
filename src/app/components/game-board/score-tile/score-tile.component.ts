@@ -15,7 +15,7 @@ export class ScoreTileComponent {
 
   @Input({ required: true })
   @HostBinding('attr.data-category')
-  goalCategory!: GoalCategory | 'monster';
+  goalCategory!: GoalCategory;
 
   @Input()
   @HostBinding('class.is-on-board')

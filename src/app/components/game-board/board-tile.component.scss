@@ -46,6 +46,31 @@
       }
     }
 
+    &.coin-was-removed {
+      display: none;
+
+      &[data-landscape='mountain'],
+      &[data-landscape='monster'] {
+        // always show coin on mountain and monster
+        display: block;
+      }
+
+      &::after {
+        filter: grayscale(1);
+      }
+
+      &::before {
+        content: '✔';
+        font-size: 0.7em;
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        line-height: 1;
+        z-index: 1;
+        color: #0b0;
+      }
+    }
+
     &.is-dragon {
       &::after {
         content: '💎💎💎';
@@ -53,6 +78,14 @@
         letter-spacing: -0.6em;
         right: 0.6em;
       }
+    }
+  }
+
+  &[data-landscape='mountain'],
+  &[data-landscape='monster'] {
+    // always show coin on mountain and monster
+    div.coin.coin-was-removed {
+      display: block;
     }
   }
 
@@ -118,5 +151,11 @@
 
   100% {
     transform: scale(1);
+  }
+}
+
+:host-context(.has-highlighted-coin-goal) {
+  div.coin.coin-was-removed {
+    display: block;
   }
 }

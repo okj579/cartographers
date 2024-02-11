@@ -8,8 +8,6 @@
 
     <app-goal-area
       [goals]="gameState.goals"
-      [coins]="playerState.coins"
-      [temporaryCoins]="visiblePlayerState.coins"
       [previousScores]="playerState.scores"
       [temporaryScores]="visiblePlayerState.scores"
       [currentSeason]="playerState.season"
@@ -26,13 +24,13 @@
     } @else {
       <app-game-board
         [currentBoardState]="playerState.boardState"
+        [nextBoardState]="visiblePlayerState.boardState"
         [currentShapeToPlace]="showCurrentShape ? currentShapeToPlace : undefined"
         [conflictedCellIndices]="visiblePlayerState.conflictedCellIndices"
         [scoreInfos]="visiblePlayerState.scoreInfos"
         [seasonGoals]="playerState.seasonGoals"
         [isEndOfSeason]="playerState.isEndOfSeason && !playerState.isEndOfGame"
         [isEndOfGame]="playerState.isEndOfGame"
-        [newMinedMonsterTiles]="visiblePlayerState.newMinedMountainTiles"
         [specialHighlightGoal]="specialHighlightGoal"
         (positionChange)="onPositionChange($event)"
       />
@@ -58,7 +56,6 @@
         *ngIf="isCurrentPlayer && !isStartOfGame && playerState.season"
         [currentSeason]="playerState.season"
         [goals]="gameState.goals"
-        [coins]="playerState.coins"
         [scores]="playerState.scores"
         [isStartOfSeason]="isStartOfSeason"
         [isEndOfSeason]="playerState.isEndOfSeason"
@@ -86,7 +83,6 @@
           *ngFor="let seasonScore of playerState.seasonScores"
           [currentSeason]="seasonScore.season"
           [goals]="gameState.goals"
-          [coins]="seasonScore.coins"
           [scores]="seasonScore.goalScores"
           [isEndOfGame]="true"
           (goalHover)="setSpecialHighlightGoalIndex($event)"

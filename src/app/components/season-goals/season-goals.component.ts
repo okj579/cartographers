@@ -3,7 +3,6 @@ import { Season } from '../../../models/season';
 import { Goal } from '../../../models/goals';
 import { NgClass, NgForOf, NgIf } from '@angular/common';
 import { IndexToCharPipe } from '../goal-area/index-to-char.pipe';
-import { GoalEmojisPipe } from './goal-emojis.pipe';
 import { GoalIdComponent } from '../goal-area/goal-id/goal-id.component';
 import { GoalListComponent } from '../goal-list/goal-list.component';
 import { SeasonScoresComponent } from '../season-scores/season-scores.component';
@@ -11,7 +10,7 @@ import { SeasonScoresComponent } from '../season-scores/season-scores.component'
 @Component({
   selector: 'app-season-goals',
   standalone: true,
-  imports: [NgForOf, IndexToCharPipe, GoalEmojisPipe, NgIf, NgClass, GoalIdComponent, GoalListComponent, SeasonScoresComponent],
+  imports: [NgForOf, IndexToCharPipe, NgIf, NgClass, GoalIdComponent, GoalListComponent, SeasonScoresComponent],
   templateUrl: './season-goals.component.html',
   styleUrl: './season-goals.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,7 +23,6 @@ export class SeasonGoalsComponent {
   @Input() isEndOfSeason: boolean = false;
   @Input() isEndOfGame: boolean = false;
 
-  @Input() coins: number = 0;
   @Input() scores: number[] = [];
 
   @Output() startSeason = new EventEmitter<void>();

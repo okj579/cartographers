@@ -38,7 +38,7 @@ export class TemporaryPlacedLandscapeShapeComponent implements OnChanges {
   hasOutOfBoardTiles: boolean = false;
 
   trackByIndexAndShapeSize = (index: number): number => {
-    return index + 10 * this.boardTiles.length + (this.hasOutOfBoardTiles ? 100 : 0);
+    return index + 10 * this.boardTiles.length + (this.hasOutOfBoardTiles ? 100 : 0) + this.conflictedCellIndices.length * 1000;
   };
 
   ngOnChanges() {

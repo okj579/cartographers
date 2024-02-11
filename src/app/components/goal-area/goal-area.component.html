@@ -20,30 +20,6 @@
   </div>
 </div>
 
-<div class="goal" [attr.title]="coinDescription" [class.highlight]="isEndOfSeason && coins > 0" (click)="showCoinsDescription()">
-  <div class="goal-id">💎</div>
-  <div class="score">
-    {{ coins }}
-    <span *ngIf="coinDiff > 0" class="positive">{{ coinDiff | formatNumber }}</span>
-  </div>
-</div>
-
-<div
-  class="goal"
-  [attr.title]="monsterScoreDescription"
-  [appGoalHighlighter]="monsterScoreIndex"
-  activateTouchEvents
-  (goalHover)="goalHover.emit($event)"
->
-  <div class="goal-id">😈</div>
-  <div class="score">
-    {{ previousScores[monsterScoreIndex] ?? 0 }}
-    <span *ngIf="getScoreDiff(monsterScoreIndex) as scoreDiff" [class.positive]="scoreDiff > 0" [class.negative]="scoreDiff < 0">{{
-      scoreDiff | formatNumber
-    }}</span>
-  </div>
-</div>
-
 <div *ngIf="currentSeason" class="goal">
   <div><strong>Σ</strong> {{ currentSeason.emoji }}</div>
   <div class="title">{{ currentSeason.name }}</div>

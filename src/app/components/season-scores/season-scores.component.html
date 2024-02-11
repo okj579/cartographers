@@ -10,12 +10,6 @@
     />
     <div>{{ scores?.[goalIndex] ?? "?" }}</div>
   </ng-container>
-
-  <div class="goal-id">💎</div>
-  <div>{{ coins ?? "?" }}</div>
-
-  <div class="goal-id" [appGoalHighlighter]="monsterScoreIndex" activateTouchEvents (goalHover)="goalHover.emit($event)">😈</div>
-  <div>{{ scores?.[monsterScoreIndex] ?? "?" }}</div>
 </div>
 
 <div class="total-score">Σ {{ totalSeasonScore ?? "?" }}</div>

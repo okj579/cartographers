@@ -1,7 +1,7 @@
 <ng-container *ngFor="let goal of goals; let index = index">
   <div
     class="row"
-    *ngIf="showGoal(index)"
+    *ngIf="showGoal(index, goal)"
     [class.is-highlighted]="highlightedGoalIndex === index"
     [appGoalHighlighter]="index"
     (goalHover)="highlightGoal($event)"
@@ -9,24 +9,5 @@
     <div><app-goal-id class="goal-id" [goal]="goal" [index]="index" /></div>
     <div>{{ goal.emojiDescription }}</div>
     <div>{{ goal.description }}</div>
-  </div>
-</ng-container>
-
-<ng-container *ngIf="showDefaultGoals">
-  <div class="row">
-    <div class="goal-id">💎</div>
-    <div>{{ coinEmojiDescription }}</div>
-    <div>{{ coinDescription }}</div>
-  </div>
-
-  <div
-    class="row"
-    [class.is-highlighted]="highlightedGoalIndex === MONSTER_SCORE_INDEX"
-    [appGoalHighlighter]="MONSTER_SCORE_INDEX"
-    (goalHover)="highlightGoal($event)"
-  >
-    <div class="goal-id interactive">😈</div>
-    <div>{{ monsterEmojiDescription }}</div>
-    <div>{{ monsterScoreDescription }}</div>
   </div>
 </ng-container>

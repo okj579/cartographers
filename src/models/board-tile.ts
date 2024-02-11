@@ -9,6 +9,7 @@ export interface BoardTile {
   conflicted?: boolean;
   heroStar?: boolean;
   hasCoin?: boolean;
+  wasScoreCoin?: boolean;
   monsterType?: MonsterType;
 }
 

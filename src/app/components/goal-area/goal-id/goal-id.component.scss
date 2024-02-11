@@ -8,6 +8,12 @@
   font-weight: 600;
   cursor: pointer;
 
+  &[data-category='coin'],
+  &[data-category='monster'] {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
   &[data-category='global'] {
     background: #666;
   }

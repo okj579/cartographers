@@ -32,7 +32,6 @@ export interface CurrentGameState {
 
 export interface CurrentPlayerBoard extends PlayerGameState {
   readonly boardState: BoardTile[][];
-  readonly coins: number;
   readonly seasonScores: SeasonScore[];
 }
 
@@ -52,5 +51,4 @@ export interface CurrentPlayerGameState extends CurrentPlayerBoard {
 export interface TempPlayerGameState extends CurrentPlayerGameState {
   readonly hasConflict: boolean;
   readonly conflictedCellIndices: number[];
-  readonly newMinedMountainTiles: BoardTile[];
 }

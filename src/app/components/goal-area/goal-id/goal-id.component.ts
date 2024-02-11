@@ -6,7 +6,7 @@ import { IndexToCharPipe } from '../index-to-char.pipe';
   selector: 'app-goal-id',
   standalone: true,
   imports: [IndexToCharPipe],
-  template: '{{ index | indexToChar }}',
+  template: '{{ goal.goalEmoji ?? (index | indexToChar) }}',
   styleUrl: './goal-id.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

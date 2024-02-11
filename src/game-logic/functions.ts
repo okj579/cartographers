@@ -5,15 +5,13 @@ import { areShapesEqual, BaseShape, copyShape } from '../models/base-shape';
 import { Coordinates, includesCoordinates } from '../models/simple-types';
 import { copyLandscapeCard, LandscapeCard } from '../models/landscape-card';
 import { Season } from '../models/season';
-import { BOARD_SIZE, MONSTER_SCORE_INDEX } from './constants';
+import { BOARD_SIZE } from './constants';
 import { flipShape, rotateShapeClockwise } from './transformation-functions';
-import { DRAGON_COINS, MonsterType } from '../models/monster';
+import { MonsterType } from '../models/monster';
 
 interface PlaceShapeResult {
   updatedBoard: BoardTile[][];
   conflictedCellIndices: number[];
-  newCoins: number;
-  newMinedMountainTiles: BoardTile[];
 }
 
 export interface FindPositionResult {
@@ -51,21 +49,15 @@ export function getCurrentTimeProgress(playedCards: LandscapeCard[]): number {
   return playedCards.reduce((sum, card) => sum + card.timeValue, 0);
 }
 
-export function getSeasonScore(season: Season, scores: number[], coins: number): number {
-  return (
-    coins +
-    season.goalIndices.reduce((acc: number, index: number): number => acc + (scores[index] ?? 0), 0) +
-    (scores[MONSTER_SCORE_INDEX] ?? 0)
-  );
+export function getSeasonScore(season: Season, scores: number[]): number {
+  return season.goalIndices.reduce((acc: number, index: number): number => acc + (scores[index] ?? 0), 0);
 }
 
 export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscapeShape | undefined): PlaceShapeResult {
   const updatedBoard: BoardTile[][] = copyBoard(board);
   const conflictedCellIndices: number[] = [];
-  const newMinedMountainTiles: BoardTile[] = [];
-  let newCoins = 0;
 
-  if (!shape) return { updatedBoard, conflictedCellIndices, newCoins, newMinedMountainTiles };
+  if (!shape) return { updatedBoard, conflictedCellIndices };
 
   let dragonFightStatus = isDragonDefeated(board);
 
@@ -78,9 +70,14 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
     if (tile) {
       tile.monsterType = isHeroStar ? tile.monsterType : shape.monsterType;
       applyShapeToTile(tile, shape, isHeroStar);
+
       if (!tile.conflicted) {
-        newMinedMountainTiles.push(...checkForMountainCoin(updatedBoard, tile.position));
-        newCoins = newMinedMountainTiles.length;
+        // todo - check needed? + needed for monster move?
+        checkForMountainCoin(updatedBoard, tile.position);
+
+        if (i === 0 && shape.baseShape.hasCoin) {
+          tile.wasScoreCoin = true;
+        }
       }
       if (shape.monsterType === MonsterType.DRAGON && i === 0) {
         tile.hasCoin = true;
@@ -94,49 +91,23 @@ export function tryPlaceShapeOnBoard(board: BoardTile[][], shape: PlacedLandscap
     }
   }
 
-  if (!dragonFightStatus.isDefeated) {
-    if (!conflictedCellIndices.length && (dragonFightStatus.undefeatedTiles.length > 0 || shape.monsterType === MonsterType.DRAGON)) {
-      const newDragonFightStatus = isDragonDefeated(updatedBoard);
-      if (newDragonFightStatus.isDefeated) {
-        newCoins += DRAGON_COINS;
-        newMinedMountainTiles.push(dragonFightStatus.undefeatedTiles.find((tile) => tile.hasCoin) as BoardTile);
-      }
-      dragonFightStatus = newDragonFightStatus;
-    }
-
-    let shouldMoveTreasure = false;
-
-    dragonFightStatus.defeatedTiles.forEach((tile) => {
-      if (tile.hasCoin) {
-        shouldMoveTreasure = true;
-      }
-
-      tile.hasCoin = false;
-    });
-
-    if (shouldMoveTreasure && dragonFightStatus.undefeatedTiles.length > 0) {
-      dragonFightStatus.undefeatedTiles[0].hasCoin = true;
-    }
+  if (
+    !dragonFightStatus.isDefeated &&
+    !conflictedCellIndices.length &&
+    (dragonFightStatus.undefeatedTiles.length > 0 || shape.monsterType === MonsterType.DRAGON)
+  ) {
+    handleDragonFight(dragonFightStatus, updatedBoard);
   }
-
-  if (shape.baseShape.hasCoin) {
-    newCoins++;
-  }
-
-  const hasConflict = conflictedCellIndices.length > 0;
 
   return {
     updatedBoard,
     conflictedCellIndices,
-    newCoins: hasConflict ? 0 : newCoins,
-    newMinedMountainTiles: hasConflict ? [] : newMinedMountainTiles,
   };
 }
 
-function checkForMountainCoin(board: BoardTile[][], cell: Coordinates): BoardTile[] {
+export function checkForMountainCoin(board: BoardTile[][], cell: Coordinates): void {
   const adjacentTiles = getAdjacentTiles(board, cell);
   const mountainTiles = adjacentTiles.filter((tile) => isTileOfLandscape(tile, LandscapeType.MOUNTAIN));
-  const minedMountainTiles: BoardTile[] = [];
 
   for (let mountainTile of mountainTiles) {
     if (!mountainTile.hasCoin) continue;
@@ -146,14 +117,12 @@ function checkForMountainCoin(board: BoardTile[][], cell: Coordinates): BoardTil
 
     if (isMountainSurrounded) {
       mountainTile.hasCoin = false;
-      minedMountainTiles.push(mountainTile);
+      mountainTile.wasScoreCoin = true;
     }
   }
-
-  return minedMountainTiles;
 }
 
-function isDragonDefeated(board: BoardTile[][]): DragonFightStatus {
+export function isDragonDefeated(board: BoardTile[][]): DragonFightStatus {
   const dragonTiles = board.flat().filter((tile) => tile.landscape === LandscapeType.MONSTER && tile.monsterType === MonsterType.DRAGON);
 
   const defeatedTiles: BoardTile[] = dragonTiles.filter((dragonTile: BoardTile): boolean => {
@@ -172,6 +141,32 @@ function isDragonDefeated(board: BoardTile[][]): DragonFightStatus {
     undefeatedTiles,
     isDefeated: defeatedTiles.length > 0 && undefeatedTiles.length === 0,
   };
+}
+
+export function handleDragonFight(dragonFightStatus: DragonFightStatus, board: BoardTile[][]): void {
+  const newDragonFightStatus = isDragonDefeated(board);
+  if (newDragonFightStatus.isDefeated) {
+    const coinTile = dragonFightStatus.undefeatedTiles.find((tile) => tile.hasCoin);
+
+    if (coinTile) {
+      coinTile.wasScoreCoin = true;
+    }
+  }
+  dragonFightStatus = newDragonFightStatus;
+
+  let shouldMoveTreasure = false;
+
+  dragonFightStatus.defeatedTiles.forEach((tile) => {
+    if (tile.hasCoin) {
+      shouldMoveTreasure = true;
+    }
+
+    tile.hasCoin = false;
+  });
+
+  if (shouldMoveTreasure && dragonFightStatus.undefeatedTiles.length > 0) {
+    dragonFightStatus.undefeatedTiles[0].hasCoin = true;
+  }
 }
 
 export function getAdjacentTiles(board: BoardTile[][], cell: Coordinates): BoardTile[] {

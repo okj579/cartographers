@@ -1,8 +1,7 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { GoalIdComponent } from '../goal-area/goal-id/goal-id.component';
 import { NgForOf, NgIf } from '@angular/common';
-import { Goal } from '../../../models/goals';
-import { MONSTER_SCORE_INDEX } from '../../../game-logic/constants';
+import { Goal, isDefaultGoal } from '../../../models/goals';
 import { GoalHighlighterDirective } from '../../directives/goal-highlighter.directive';
 
 @Component({
@@ -20,11 +19,6 @@ export class GoalListComponent {
 
   @Output() goalHover = new EventEmitter<number>();
 
-  protected readonly coinDescription: string = 'Collect 💎 by surrounding mountains on the 4 edges, and from some of the landscape shapes.';
-  protected readonly monsterScoreDescription: string = 'One minus point for each empty tile that is adjacent to at least one monster tile';
-  protected readonly coinEmojiDescription: string = '1🎖️ / 💎';
-  protected readonly monsterEmojiDescription: string = '-1🎖️ / 🔲⏭️😈';
-
   protected highlightedGoalIndex: number = -1;
 
   @HostBinding('class.has-highlighted-goal')
@@ -32,7 +26,11 @@ export class GoalListComponent {
     return this.highlightedGoalIndex >= 0;
   }
 
-  showGoal(index: number): boolean {
+  showGoal(index: number, goal: Goal): boolean {
+    if (isDefaultGoal(goal)) {
+      return this.showDefaultGoals;
+    }
+
     return !this.goalIndices.length || this.goalIndices.includes(index);
   }
 
@@ -40,6 +38,4 @@ export class GoalListComponent {
     this.highlightedGoalIndex = index;
     this.goalHover.emit(index);
   }
-
-  protected readonly MONSTER_SCORE_INDEX = MONSTER_SCORE_INDEX;
 }

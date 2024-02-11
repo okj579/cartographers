@@ -7,7 +7,17 @@ import {
   SeasonSetup,
   TempPlayerGameState,
 } from '../models/game-state';
-import { findGoalByName, getFallbackScoreInfo, getMonsterScore, getShuffledGoals, Goal, GoalCategory, ScoreInfo } from '../models/goals';
+import {
+  COIN_GOAL,
+  findGoalByName,
+  getFallbackScoreInfo,
+  getMonsterScore,
+  getShuffledGoals,
+  Goal,
+  GoalCategory,
+  MONSTER_GOAL,
+  ScoreInfo,
+} from '../models/goals';
 import { getInitialBoardTiles } from './constants';
 import { getPortalCard, HERO_CARDS, LANDSCAPE_CARDS, LandscapeCard, MONSTER_CARDS } from '../models/landscape-card';
 import { getCurrentTimeProgress, getSeasonScore, getShuffledCards, tryPlaceShapeOnBoard } from './functions';
@@ -22,7 +32,7 @@ import { flipLandscapeShape, rotateLandscapeShapeClockwise, rotateLandscapeShape
 
 export function createNewGame(): GameState {
   return {
-    goals: getShuffledGoals(),
+    goals: [...getShuffledGoals(), COIN_GOAL, MONSTER_GOAL],
     seasonSetups: createSeasonSetups(),
     playerStates: [createPlayerState()],
   };
@@ -121,7 +131,6 @@ function getBoardStateFromMoveHistory(
   let board: CurrentPlayerBoard = {
     ...playerState,
     boardState: getInitialBoardTiles(),
-    coins: 0,
     seasonScores: [],
   };
   let seasonIndex = 0;
@@ -145,7 +154,7 @@ function getBoardStateFromMoveHistory(
         seasonIndex++;
         board = {
           ...board,
-          seasonScores: [...board.seasonScores, getSeasonScoreFromCurrentBoard(board, scores, currentSeason)],
+          seasonScores: [...board.seasonScores, getSeasonScoreFromCurrentBoard(scores, currentSeason)],
         };
       } else {
         board = { ...board, boardState: applyMonsterEffect(board.boardState, move) };
@@ -166,9 +175,9 @@ export function addMoveToGame(state: GameState, move: AnyMove, playerId: string)
 export function applyMoveToBoard(board: CurrentPlayerBoard, card: LandscapeCard, move: Move): CurrentPlayerBoard {
   const placedLandscapeShape = getPlacedShapeFromMove(move, card);
 
-  const { updatedBoard, newCoins } = tryPlaceShapeOnBoard(board.boardState, placedLandscapeShape);
+  const { updatedBoard } = tryPlaceShapeOnBoard(board.boardState, placedLandscapeShape);
 
-  return { ...board, boardState: updatedBoard, coins: board.coins + newCoins };
+  return { ...board, boardState: updatedBoard };
 }
 
 export function getPlacedShapeFromMove(move: Move, card: LandscapeCard): PlacedLandscapeShape {
@@ -235,16 +244,12 @@ export function getTempPlayerStateWithShape(
   previousPlayerState: CurrentPlayerGameState,
   shape: PlacedLandscapeShape,
 ): TempPlayerGameState {
-  let { updatedBoard, newCoins, conflictedCellIndices, newMinedMountainTiles } = tryPlaceShapeOnBoard(
-    previousPlayerState.boardState,
-    shape,
-  );
+  let { updatedBoard, conflictedCellIndices } = tryPlaceShapeOnBoard(previousPlayerState.boardState, shape);
   const hasConflict = conflictedCellIndices.length > 0;
 
   const newPlayerState: CurrentPlayerGameState = {
     ...previousPlayerState,
     boardState: updatedBoard,
-    coins: previousPlayerState.coins + newCoins,
   };
 
   const scoreInfos: ScoreInfo[] = hasConflict ? previousPlayerState.scoreInfos : getScoresFromBoard(state.goals, updatedBoard);
@@ -255,8 +260,7 @@ export function getTempPlayerStateWithShape(
     scoreInfos,
     scores,
     hasConflict,
-    conflictedCellIndices: conflictedCellIndices,
-    newMinedMountainTiles,
+    conflictedCellIndices,
   };
 }
 
@@ -288,12 +292,11 @@ export function endSeason(state: GameState, currentState: CurrentGameState, play
   };
 }
 
-function getSeasonScoreFromCurrentBoard(playerState: CurrentPlayerBoard, scores: number[], season: Season): SeasonScore {
+function getSeasonScoreFromCurrentBoard(scores: number[], season: Season): SeasonScore {
   return {
     season,
     goalScores: scores,
-    coins: playerState.coins,
-    totalScore: getSeasonScore(season, scores, playerState.coins),
+    totalScore: getSeasonScore(season, scores),
   };
 }
 

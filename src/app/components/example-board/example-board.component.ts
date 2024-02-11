@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { AnyGoal, Goal, ScoreInfo } from '../../../models/goals';
+import { Goal, ScoreInfo } from '../../../models/goals';
 import { BoardTile } from '../../../models/board-tile';
 import { exampleBoard } from './example-board.data';
 import { getScoresFromBoard } from '../../../game-logic/game-state-functions';
@@ -15,7 +15,7 @@ import { GameBoardComponent } from '../game-board/game-board.component';
 })
 export class ExampleBoardComponent implements OnInit {
   @Input() goals: Goal[] = [];
-  @Input() specialHighlightGoal: AnyGoal | undefined;
+  @Input() specialHighlightGoal: Goal | undefined;
 
   readonly currentBoard: BoardTile[][] = exampleBoard;
 
