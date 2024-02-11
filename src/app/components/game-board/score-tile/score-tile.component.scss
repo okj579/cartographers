@@ -19,13 +19,21 @@
     pointer-events: none;
 
     &.highlight {
-      background: rgba(#fff, 0.7);
+      background: rgba(#fff, 0.8);
 
       span {
         background: var(--score-tile-fg);
         background-clip: text;
         -webkit-text-fill-color: transparent;
       }
+    }
+  }
+
+  &:not(.is-on-board) {
+    &.highlight {
+      opacity: 0.9;
+      background: var(--score-tile-fg);
+      color: white;
     }
   }
 
