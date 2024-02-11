@@ -28,6 +28,7 @@ export type ScoreType = 'tile' | 'row' | 'column' | 'row+column' | 'area';
 
 export interface ScoreIndicator extends Partial<Coordinates> {
   scorePerEntity?: number;
+  relatedArea?: LandscapeArea;
 }
 
 export interface ScoreInfo {
@@ -111,7 +112,7 @@ export const FOREST_GOALS: Goal[] = [
         score: 6 * filteredForestAreas.length,
         scoredTiles: filteredForestAreas.flatMap((area) => area.tiles.slice(0, 5)), // todo - as expected?
         relatedTiles: [...relatedTiles, ...filteredForestAreas.flatMap((area) => area.tiles)],
-        scoreIndicatorPositions: filteredForestAreas.map((area) => area.tiles[0].position),
+        scoreIndicatorPositions: filteredForestAreas.map((area) => ({ ...area.tiles[0].position, relatedArea: area })),
       };
     },
   },
@@ -232,7 +233,7 @@ export const VILLAGE_GOALS: Goal[] = [
     scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const villageAreas = getIndividualAreas(boardState, LandscapeType.VILLAGE);
       const scoredTiles: BoardTile[] = [];
-      const scoreIndicatorPositions: Partial<Coordinates>[] = [];
+      const scoreIndicatorPositions: ScoreIndicator[] = [];
 
       const filteredVillageAreas = villageAreas.filter((area: LandscapeArea): boolean => {
         if (area.tiles.length < 4) {
@@ -244,7 +245,7 @@ export const VILLAGE_GOALS: Goal[] = [
           const columnTiles: BoardTile[] = [boardState[x][y], boardState[x][y + 1], boardState[x][y + 2], boardState[x][y + 3]];
 
           if (columnTiles.every((tile) => tile && isTileOfLandscape(tile, LandscapeType.VILLAGE))) {
-            scoreIndicatorPositions.push(tile.position);
+            scoreIndicatorPositions.push({ ...tile.position, relatedArea: area });
             scoredTiles.push(...columnTiles);
             return true;
           }
@@ -252,7 +253,7 @@ export const VILLAGE_GOALS: Goal[] = [
           const rowTiles: BoardTile[] = [boardState[x][y], boardState[x + 1]?.[y], boardState[x + 2]?.[y], boardState[x + 3]?.[y]];
 
           if (rowTiles.every((tile) => tile && isTileOfLandscape(tile, LandscapeType.VILLAGE))) {
-            scoreIndicatorPositions.push(tile.position);
+            scoreIndicatorPositions.push({ ...tile.position, relatedArea: area });
             scoredTiles.push(...rowTiles);
             return true;
           }
@@ -281,7 +282,7 @@ export const VILLAGE_GOALS: Goal[] = [
     scoreAlgorithm: (boardState: BoardTile[][]): ScoreInfo => {
       const villageAreas = getIndividualAreas(boardState, LandscapeType.VILLAGE);
       const scoredTiles: BoardTile[] = [];
-      const scoreIndicatorPositions: Partial<Coordinates>[] = [];
+      const scoreIndicatorPositions: ScoreIndicator[] = [];
 
       const filteredVillageAreas = villageAreas.filter((area: LandscapeArea): boolean => {
         for (const tile of area.tiles) {
@@ -290,7 +291,7 @@ export const VILLAGE_GOALS: Goal[] = [
 
           if (squareTiles.every((tile) => tile && isTileOfLandscape(tile, LandscapeType.VILLAGE))) {
             scoredTiles.push(...squareTiles);
-            scoreIndicatorPositions.push(tile.position);
+            scoreIndicatorPositions.push({ ...tile.position, relatedArea: area });
 
             return true;
           }
@@ -451,7 +452,7 @@ export const FIELD_WATER_GOALS: Goal[] = [
         scorePerEntity: 7,
         score: 7 * filteredFieldAreas.length,
         scoredTiles: filteredFieldAreas.flatMap((area) => area.tiles),
-        scoreIndicatorPositions: filteredFieldAreas.map((area) => area.tiles[0].position),
+        scoreIndicatorPositions: filteredFieldAreas.map((area) => ({ ...area.tiles[0].position, relatedArea: area })),
         relatedTiles,
       };
     },
@@ -616,7 +617,7 @@ export const GLOBAL_GOALS: Goal[] = [
         scorePerEntity: 4,
         score: 4 * filteredEmptyAreas.length,
         scoredTiles: filteredEmptyAreas.flatMap((area) => area.tiles),
-        scoreIndicatorPositions: filteredEmptyAreas.map((area) => area.tiles[0].position),
+        scoreIndicatorPositions: filteredEmptyAreas.map((area) => ({ ...area.tiles[0].position, relatedArea: area })),
       };
     },
   },
@@ -785,4 +786,28 @@ export function getFallbackScoreInfo(goalCategory: GoalCategory): ScoreInfo {
     scoredTiles: [],
     scoreIndicatorPositions: [],
   };
+}
+
+export function doesScoreIndicatorAppearInScoreInfos(
+  scoreInfos: ScoreInfo[],
+  scoreInfo: ScoreInfo,
+  scoreIndicator: ScoreIndicator,
+): boolean {
+  return scoreInfos.some(
+    (info) =>
+      info.goalCategory === scoreInfo.goalCategory &&
+      !!info.scoreIndicatorPositions.find(
+        (existingIndicator) =>
+          (existingIndicator.x === scoreIndicator.x && existingIndicator.y === scoreIndicator.y) ||
+          isSameScoreArea(existingIndicator.relatedArea, scoreIndicator.relatedArea),
+      ),
+  );
+}
+
+function isSameScoreArea(area1?: LandscapeArea, area2?: LandscapeArea): boolean {
+  if (!area1 || !area2) {
+    return false;
+  }
+
+  return area1.tiles.some((tile) => includesCoordinates(tile.position, tilesToCoordinates(area2.tiles)));
 }

@@ -7,7 +7,7 @@ import { getShapeDimensions, LandscapeShape, PlacedLandscapeShape } from '../../
 import { Coordinates, Direction, getNeighborCoordinates, includesCoordinates } from '../../../models/simple-types';
 import { BOARD_SIZE } from '../../../game-logic/constants';
 import { IndexToCharPipe } from '../goal-area/index-to-char.pipe';
-import { Goal, GoalCategory, ScoreInfo } from '../../../models/goals';
+import { doesScoreIndicatorAppearInScoreInfos, Goal, GoalCategory, ScoreIndicator, ScoreInfo } from '../../../models/goals';
 import { ScoreTileComponent } from './score-tile/score-tile.component';
 import { LandscapeType } from '../../../models/landscape-type';
 
@@ -25,6 +25,7 @@ export class GameBoardComponent {
   @Input() currentShapeToPlace: PlacedLandscapeShape | undefined;
   @Input() conflictedCellIndices: number[] = [];
   @Input() scoreInfos: ScoreInfo[] = [];
+  @Input() nextScoreInfos: ScoreInfo[] = [];
   @Input() seasonGoals: Goal[] = [];
   @Input() specialHighlightGoal: Goal | undefined;
 
@@ -54,10 +55,6 @@ export class GameBoardComponent {
     return this.currentShapeToPlace !== undefined;
   }
 
-  get scoreInfosWithScore(): ScoreInfo[] {
-    return this.scoreInfos.filter((scoreInfo) => scoreInfo.scoreIndicatorPositions.length > 0);
-  }
-
   get scoredTiles(): BoardTile[] {
     return this.scoreInfos.filter((scoreInfo) => this.isScoreRelevant(scoreInfo)).flatMap((scoreInfo) => scoreInfo.scoredTiles);
   }
@@ -68,6 +65,14 @@ export class GameBoardComponent {
 
   willCoinBeRemoved(tile: BoardTile): boolean {
     return !!tile.hasCoin && (this.nextBoardState[tile.position.x]?.[tile.position.y]?.wasScoreCoin ?? false);
+  }
+
+  isNewScore(scoreInfo: ScoreInfo, scoreIndicator: ScoreIndicator) {
+    return !doesScoreIndicatorAppearInScoreInfos(this.scoreInfos, scoreInfo, scoreIndicator);
+  }
+
+  isRemovedScore(scoreInfo: ScoreInfo, scoreIndicator: ScoreIndicator) {
+    return !doesScoreIndicatorAppearInScoreInfos(this.nextScoreInfos, scoreInfo, scoreIndicator);
   }
 
   isScoreRelevant(scoreInfo: ScoreInfo): boolean {

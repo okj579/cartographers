@@ -25,7 +25,7 @@
   [conflictedCellIndices]="conflictedCellIndices"
 />
 
-<ng-container *ngFor="let scoreInfo of scoreInfosWithScore">
+<ng-container *ngFor="let scoreInfo of scoreInfos">
   <app-score-tile
     *ngFor="let scorePosition of scoreInfo.scoreIndicatorPositions"
     [class.col]="scorePosition.y === undefined"
@@ -33,9 +33,28 @@
     [score]="scorePosition.scorePerEntity ?? scoreInfo.scorePerEntity"
     [goalCategory]="scoreInfo.goalCategory"
     [isOnBoard]="scorePosition.x !== undefined && scorePosition.y !== undefined"
-    [highlight]="(isEndOfSeason || !!specialHighlightGoal) && isScoreRelevant(scoreInfo)"
+    [highlight]="isRemovedScore(scoreInfo, scorePosition) || ((isEndOfSeason || !!specialHighlightGoal) && isScoreRelevant(scoreInfo))"
     [style.grid-column]="(scorePosition.x ?? BOARD_SIZE) + 1"
     [style.grid-row]="(scorePosition.y ?? BOARD_SIZE + 1) + 1"
     [class.relevant]="isScoreRelevant(scoreInfo)"
+    [class.will-be-removed]="isRemovedScore(scoreInfo, scorePosition)"
   />
+</ng-container>
+
+<ng-container *ngFor="let scoreInfo of nextScoreInfos; trackBy: trackByIndex">
+  <ng-container *ngFor="let scorePosition of scoreInfo.scoreIndicatorPositions; trackBy: trackByIndex">
+    <app-score-tile
+      *ngIf="isNewScore(scoreInfo, scorePosition)"
+      class="will-appear"
+      [class.col]="scorePosition.y === undefined"
+      [class.row]="scorePosition.x === undefined"
+      [score]="scorePosition.scorePerEntity ?? scoreInfo.scorePerEntity"
+      [goalCategory]="scoreInfo.goalCategory"
+      [isOnBoard]="scorePosition.x !== undefined && scorePosition.y !== undefined"
+      [highlight]="true"
+      [style.grid-column]="(scorePosition.x ?? BOARD_SIZE) + 1"
+      [style.grid-row]="(scorePosition.y ?? BOARD_SIZE + 1) + 1"
+      [class.relevant]="isScoreRelevant(scoreInfo)"
+    />
+  </ng-container>
 </ng-container>

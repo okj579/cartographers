@@ -43,6 +43,16 @@ app-score-tile {
     opacity: 0.4;
     color: var(--color-text-secondary);
   }
+
+  &.will-appear {
+    display: block !important;
+    animation: rotate-grow 1s;
+  }
+
+  &.will-be-removed {
+    animation: rotate-shrink 1s;
+    transform: scale(0);
+  }
 }
 
 :host(.is-end-of-game):not(.has-highlighted-goal) app-score-tile {
@@ -97,5 +107,39 @@ app-score-tile {
 
   100% {
     transform: scale(1);
+  }
+}
+
+@keyframes scale-pulse-small {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes rotate-shrink {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  100% {
+    transform: rotate(-360deg) scale(0);
+  }
+}
+
+@keyframes rotate-grow {
+  0% {
+    transform: rotate(0deg) scale(0);
+  }
+
+  100% {
+    transform: rotate(360deg) scale(1);
   }
 }
