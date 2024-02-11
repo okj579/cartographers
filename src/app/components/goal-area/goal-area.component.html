@@ -5,6 +5,7 @@
   [attr.title]="goal.description"
   [class.inactive]="currentSeason?.goalIndices?.indexOf(index) === -1"
   [appGoalHighlighter]="index"
+  activateTouchEvents
   (goalHover)="goalHover.emit($event)"
 >
   <app-goal-id class="goal-id" [goal]="goal" [index]="index" />
@@ -27,7 +28,13 @@
   </div>
 </div>
 
-<div class="goal" [attr.title]="monsterScoreDescription" [appGoalHighlighter]="monsterScoreIndex" (goalHover)="goalHover.emit($event)">
+<div
+  class="goal"
+  [attr.title]="monsterScoreDescription"
+  [appGoalHighlighter]="monsterScoreIndex"
+  activateTouchEvents
+  (goalHover)="goalHover.emit($event)"
+>
   <div class="goal-id">😈</div>
   <div class="score">
     {{ previousScores[monsterScoreIndex] ?? 0 }}
