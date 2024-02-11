@@ -59,6 +59,11 @@ app-score-tile {
       filter: grayscale(1);
       opacity: 0.8;
 
+      &[data-landscape='field'],
+      &[data-landscape='hero'] {
+        filter: brightness(0.4) grayscale(1); // to make yellow/grey less bright
+      }
+
       &.base {
         opacity: 0.4;
       }
