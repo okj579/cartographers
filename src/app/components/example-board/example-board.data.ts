@@ -254,7 +254,6 @@ export const exampleBoard: BoardTile[][] = [
         y: 1,
       },
       landscape: LandscapeType.FOREST,
-      wasScoreCoin: true,
     },
     {
       position: {
@@ -324,7 +323,6 @@ export const exampleBoard: BoardTile[][] = [
         y: 10,
       },
       landscape: LandscapeType.VILLAGE,
-      wasScoreCoin: true,
     },
   ],
   [
