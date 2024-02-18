@@ -49,6 +49,7 @@ export const MONSTER_EFFECTS: Record<MonsterType, MonsterEffect> = {
     description: 'Destroys 1 adjacent empty landscape tile after each scoring.',
     isEndOfSeasonEffect: true,
     getMonsterMove: (board: BoardTile[][]) => {
+      const affectedTiles: Coordinates[] = [];
       const trollTiles = board
         .flat()
         .filter((tile) => isTileOfLandscape(tile, LandscapeType.MONSTER) && tile.monsterType === MonsterType.TROLL);
@@ -57,38 +58,33 @@ export const MONSTER_EFFECTS: Record<MonsterType, MonsterEffect> = {
         const emptyAdjacentTiles = adjacentTiles.filter((tile) => isTileOfLandscape(tile, undefined));
         if (emptyAdjacentTiles.length) {
           const tileToDestroy = emptyAdjacentTiles[0];
-          return {
-            action: 'monster_effect',
-            monsterType: MonsterType.TROLL,
-            affectedTiles: [tileToDestroy.position],
-          };
+          affectedTiles.push(tileToDestroy.position);
+          break;
         }
       }
 
-      return undefined;
+      return {
+        action: 'monster_effect',
+        monsterType: MonsterType.TROLL,
+        affectedTiles,
+      };
     },
     applySpecialEffect: (board: BoardTile[][], move: SpecialMove) => {
-      if (move.monsterType === MonsterType.TROLL) {
-        const tileToDestroy = board[move.affectedTiles![0].x][move.affectedTiles![0].y];
+      if (move.monsterType === MonsterType.TROLL && move.affectedTiles?.length) {
+        const tileToDestroy = board[move.affectedTiles[0].x][move.affectedTiles[0].y];
         tileToDestroy.destroyed = true;
+
+        return copyBoard(board);
       }
 
-      return copyBoard(board);
+      return board;
     },
   },
   [MonsterType.ZOMBIE]: {
     name: 'Zombie',
     description: 'Expands to each adjacent empty landscape tile after each scoring.',
     isEndOfSeasonEffect: true,
-    getMonsterMove: (board: BoardTile[][]) => {
-      const zombieTiles = board
-        .flat()
-        .filter((tile) => isTileOfLandscape(tile, LandscapeType.MONSTER) && tile.monsterType === MonsterType.ZOMBIE);
-
-      if (!zombieTiles.length) {
-        return undefined;
-      }
-
+    getMonsterMove: (_board: BoardTile[][]) => {
       return {
         action: 'monster_effect',
         monsterType: MonsterType.ZOMBIE,
@@ -125,10 +121,6 @@ export const MONSTER_EFFECTS: Record<MonsterType, MonsterEffect> = {
         .flat()
         .filter((tile) => isTileOfLandscape(tile, LandscapeType.MONSTER) && tile.monsterType === MonsterType.GORGON);
 
-      if (!gorgonTiles.length) {
-        return undefined;
-      }
-
       let affectedTiles: Coordinates[] = [];
 
       const emptyTilesNextToGorgon: BoardTile[] = [];
@@ -150,11 +142,11 @@ export const MONSTER_EFFECTS: Record<MonsterType, MonsterEffect> = {
         affectedTiles.push(emptyTilesNextToGorgon[0].position);
       }
 
-      return affectedTiles.length ? { action: 'monster_effect', monsterType: MonsterType.GORGON, affectedTiles } : undefined;
+      return { action: 'monster_effect', monsterType: MonsterType.GORGON, affectedTiles };
     },
     applySpecialEffect: (board: BoardTile[][], move: SpecialMove) => {
-      if (move.monsterType === MonsterType.GORGON) {
-        const tileToDestroy = board[move.affectedTiles![0].x][move.affectedTiles![0].y];
+      if (move.monsterType === MonsterType.GORGON && move.affectedTiles?.length) {
+        const tileToDestroy = board[move.affectedTiles[0].x][move.affectedTiles[0].y];
         tileToDestroy.destroyed = true;
 
         return copyBoard(board);

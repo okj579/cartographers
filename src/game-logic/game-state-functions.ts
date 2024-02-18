@@ -48,7 +48,8 @@ export function addPlayer(state: GameState): GameState {
 export function stateToCurrentState(state: GameState, playerId: string): CurrentGameState {
   const playerIndex = findPlayerIndex(state.playerStates, playerId);
   const activePlayerState = state.playerStates[playerIndex];
-  const lengthOfMoveHistory = activePlayerState?.moveHistory.length ?? 0;
+  const seasonChangeMoves = activePlayerState?.moveHistory.filter(isSeasonChange) ?? [];
+  const lengthOfMoveHistory = seasonChangeMoves.length >= SEASONS.length ? 9999 : activePlayerState?.moveHistory.length ?? 0;
   const playerStates: CurrentPlayerGameState[] = state.playerStates.map((playerState) => ({
     ...playerStateToCurrentPlayerState(playerState, state, lengthOfMoveHistory),
   }));
