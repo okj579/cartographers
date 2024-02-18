@@ -34,6 +34,15 @@
     opacity: 0.33;
   }
 
+  &.irrelevant {
+    opacity: 0.2;
+    text-decoration: line-through;
+
+    .score-diff {
+      display: none;
+    }
+  }
+
   .score {
     font-size: 1.5rem;
     line-height: 1;

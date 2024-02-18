@@ -10,6 +10,7 @@ import { IndexToCharPipe } from '../goal-area/index-to-char.pipe';
 import { doesScoreIndicatorAppearInScoreInfos, Goal, GoalCategory, ScoreIndicator, ScoreInfo } from '../../../models/goals';
 import { ScoreTileComponent } from './score-tile/score-tile.component';
 import { LandscapeType } from '../../../models/landscape-type';
+import { getStillRelevantGoalIndices, Season } from '../../../models/season';
 
 @Component({
   selector: 'app-game-board',
@@ -26,7 +27,8 @@ export class GameBoardComponent {
   @Input() conflictedCellIndices: number[] = [];
   @Input() scoreInfos: ScoreInfo[] = [];
   @Input() nextScoreInfos: ScoreInfo[] = [];
-  @Input() seasonGoals: Goal[] = [];
+  @Input() goals: Goal[] = [];
+  @Input() season: Season | undefined;
   @Input() specialHighlightGoal: Goal | undefined;
 
   @HostBinding('class.is-end-of-season')
@@ -80,7 +82,20 @@ export class GameBoardComponent {
       return scoreInfo.goalCategory === this.specialHighlightGoal.category;
     }
 
-    return !this.seasonGoals.length || this.seasonGoals.some((goal) => goal.category === scoreInfo.goalCategory);
+    const goalIndex = this.goals.findIndex((goal) => goal.category === scoreInfo.goalCategory);
+
+    return !this.season || this.season.goalIndices.includes(goalIndex);
+  }
+
+  isScoreIrrelevant(scoreInfo: ScoreInfo): boolean {
+    if ((!!this.specialHighlightGoal && scoreInfo.goalCategory === this.specialHighlightGoal.category) || !this.season) {
+      return false;
+    }
+
+    const goalIndex = this.goals.findIndex((goal) => goal.category === scoreInfo.goalCategory);
+    const relevantGoalIndices = getStillRelevantGoalIndices(this.season);
+
+    return !relevantGoalIndices.includes(goalIndex);
   }
 
   isScoredTile(tile: BoardTile): boolean {

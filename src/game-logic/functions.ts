@@ -151,8 +151,6 @@ export function handleDragonFight(dragonFightStatus: DragonFightStatus, board: B
     }
   }
 
-  console.debug('handleDragonFight', dragonFightStatus, newDragonFightStatus);
-
   dragonFightStatus = newDragonFightStatus;
 
   dragonFightStatus.defeatedTiles.forEach((tile) => {

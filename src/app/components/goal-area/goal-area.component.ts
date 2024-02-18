@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import { Goal } from '../../../models/goals';
 import { NgForOf, NgIf } from '@angular/common';
 import { IndexToCharPipe } from './index-to-char.pipe';
-import { Season } from '../../../models/season';
+import { getStillRelevantGoalIndices, Season } from '../../../models/season';
 import { getSeasonScore } from '../../../game-logic/functions';
 import { FormatNumberPipe } from '../../pipes/format-number.pipe';
 import { GoalIdComponent } from './goal-id/goal-id.component';
@@ -46,6 +46,14 @@ export class GoalAreaComponent {
 
   get totalSeasonScoreDiff(): number {
     return this.totalSeasonScore - this.totalSeasonPreviousScore;
+  }
+
+  isIrrelevantGoal(index: number): boolean {
+    if (!this.currentSeason) {
+      return false;
+    }
+
+    return !getStillRelevantGoalIndices(this.currentSeason).includes(index);
   }
 
   getScoreDiff(index: number): number {

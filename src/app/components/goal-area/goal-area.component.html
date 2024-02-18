@@ -4,6 +4,7 @@
   [attr.data-category]="goal.category"
   [attr.title]="goal.description"
   [class.inactive]="currentSeason?.goalIndices?.indexOf(index) === -1"
+  [class.irrelevant]="isIrrelevantGoal(index)"
   [appGoalHighlighter]="index"
   activateTouchEvents
   (goalHover)="goalHover.emit($event)"
@@ -14,7 +15,7 @@
   </div>
   <div class="score">
     {{ previousScores[index] ?? 0 }}
-    <span *ngIf="getScoreDiff(index) as scoreDiff" [class.positive]="scoreDiff > 0" [class.negative]="scoreDiff < 0">{{
+    <span *ngIf="getScoreDiff(index) as scoreDiff" class="score-diff" [class.positive]="scoreDiff > 0" [class.negative]="scoreDiff < 0">{{
       scoreDiff | formatNumber
     }}</span>
   </div>
@@ -25,9 +26,13 @@
   <div class="title">{{ currentSeason.name }}</div>
   <div class="score">
     {{ totalSeasonPreviousScore }}
-    <span *ngIf="totalSeasonScoreDiff" [class.positive]="totalSeasonScoreDiff > 0" [class.negative]="totalSeasonScoreDiff < 0">{{
-      totalSeasonScoreDiff | formatNumber
-    }}</span>
+    <span
+      *ngIf="totalSeasonScoreDiff"
+      class="score-diff"
+      [class.positive]="totalSeasonScoreDiff > 0"
+      [class.negative]="totalSeasonScoreDiff < 0"
+      >{{ totalSeasonScoreDiff | formatNumber }}</span
+    >
   </div>
 </div>
 
@@ -36,7 +41,7 @@
   <div class="title">Total</div>
   <div class="score">
     {{ totalPreviousScore }}
-    <span *ngIf="totalScoreDiff" [class.positive]="totalScoreDiff > 0" [class.negative]="totalScoreDiff < 0">{{
+    <span *ngIf="totalScoreDiff" class="score-diff" [class.positive]="totalScoreDiff > 0" [class.negative]="totalScoreDiff < 0">{{
       totalScoreDiff | formatNumber
     }}</span>
   </div>

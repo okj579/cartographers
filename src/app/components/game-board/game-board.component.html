@@ -37,6 +37,7 @@
     [style.grid-column]="(scorePosition.x ?? BOARD_SIZE) + 1"
     [style.grid-row]="(scorePosition.y ?? BOARD_SIZE + 1) + 1"
     [class.relevant]="isScoreRelevant(scoreInfo)"
+    [class.irrelevant]="isScoreIrrelevant(scoreInfo)"
     [class.will-be-removed]="isRemovedScore(scoreInfo, scorePosition)"
   />
 </ng-container>
@@ -55,6 +56,7 @@
       [style.grid-column]="(scorePosition.x ?? BOARD_SIZE) + 1"
       [style.grid-row]="(scorePosition.y ?? BOARD_SIZE + 1) + 1"
       [class.relevant]="isScoreRelevant(scoreInfo)"
+      [class.irrelevant]="isScoreIrrelevant(scoreInfo)"
     />
   </ng-container>
 </ng-container>

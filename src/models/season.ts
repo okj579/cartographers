@@ -37,3 +37,10 @@ export const SEASONS: Season[] = [
     goalIndices: [3, 0, 4, 5],
   },
 ];
+
+export function getStillRelevantGoalIndices(season: Season): number[] {
+  const seasonIndex = SEASONS.findIndex((s) => s.name === season.name);
+  const upcomingSeasons = SEASONS.slice(seasonIndex);
+
+  return upcomingSeasons.reduce((acc, s) => acc.concat(s.goalIndices), [] as number[]);
+}

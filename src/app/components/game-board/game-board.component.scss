@@ -53,6 +53,10 @@ app-score-tile {
     animation: rotate-shrink 1s;
     transform: scale(0);
   }
+
+  &.irrelevant {
+    display: none;
+  }
 }
 
 :host(.is-end-of-game):not(.has-highlighted-goal) app-score-tile {
