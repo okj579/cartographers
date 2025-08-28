@@ -12,11 +12,14 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     mainFields: ['module'],
   },
-  plugins: [
-    analog({
-      prerender: { routes: [] },
-    }),
-  ],
+  plugins: [analog()],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern',
+      },
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',

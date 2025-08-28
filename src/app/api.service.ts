@@ -1,36 +1,35 @@
-import { Injectable, NgZone } from '@angular/core';
-import { $fetch } from 'ofetch';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { GameState, PlayerGameState } from '../models/game-state';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  constructor(private _ngZone: NgZone) {}
+  private http = inject(HttpClient);
 
   getGame(gameId: string): Promise<GameState> {
-    return this._ngZone.run(() => $fetch(`/api/game/${gameId}`));
+    return firstValueFrom(this.http.get<GameState>(`/api/game/${gameId}`));
   }
 
   updateGame(gameId: string, playerState: PlayerGameState): Promise<GameState> {
-    return this._ngZone.run(() =>
-      $fetch(`/api/game/${gameId}`, {
-        method: 'PATCH',
+    return firstValueFrom(
+      this.http.patch<GameState>(`/api/game/${gameId}`, {
         body: playerState,
       }),
     );
   }
 
   createGame(gameId: string, gameState: GameState): Promise<GameState> {
-    return this._ngZone.run(() =>
-      $fetch(`/api/game/${gameId}`, {
-        method: 'POST',
+    return firstValueFrom(
+      this.http.post<GameState>(`/api/game/${gameId}`, {
         body: gameState,
       }),
     );
   }
 
   getGames(): Promise<string[]> {
-    return this._ngZone.run(() => $fetch('/api/games'));
+    return firstValueFrom(this.http.get<string[]>('/api/games'));
   }
 }
